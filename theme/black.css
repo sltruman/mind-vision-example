@@ -1,0 +1,227 @@
+#MainWindow {
+    background-color: #191919;
+}
+
+#MainMenu #pushButton_file,#pushButton_previewControl,#pushButton_imageSetting,#pushButton_softwareSetting,#pushButton_tool,#pushButton_help {
+    border:none;
+    color:white;
+}
+
+#MainMenu #pushButton_file:hover,#pushButton_previewControl:hover,#pushButton_imageSetting:hover,#pushButton_softwareSetting:hover,#pushButton_tool:hover,#pushButton_help:hover {
+    background-color: #303030;
+    border-bottom: 2px solid #2D84E5;
+}
+
+#MainMenu #pushButton_close {
+    background:transparent;
+    background-image: url(:/切图-首页/关闭.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#MainMenu #pushButton_close:hover {
+    background-color: #303030;
+}
+
+#MainMenu #pushButton_maximum {
+    background:transparent;
+    background-image: url(:/切图-首页/页面变小.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#MainMenu #pushButton_maximum:hover {
+    background-color: #303030;
+}
+
+#MainMenu #pushButton_minimum {
+    background:transparent;
+    background-image: url(:/切图-首页/最小化.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#MainMenu #pushButton_minimum:hover {
+    background-color: #303030;
+}
+
+#MainMenu #pushButton_language {
+    background:transparent;
+    background-image: url(:/切图-首页/多种语言.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#MainMenu #pushButton_language:hover {
+    background-color: #303030;
+}
+
+#MainMenu #widget_logo {
+    background-color: #141519;
+}
+
+#MainMenu #widget_logo #label_logo {
+    background-image: url(:/切图-首页/LOGO.png);
+    background-position:left center;
+    background-repeat: no-repeat;
+}
+
+#tab_welcome {
+    background-color: #38393B;
+    background-image: url(:/切图-首页/产品图.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+QGraphicsView {
+    background-color: #38393B;
+    background-image: url(:/切图-首页/LOGO.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#widget_control {
+    border-image: url(:/切图-首页/下底.png);
+}
+
+#widget_control QPushButton {
+    border:none;
+    color: #7F8082;
+}
+
+#widget_control QPushButton:hover {
+    background-color: #303030;
+}
+
+#widget_status QLabel{
+    color: #7F8082;
+}
+
+#widget_status QPushButton{
+    border:none;
+    color: #7F8082;
+}
+
+#widget_status QPushButton:hover {
+    background-color: #303030;
+}
+
+#widget_devices QMenu {
+    background-color: #23262F;
+    border: 1px solid gray;
+    color: white;
+}
+
+#widget_devices QMenu::item:selected { /* when user selects item using mouse or keyboard */
+    background-color: #303030;
+}
+
+#widget_devices #widget_deviceTitleBar {
+    background-color: #23262F;
+    border-top:1px solid #444444;
+}
+
+#widget_deviceTitleBar #pushButton_shrinkLeft {
+    background:transparent;
+    background-image: url(:/切图-首页/缩进.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#widget_deviceTitleBar #label_devices {
+    color: white;
+}
+
+#treeWidget_devices {
+    background-image: url(:/切图-首页/左边底.png);
+    color: white;
+}
+
+#treeWidget_devices::branch:has-siblings:!adjoins-item,
+#treeWidget_devices::branch:has-siblings:adjoins-item,
+#treeWidget_devices::branch:!has-children:!has-siblings:adjoins-item {
+     background: transparent;
+}
+
+#treeWidget_devices::branch:closed:has-children:has-siblings {
+    background-image: url(:/切图-首页/下拉.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#treeWidget_devices::branch:has-children:!has-siblings:closed {
+    background-image: url(:/切图-首页/小箭头.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#treeWidget_devices::branch:open:has-children:has-siblings {
+    background-image: url(:/切图-首页/下拉.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#treeWidget_devices::branch:open:has-children:!has-siblings {
+    background-image: url(:/切图-首页/下拉.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#treeWidget_devices #toolButton_refresh {
+    background:transparent;
+    background-image: url(:/切图-首页/刷新.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#treeWidget_devices::item:selected {
+    background-color: #303030;
+    border-left: 2px solid #2D84E5;
+}
+
+#scrollArea_info
+    #label_deviceName,
+    #label_physicalAddress,
+    #label_ip,
+    #label_mask,
+    #label_gateway,
+    #label_sensor,
+    #label_series,
+    #label_manufacturer {
+    color: #7F8082;
+}
+
+#scrollArea_info
+    #label_deviceName_2,
+    #label_physicalAddress_2,
+    #label_ip_2,
+    #label_mask_2,
+    #label_gateway_2,
+    #label_sensor_2,
+    #label_series_2,
+    #label_manufacturer_2 {
+    color: white;
+}
+
+#widget_params {
+    border:1px solid #444444;
+}
+
+#widget_params #widget_paramsTitleBar {
+    background-color: #262630;
+}
+
+#widget_params #pushButton_shrinkRight {
+    background:transparent;
+    background-image: url(:/切图-首页/缩进.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#widget_params #tabWidget_params {
+    background-color: #201B22;
+}
+
+#widget_params QLabel,QCheckBox {
+    color: #7F8082;
+}
