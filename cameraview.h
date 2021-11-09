@@ -5,12 +5,13 @@
 #include <QProcess>
 #include <QLocalSocket>
 #include <QTimer>
+#include <QGraphicsPixmapItem>
 
 class CameraView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    CameraView(QWidget *parent,QProcess* camera);
+    CameraView(QProcess* camera,QWidget *parent=nullptr);
     ~CameraView();
 
     void play(QString pipeName);
@@ -19,6 +20,9 @@ public:
 
     QProcess* camera;
     QGraphicsPixmapItem* background;
+    float currentScale;
+    int displayFPS;
+    unsigned long long frames;
 
 private slots:
     void process();

@@ -53,17 +53,11 @@ protected:
     QPoint  mRelativeSrcPos;
 
 private slots:
-    void on_pushButton_playOrStop_clicked();
-
-    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-
     void on_treeWidget_devices_customContextMenuRequested(const QPoint &pos);
 
     void on_pushButton_magnify_clicked();
 
     void on_pushButton_shrink_clicked();
-
-    void on_pushButton_center_clicked();
 
     void on_pushButton_take_clicked();
 
@@ -77,16 +71,28 @@ private slots:
 
     void on_pushButton_customStatus_clicked();
 
-    void on_pushButton_cameras_clicked();
-
     void on_action_preview_triggered();
 
     void on_tabWidget_currentChanged(int index);
+
+    void at_cameraStatusUpdate_timeout();
+
+    void on_pushButton_playOrStop_clicked(bool checked);
+
+    void on_pushButton_allCameras_clicked();
+
+    void on_pushButton_perfect_clicked();
+
+    void on_treeWidget_devices_itemSelectionChanged();
+
+    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 private:
     Ui::MainWindow *ui;
 
     QMap<QString,CameraView*> cameraViews;
+    QTimer cameraStatusUpdate;
+    QTreeWidgetItem* selectedCameraItem;
 
 };
 #endif // MAINWINDOW_H

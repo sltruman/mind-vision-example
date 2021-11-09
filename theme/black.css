@@ -75,7 +75,7 @@
 
 QGraphicsView {
     background-color: #38393B;
-    background-image: url(:/切图-首页/LOGO.png);
+    background-image: url(:/切图-首页/相机.png);
     background-position:center;
     background-repeat: no-repeat;
 }
@@ -123,7 +123,7 @@ QGraphicsView {
 
 #widget_deviceTitleBar #pushButton_shrinkLeft {
     background:transparent;
-    background-image: url(:/切图-首页/缩进.png);
+    background-image: url(:/切图-首页/箭头拷贝2.png);
     background-position:center;
     background-repeat: no-repeat;
 }
@@ -144,7 +144,7 @@ QGraphicsView {
 }
 
 #treeWidget_devices::branch:closed:has-children:has-siblings {
-    background-image: url(:/切图-首页/下拉.png);
+    background-image: url(:/切图-首页/小箭头.png);
     background-position:center;
     background-repeat: no-repeat;
 }
