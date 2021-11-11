@@ -7,11 +7,17 @@
 #include <QTimer>
 #include <QGraphicsPixmapItem>
 
+
+namespace Ui {
+class CameraView;
+}
+
 class CameraView : public QGraphicsView
 {
     Q_OBJECT
+
 public:
-    CameraView(QProcess* camera,QWidget *parent=nullptr);
+    explicit CameraView(QProcess* camera,QWidget *parent = nullptr);
     ~CameraView();
 
     void play(QString pipeName);
@@ -24,12 +30,18 @@ public:
     int displayFPS;
     unsigned long long frames;
 
+protected:
+    void enterEvent(QEvent *event) override;
+    void leaveEvent(QEvent *event) override;
+
 private slots:
     void process();
 
-protected:
-    void paintEvent(QPaintEvent *event);
 
+    void on_pushButton_close_clicked();
+
+private:
+    Ui::CameraView *ui;
     QLocalSocket sock;
     QTimer t;
 };

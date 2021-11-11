@@ -1,21 +1,40 @@
 #include "cameraview.h"
+#include "ui_cameraview.h"
+
 #include <QApplication>
 #include <QDateTime>
+#include <QGraphicsScene>
+
 
 #include <iostream>
 using std::endl;
 using std::cout;
-CameraView::CameraView(QProcess* camera,QWidget *parent) : QGraphicsView(parent),camera(camera),currentScale(0.99f),displayFPS(0),frames(0)
+
+CameraView::CameraView(QProcess* camera,QWidget *parent) :
+    QGraphicsView(parent),
+    ui(new Ui::CameraView),
+    camera(camera),currentScale(0.99f),displayFPS(0),frames(0)
 {
+    ui->setupUi(this);
     setScene(new QGraphicsScene(this));
     background = scene()->addPixmap(QPixmap());
     connect(&sock,SIGNAL(connected()),SLOT(process()),Qt::QueuedConnection);
+    ui->pushButton_close->hide();
 }
 
-CameraView::~CameraView() {
+CameraView::~CameraView()
+{
     sock.disconnectFromServer();
+    delete ui;
 }
 
+void CameraView::enterEvent(QEvent *event) {
+//    ui->pushButton_close->show();
+}
+
+void CameraView::leaveEvent(QEvent *event) {
+//    ui->pushButton_close->hide();
+}
 
 bool CameraView::playing() {
     return QLocalSocket::ConnectedState == sock.state();
@@ -27,11 +46,8 @@ void CameraView::play(QString pipeName) {
 
 void CameraView::stop() {
     scene()->clear();
+    background = scene()->addPixmap(QPixmap());
     sock.disconnectFromServer();
-}
-
-void CameraView::paintEvent(QPaintEvent *event) {
-    QGraphicsView::paintEvent(event);
 }
 
 void CameraView::process() {
@@ -90,3 +106,9 @@ void CameraView::process() {
     tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
     frames++;
 }
+
+void CameraView::on_pushButton_close_clicked()
+{
+    setParent(nullptr);
+}
+

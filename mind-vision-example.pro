@@ -10,19 +10,26 @@ CONFIG += c++11
 
 SOURCES += \
     cameraview.cpp \
+    exposuredialog.cpp \
     main.cpp \
     mainmenu.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    whitebalancedialog.cpp
 
 HEADERS += \
     cameraview.h \
+    exposuredialog.h \
     mainmenu.h \
-    mainwindow.h
+    mainwindow.h \
+    whitebalancedialog.h
 
 FORMS += \
+    cameraview.ui \
     devicetreewidgetitem.ui \
+    exposuredialog.ui \
     mainmenu.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    whitebalancedialog.ui
 
 
 # Default rules for deployment.

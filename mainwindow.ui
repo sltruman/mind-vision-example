@@ -24,14 +24,23 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <property name="bottomMargin">
+    <property name="leftMargin">
+     <number>6</number>
+    </property>
+    <property name="topMargin">
      <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>6</number>
+    </property>
+    <property name="bottomMargin">
+     <number>6</number>
     </property>
     <item>
      <widget class="QWidget" name="widget_devices" native="true">
       <property name="minimumSize">
        <size>
-        <width>260</width>
+        <width>280</width>
         <height>0</height>
        </size>
       </property>
@@ -205,7 +214,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>260</width>
+            <width>280</width>
             <height>300</height>
            </rect>
           </property>
@@ -408,12 +417,35 @@
       </property>
       <item>
        <widget class="QTabWidget" name="tabWidget">
+        <property name="styleSheet">
+         <string notr="true"> QTabWidget::pane {
+    border-image: url(:/切图-首页/右边底.png);
+ }
+
+ QTabWidget::tab-bar {
+	top:0px;
+ }
+
+QTabBar::tab {
+background-color:#1C1D22;
+color:#A1A1A3
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+     background-color: #4D4D4D;
+ }
+
+</string>
+        </property>
         <property name="currentIndex">
          <number>0</number>
         </property>
+        <property name="usesScrollButtons">
+         <bool>true</bool>
+        </property>
         <widget class="QWidget" name="tab_welcome">
          <attribute name="title">
-          <string>welcome</string>
+          <string>主页</string>
          </attribute>
          <layout class="QGridLayout" name="tab_welcome_contents">
           <property name="leftMargin">
@@ -435,7 +467,7 @@
         </widget>
         <widget class="QWidget" name="tab_main">
          <attribute name="title">
-          <string>main</string>
+          <string>当前相机</string>
          </attribute>
          <layout class="QGridLayout" name="tab_main_contents">
           <property name="leftMargin">
@@ -457,7 +489,7 @@
         </widget>
         <widget class="QWidget" name="tab_all">
          <attribute name="title">
-          <string>all</string>
+          <string>全部相机</string>
          </attribute>
          <layout class="QGridLayout" name="tab_all_contents">
           <property name="sizeConstraint">
@@ -590,42 +622,6 @@
           </widget>
          </item>
          <item>
-          <widget class="Line" name="line_3">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_take">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>抓拍</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/抓拍.png</normaloff>:/切图-首页/抓拍.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="pushButton_playOrStop">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -672,6 +668,42 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="pushButton_take">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>抓拍</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/切图-首页/抓拍.png</normaloff>:/切图-首页/抓拍.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_8">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButton_record">
            <property name="maximumSize">
             <size>
@@ -685,78 +717,6 @@
            <property name="icon">
             <iconset resource="resource.qrc">
              <normaloff>:/切图-首页/录像.png</normaloff>:/切图-首页/录像.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="Line" name="line_4">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_exposure">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>曝光</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/曝光.png</normaloff>:/切图-首页/曝光.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="Line" name="line_6">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_whiteBalance">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>白平衡</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/白平衡.png</normaloff>:/切图-首页/白平衡.png</iconset>
            </property>
           </widget>
          </item>
@@ -804,6 +764,18 @@
         <layout class="QHBoxLayout" name="horizontalLayout_11">
          <property name="spacing">
           <number>6</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
          </property>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -988,25 +960,18 @@
            <property name="spacing">
             <number>0</number>
            </property>
-           <item>
-            <widget class="QPushButton" name="pushButton_allCameras">
-             <property name="maximumSize">
-              <size>
-               <width>70</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>全部相机</string>
-             </property>
-            </widget>
-           </item>
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <property name="rightMargin">
+            <number>6</number>
+           </property>
            <item>
             <widget class="QPushButton" name="pushButton_customStatus">
              <property name="maximumSize">
               <size>
-               <width>70</width>
-               <height>25</height>
+               <width>16777215</width>
+               <height>99999</height>
               </size>
              </property>
              <property name="text">
@@ -1025,14 +990,14 @@
      <widget class="QWidget" name="widget_params" native="true">
       <property name="maximumSize">
        <size>
-        <width>350</width>
+        <width>380</width>
         <height>16777215</height>
        </size>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -1049,68 +1014,6 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QWidget" name="widget_paramsTitleBar" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_40">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QPushButton" name="pushButton_shrinkRight">
-            <property name="maximumSize">
-             <size>
-              <width>35</width>
-              <height>35</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
         <widget class="QTabWidget" name="tabWidget_params">
          <property name="minimumSize">
           <size>
@@ -1124,12 +1027,10 @@
  }
 
  QTabWidget::tab-bar {
-	top:-5px;
+	top:0px;
  }
 
 QTabBar::tab {
-border:1px solid #444444;
-padding:2px;
 background-color:#1C1D22;
 color:#A1A1A3
 }
@@ -1141,21 +1042,27 @@ QTabBar::tab:selected, QTabBar::tab:hover {
 </string>
          </property>
          <property name="tabPosition">
-          <enum>QTabWidget::East</enum>
+          <enum>QTabWidget::North</enum>
          </property>
          <property name="tabShape">
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <property name="elideMode">
-          <enum>Qt::ElideRight</enum>
+          <enum>Qt::ElideLeft</enum>
          </property>
          <property name="usesScrollButtons">
           <bool>true</bool>
          </property>
+         <property name="documentMode">
+          <bool>false</bool>
+         </property>
          <property name="tabsClosable">
+          <bool>false</bool>
+         </property>
+         <property name="movable">
           <bool>false</bool>
          </property>
          <property name="tabBarAutoHide">
@@ -1201,8 +1108,8 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>325</width>
-                <height>557</height>
+                <width>380</width>
+                <height>555</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -1488,8 +1395,8 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>325</width>
-                <height>557</height>
+                <width>380</width>
+                <height>555</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -1793,8 +1700,8 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>325</width>
-                <height>557</height>
+                <width>380</width>
+                <height>555</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1865,7 +1772,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_37">
                    <property name="text">
-                    <string>PixelFormat</string>
+                    <string>图像格式</string>
                    </property>
                   </widget>
                  </item>
@@ -1910,7 +1817,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_42">
                    <property name="text">
-                    <string>OffsetX</string>
+                    <string>偏移X</string>
                    </property>
                   </widget>
                  </item>
@@ -1927,7 +1834,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_43">
                    <property name="text">
-                    <string>OffsetY</string>
+                    <string>偏移Y</string>
                    </property>
                   </widget>
                  </item>
@@ -1944,7 +1851,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_44">
                    <property name="text">
-                    <string>Width</string>
+                    <string>宽度</string>
                    </property>
                   </widget>
                  </item>
@@ -1961,7 +1868,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_45">
                    <property name="text">
-                    <string>Height</string>
+                    <string>高度</string>
                    </property>
                   </widget>
                  </item>
@@ -2156,8 +2063,8 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>325</width>
-                <height>557</height>
+                <width>380</width>
+                <height>555</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -2225,15 +2132,30 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_39">
                    <property name="text">
-                    <string>TriggerMode</string>
+                    <string>触发模式</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="lineEdit_26">
-                   <property name="text">
-                    <string/>
+                  <widget class="QComboBox" name="comboBox_2">
+                   <property name="currentIndex">
+                    <number>-1</number>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>连续</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>软件</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>硬件</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                 </layout>
@@ -2246,7 +2168,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_40">
                    <property name="text">
-                    <string>TriggerActivation</string>
+                    <string>触发激活</string>
                    </property>
                   </widget>
                  </item>
@@ -2267,7 +2189,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_50">
                    <property name="text">
-                    <string>TriggerDelay</string>
+                    <string>触发延迟</string>
                    </property>
                   </widget>
                  </item>
@@ -2288,7 +2210,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_49">
                    <property name="text">
-                    <string>自动触发时间</string>
+                    <string>触发时间</string>
                    </property>
                   </widget>
                  </item>
@@ -2309,7 +2231,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                  <item>
                   <widget class="QLabel" name="label_51">
                    <property name="text">
-                    <string>TriggerSoftware</string>
+                    <string>软件触发</string>
                    </property>
                   </widget>
                  </item>
@@ -2410,12 +2332,9 @@ QTabBar::tab:selected, QTabBar::tab:hover {
     </rect>
    </property>
   </widget>
-  <action name="action_preview">
+  <action name="action_open">
    <property name="text">
-    <string>开始预览</string>
-   </property>
-   <property name="toolTip">
-    <string>开始预览</string>
+    <string>打开相机</string>
    </property>
   </action>
   <action name="action_modifyIp">

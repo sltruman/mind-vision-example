@@ -7,6 +7,9 @@ MainMenu::MainMenu(QWidget *parent) :
     ui(new Ui::MainMenu)
 {
     ui->setupUi(this);
+    ui->pushButton_close->hide();
+    ui->pushButton_minimum->hide();
+    ui->pushButton_maximum->hide();
 }
 
 MainMenu::~MainMenu()

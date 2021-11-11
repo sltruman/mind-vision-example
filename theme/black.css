@@ -98,8 +98,8 @@ QGraphicsView {
 }
 
 #widget_status QPushButton{
-    border:none;
-    color: #7F8082;
+border:none;
+color: #7F8082;
 }
 
 #widget_status QPushButton:hover {
@@ -135,6 +135,8 @@ QGraphicsView {
 #treeWidget_devices {
     background-image: url(:/切图-首页/左边底.png);
     color: white;
+    background-repeat: no-repeat;
+    background-position:center;
 }
 
 #treeWidget_devices::branch:has-siblings:!adjoins-item,
