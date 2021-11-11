@@ -73,7 +73,8 @@ private:
     QMap<QString,CameraView*> cameraViews;
     QTimer cameraStatusUpdate;
     QTreeWidgetItem* selectedCameraItem;
-    CameraView* mainView;
 
+
+    CameraView* mainView;
 };
 #endif // MAINWINDOW_H

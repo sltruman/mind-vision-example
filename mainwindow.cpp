@@ -89,6 +89,7 @@ void MainWindow::closeEvent(QCloseEvent *event){
     for(auto view : cameraViews) {
         view->stop();
         view->camera->write("exit\n");
+        delete view->camera;
         delete view;
     }
 }
@@ -149,12 +150,12 @@ void MainWindow::at_cameraStatusUpdate_timeout()
 
         cameraViews.remove(cameraName);
         view->camera->write("exit\n");
+        delete view->camera;
         delete view;
 
 FOUND_CAMERA:
         continue;
     }
-
 
     if(selectedCameraItem) {
         auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
@@ -164,6 +165,13 @@ FOUND_CAMERA:
             ui->label_scale->setText(QString::number(cameraViews[cameraName]->currentScale * 100) + '%');
             ui->label_displayFPS->setText(QString::number(cameraViews[cameraName]->displayFPS));
             ui->label_frames->setText(QString::number(cameraViews[cameraName]->frames));
+            ui->pushButton_playOrStop->setChecked(cameraViews[cameraName]->playing());
+        } else {
+            ui->label_resolution->setText("?x?");
+            ui->label_scale->setText("?%");
+            ui->label_displayFPS->setText("?");
+            ui->label_frames->setText("?");
+            ui->pushButton_playOrStop->setChecked(false);
         }
     }
 }
@@ -323,12 +331,6 @@ void MainWindow::on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *curre
     ui->label_gateway_2->setText(info.size() > 12 ? info[12] : "");
     ui->label_manufacturer_2->setText("");
 
-    auto it = cameraViews.find(cameraName);
-    if(cameraViews.end() != it)
-        ui->pushButton_playOrStop->setChecked(true);
-    else
-        ui->pushButton_playOrStop->setChecked(false);
-
     emit ui->tabWidget->currentChanged(1);
 }
 
@@ -336,8 +338,9 @@ void MainWindow::on_action_open_triggered()
 {
     if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) return;
     auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
+
     if(!cameraViews.contains(cameraName)) {
-        auto cmd = new QProcess(this);
+        auto cmd = new QProcess();
         cmd->start("/home/sl.truman/Desktop/build-mind-vision-Desktop-Debug/mind-vision",{"open",cameraName});
         cmd->waitForReadyRead();
         auto res = cmd->readLine().split(' ');
@@ -349,10 +352,17 @@ void MainWindow::on_action_open_triggered()
 
         auto view = new CameraView(cmd);
         cameraViews.insert(cameraName,view);
-    }
 
-    if(!cameraViews[cameraName]->playing()) {
-        cameraViews[cameraName]->play(cameraName);
+        if(!cameraViews[cameraName]->playing()) {
+            cameraViews[cameraName]->play(cameraName);
+        }
+
+    } else {
+        auto view = cameraViews.take(cameraName);
+        view->camera->write("exit\n");
+        delete view->camera;
+        delete view;
+
     }
 
     emit ui->tabWidget->currentChanged(1);
