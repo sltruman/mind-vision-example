@@ -45,6 +45,8 @@ private slots:
 //    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 
+    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+
 private:
     Ui::MainWindow *ui;
     QTreeWidgetItem* selectedCameraItem;

@@ -44,7 +44,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event){
-    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget_preview->setCurrentIndex(0);
 
 //    for(auto view : cameraViews) {
 //        view->stop();
@@ -78,35 +78,14 @@ void MainWindow::at_cameraStatusUpdate_timeout()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
-    if(deviceItem) {
-        auto info = deviceItem->data(0,Qt::UserRole).toStringList();
-        ui->label_series_2->setText(info[0]);
-        ui->label_deviceName_2->setText(info[1]);
-        auto cameraName = info[2];
-        ui->label_physicalAddress_2->setText(info[3]);
-        ui->label_sensor_2->setText(info[6]);
-        ui->label_ip_2->setText(info.size() > 10 ? info[10] : "");
-        ui->label_mask_2->setText(info.size() > 11 ? info[11] : "");
-        ui->label_gateway_2->setText(info.size() > 12 ? info[12] : "");
-        ui->label_manufacturer_2->setText("");
-
-        auto resolution = deviceItem->cameraView->background->pixmap().size();
-        ui->label_resolution->setText(QString("%1x%2").arg(resolution.width()).arg(resolution.height()));
-        ui->label_scale->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
-        ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
-        ui->label_frames->setText(QString::number(deviceItem->cameraView->frames));
-        ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing());
-    }
-
-    switch(ui->tabWidget->currentIndex()) {
+    switch(ui->tabWidget_preview->currentIndex()) {
     case 0:
         break;
     case 1:
-        if(deviceItem) {
-            if(-1 != ui->tab_main_contents->indexOf(deviceItem->cameraView)) return;
-            if(ui->tab_main_contents->count()) ui->tab_main_contents->itemAt(0)->widget()->setParent(nullptr);
-            ui->tab_main_contents->addWidget(deviceItem->cameraView);
-        }
+        if(!deviceItem) return;
+        if(-1 != ui->tab_main_contents->indexOf(deviceItem->cameraView)) return;
+        if(ui->tab_main_contents->count()) ui->tab_main_contents->itemAt(0)->widget()->setParent(nullptr);
+        ui->tab_main_contents->addWidget(deviceItem->cameraView);
         break;
     case 2:
         for(auto topItemIndex=0;topItemIndex<ui->treeWidget_devices->topLevelItemCount();topItemIndex++) {
@@ -225,3 +204,31 @@ void MainWindow::on_pushButton_playOrStop_clicked()
         deviceItem->cameraView->setParent(nullptr);
     }
 }
+
+void MainWindow::on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
+
+    auto info = deviceItem->data(0,Qt::UserRole).toStringList();
+    ui->label_series_2->setText(info[0]);
+    ui->label_deviceName_2->setText(info[1]);
+    auto cameraName = info[2];
+    ui->label_physicalAddress_2->setText(info[3]);
+    ui->label_sensor_2->setText(info[6]);
+    ui->label_ip_2->setText(info.size() > 10 ? info[10] : "");
+    ui->label_mask_2->setText(info.size() > 11 ? info[11] : "");
+    ui->label_gateway_2->setText(info.size() > 12 ? info[12] : "");
+    ui->label_manufacturer_2->setText("");
+
+    auto resolution = deviceItem->cameraView->background->pixmap().size();
+    ui->label_resolution->setText(QString("%1x%2").arg(resolution.width()).arg(resolution.height()));
+    ui->label_scale->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
+    ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
+    ui->label_frames->setText(QString::number(deviceItem->cameraView->frames));
+    ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing());
+
+
+//    deviceItem->camera.
+}
+

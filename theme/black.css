@@ -66,14 +66,31 @@
     background-repeat: no-repeat;
 }
 
-#tab_welcome {
+#tabWidget_preview::pane {
+    border-image: url(:/切图-首页/右边底.png);
+}
+
+#tabWidget_preview::tab-bar {
+    top:0px;
+}
+
+#tabWidget_preview QTabBar::tab {
+    background-color:#1C1D22;
+    color:white;
+}
+
+#tabWidget_preview QTabBar::tab:selected, QTabBar::tab:hover {
+    background-color: #4D4D4D;
+}
+
+#tabWidget_preview #tab_welcome {
     background-color: #38393B;
     background-image: url(:/切图-首页/产品图.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
-QGraphicsView {
+#tabWidget_preview QGraphicsView {
     background-color: #38393B;
     background-image: url(:/切图-首页/相机.png);
     background-position:center;
@@ -98,8 +115,8 @@ QGraphicsView {
 }
 
 #widget_status QPushButton{
-border:none;
-color: #7F8082;
+    border:none;
+    color: #7F8082;
 }
 
 #widget_status QPushButton:hover {
@@ -133,7 +150,7 @@ color: #7F8082;
 }
 
 #treeWidget_devices {
-    background-image: url(:/切图-首页/左边底.png);
+    border-image: url(:/切图-首页/下底.png);
     color: white;
     background-repeat: no-repeat;
     background-position:center;
@@ -205,9 +222,31 @@ color: #7F8082;
     color: white;
 }
 
+#tabWidget_params QGroupBox:title {
+    color:white;
+}
+
+#tabWidget_params::pane {
+    border-image: url(:/切图-首页/右边底.png);
+}
+
+#tabWidget_params::tab-bar {
+    top:0px;
+}
+
+#tabWidget_params QTabBar::tab {
+    background-color:#1C1D22;
+    color:white;
+}
+
+#tabWidget_params QTabBar::tab:selected, QTabBar::tab:hover {
+    background-color: #4D4D4D;
+}
+
+/*
 #widget_params {
     border:1px solid #444444;
-}
+}*/
 
 #widget_params #widget_paramsTitleBar {
     background-color: #262630;
@@ -224,6 +263,6 @@ color: #7F8082;
     background-color: #201B22;
 }
 
-#widget_params QLabel,QCheckBox {
+#widget_params QGroupBox,QLabel,QCheckBox {
     color: #7F8082;
 }

@@ -101,3 +101,4 @@ void DeviceItem::close() {
     camera.write("exit\n");
     camera.waitForFinished();
 }
+

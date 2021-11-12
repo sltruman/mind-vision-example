@@ -41,6 +41,8 @@ public:
 
     bool open();
     void close();
+    int triggerMode();
+    void triggerMode(int);
 
     QString cameraName;
     QProcess camera;

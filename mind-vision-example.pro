@@ -10,28 +10,22 @@ CONFIG += c++11
 
 SOURCES += \
     cameraview.cpp \
-    exposuredialog.cpp \
     main.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
-    toplevelitemwidget.cpp \
-    whitebalancedialog.cpp
+    toplevelitemwidget.cpp
 
 HEADERS += \
     cameraview.h \
-    exposuredialog.h \
     mainmenu.h \
     mainwindow.h \
-    toplevelitemwidget.h \
-    whitebalancedialog.h
+    toplevelitemwidget.h
 
 FORMS += \
     cameraview.ui \
-    exposuredialog.ui \
     mainmenu.ui \
     mainwindow.ui \
-    toplevelitemwidget.ui \
-    whitebalancedialog.ui
+    toplevelitemwidget.ui
 
 
 # Default rules for deployment.
