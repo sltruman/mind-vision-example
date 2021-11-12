@@ -2,8 +2,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ui_devicetreewidgetitem.h"
-#include "exposuredialog.h"
-#include "whitebalancedialog.h"
+#include "toplevelitemwidget.h"
 
 #include <QProcess>
 #include <QSpacerItem>
@@ -18,47 +17,10 @@
 #include <iostream>
 using namespace std;
 
-DeviceTreeWidgetItem::DeviceTreeWidgetItem(QWidget *parent,QTreeWidgetItem *item,QString series) :
-    QWidget(parent),
-    ui(new Ui::DeviceTreeWidgetItem),
-    topLevelItem(item),
-    series(series)
-{
-    ui->setupUi(this);
-    emit ui->toolButton_refresh->clicked();
-}
-
-DeviceTreeWidgetItem::~DeviceTreeWidgetItem()
-{
-    delete ui;
-}
-
-void DeviceTreeWidgetItem::on_toolButton_refresh_clicked()
-{
-    QProcess cmd;
-    cmd.start("/home/sl.truman/Desktop/build-mind-vision-Desktop-Debug/mind-vision",{"list"});
-    cmd.waitForFinished();
-
-    while(topLevelItem->childCount()) topLevelItem->removeChild(topLevelItem->child(0));
-    auto s = cmd.readAllStandardOutput().split('\n'); s.removeLast();
-
-    for(QString line : s) {
-        auto info = line.split(' '); //产品系列 产品名称 产品昵称 内核符号连接名 内部使用 驱动版本 sensor类型 接口类型 产品唯一序列号 实例索引号 相机IP 相机子网掩码 相机网关 网卡IP 网卡子网掩码 网卡网关
-        if(info[0] != series) continue;
-
-        auto cameraName = info[0] == "GIGE" ? QString("%1(%2)").arg(info[1]).arg(info[10]) : info[2];
-        auto child = new QTreeWidgetItem(topLevelItem,{cameraName});
-        child->setData(0,Qt::UserRole,info);
-        child->setData(0,Qt::ToolTipRole,cameraName);
-        child->setIcon(0,QIcon(":/切图-首页/录像.png"));
-    }
-}
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , selectedCameraItem(nullptr)
-    , mainView(nullptr)
 {
     ui->setupUi(this);
 
@@ -68,11 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
     auto gige = ui->treeWidget_devices->topLevelItem(0);
     auto usb = ui->treeWidget_devices->topLevelItem(1);
 
-    ui->treeWidget_devices->setItemWidget(gige,0,new DeviceTreeWidgetItem(this,gige,"GIGE"));
-    ui->treeWidget_devices->setItemWidget(usb,0,new DeviceTreeWidgetItem(this,usb,"U3V"));
-    ui->tabWidget->tabBar()->setTabVisible(0,this->cameraViews.size() == 0);
-    ui->tabWidget->tabBar()->setTabVisible(1,this->cameraViews.size());
-    ui->tabWidget->tabBar()->setTabVisible(2,this->cameraViews.size());
+    ui->treeWidget_devices->setItemWidget(gige,0,new TopLevelItemWidget(gige,"GIGE",this));
+    ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V",this));
 
     connect(&cameraStatusUpdate,SIGNAL(timeout()),SLOT(at_cameraStatusUpdate_timeout()),Qt::QueuedConnection);
     cameraStatusUpdate.setInterval(1000);
@@ -86,12 +45,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event){
     ui->tabWidget->setCurrentIndex(0);
-    for(auto view : cameraViews) {
-        view->stop();
-        view->camera->write("exit\n");
-        delete view->camera;
-        delete view;
-    }
+
+//    for(auto view : cameraViews) {
+//        view->stop();
+//        view->camera->write("exit\n");
+//        delete view->camera;
+//        delete view;
+//    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -116,69 +76,77 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::at_cameraStatusUpdate_timeout()
 {
-    ui->tabWidget->tabBar()->setTabVisible(0,this->cameraViews.size() == 0);
-    ui->tabWidget->tabBar()->setTabVisible(1,this->cameraViews.size());
-//    ui->tabWidget->tabBar()->setTabVisible(2,this->cameraViews.size());
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
-    if(ui->tabWidget->currentIndex() == 0 && this->cameraViews.size())
-        ui->tabWidget->setCurrentIndex(1);
+    if(deviceItem) {
+        auto info = deviceItem->data(0,Qt::UserRole).toStringList();
+        ui->label_series_2->setText(info[0]);
+        ui->label_deviceName_2->setText(info[1]);
+        auto cameraName = info[2];
+        ui->label_physicalAddress_2->setText(info[3]);
+        ui->label_sensor_2->setText(info[6]);
+        ui->label_ip_2->setText(info.size() > 10 ? info[10] : "");
+        ui->label_mask_2->setText(info.size() > 11 ? info[11] : "");
+        ui->label_gateway_2->setText(info.size() > 12 ? info[12] : "");
+        ui->label_manufacturer_2->setText("");
 
-    for(auto i=0;i < 2;i++) {
-        auto topItem = ui->treeWidget_devices->topLevelItem(i);
-        for(auto j=0;j < topItem->childCount();j++){
-            auto cameraName = topItem->child(j)->data(0,Qt::UserRole).toStringList()[2];
-            auto it = cameraViews.find(cameraName);
-            if (it == cameraViews.end()) {
-                topItem->child(j)->setIcon(0,QIcon(":/切图-首页/录像.png"));
-                continue;
-            }
-
-            if(it.value()->playing()) topItem->child(j)->setIcon(0,QIcon(":/切图-首页/绿.png"));
-            else topItem->child(j)->setIcon(0,QIcon(":/切图-首页/红.png"));
-        }
+        auto resolution = deviceItem->cameraView->background->pixmap().size();
+        ui->label_resolution->setText(QString("%1x%2").arg(resolution.width()).arg(resolution.height()));
+        ui->label_scale->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
+        ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
+        ui->label_frames->setText(QString::number(deviceItem->cameraView->frames));
+        ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing());
     }
 
-    for(auto view : cameraViews.values()) {
-        auto cameraName = view->camera->arguments()[1];
-        for(auto i=0;i < 2;i++) {
-            auto topItem = ui->treeWidget_devices->topLevelItem(i);
-            for(auto j=0;j < topItem->childCount();j++){
-                auto cameraName2 = topItem->child(j)->data(0,Qt::UserRole).toStringList()[2];
-                if(cameraName2 == cameraName) goto FOUND_CAMERA;
+    switch(ui->tabWidget->currentIndex()) {
+    case 0:
+        break;
+    case 1:
+        if(deviceItem) {
+            if(-1 != ui->tab_main_contents->indexOf(deviceItem->cameraView)) return;
+            if(ui->tab_main_contents->count()) ui->tab_main_contents->itemAt(0)->widget()->setParent(nullptr);
+            ui->tab_main_contents->addWidget(deviceItem->cameraView);
+        }
+        break;
+    case 2:
+        for(auto topItemIndex=0;topItemIndex<ui->treeWidget_devices->topLevelItemCount();topItemIndex++) {
+            auto topLevelItem = ui->treeWidget_devices->topLevelItem(topItemIndex);
+
+            for(auto subItemIndex=0;subItemIndex< topLevelItem->childCount();subItemIndex++) {
+                auto deviceItem = dynamic_cast<DeviceItem*>(topLevelItem->child(subItemIndex));
+
+                if(QProcess::NotRunning == deviceItem->camera.state()) continue;
+
+                auto i=0,j=ui->tab_all_contents->columnCount();
+                if(ui->tab_all_contents->count() < j*j) {
+                    for(i=0;i< ui->tab_all_contents->columnCount();i++) {
+                        ui->tab_all_contents->setRowStretch(i,1);
+                        for (j=0;j < ui->tab_all_contents->columnCount();j++) {
+                            ui->tab_all_contents->setColumnStretch(j,1);
+                            auto item = ui->tab_all_contents->itemAtPosition(i,j);
+                            if(!item) goto NEW_ITEM;
+                            if(item->widget() == deviceItem->cameraView) goto OLD_ITEM;
+                        }
+                    }
+                }
+NEW_ITEM:
+                ui->tab_all_contents->addWidget(deviceItem->cameraView,i,j);
+OLD_ITEM:
+                ;
+
             }
         }
-
-        cameraViews.remove(cameraName);
-        view->camera->write("exit\n");
-        delete view->camera;
-        delete view;
-
-FOUND_CAMERA:
-        continue;
-    }
-
-    if(selectedCameraItem) {
-        auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
-        if(cameraViews.contains(cameraName)) {
-            auto resolution = cameraViews[cameraName]->background->pixmap().size();
-            ui->label_resolution->setText(QString("%1x%2").arg(resolution.width()).arg(resolution.height()));
-            ui->label_scale->setText(QString::number(cameraViews[cameraName]->currentScale * 100) + '%');
-            ui->label_displayFPS->setText(QString::number(cameraViews[cameraName]->displayFPS));
-            ui->label_frames->setText(QString::number(cameraViews[cameraName]->frames));
-            ui->pushButton_playOrStop->setChecked(cameraViews[cameraName]->playing());
-        } else {
-            ui->label_resolution->setText("?x?");
-            ui->label_scale->setText("?%");
-            ui->label_displayFPS->setText("?");
-            ui->label_frames->setText("?");
-            ui->pushButton_playOrStop->setChecked(false);
-        }
+        break;
+    default:
+        break;
     }
 }
 
 void MainWindow::on_treeWidget_devices_customContextMenuRequested(const QPoint &pos)
 {
-    if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) return;
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
+    cout << "menu " << deviceItem->text(0).toStdString() << endl;
 
     auto qMenu = new QMenu(ui->treeWidget_devices);
     qMenu->setObjectName("menu_devices");
@@ -189,181 +157,71 @@ void MainWindow::on_treeWidget_devices_customContextMenuRequested(const QPoint &
     qMenu->exec(QCursor::pos()); //在鼠标点击的位置显示鼠标右键菜单
 }
 
+void MainWindow::on_action_open_triggered()
+{
+    emit ui->pushButton_playOrStop->clicked();
+}
+
 void MainWindow::on_pushButton_magnify_clicked()
 {
-    if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) return;
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
 
-    auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
-    if(!cameraViews.contains(cameraName)) return;
-    cameraViews[cameraName]->currentScale += 0.1;
+    deviceItem->cameraView->currentScale += 0.1;
 }
 
 void MainWindow::on_pushButton_shrink_clicked()
 {
-if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) return;
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
 
-    auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
-    if(!cameraViews.contains(cameraName)) return;
-    cameraViews[cameraName]->currentScale -= 0.1;
+    deviceItem->cameraView->currentScale -= 0.1;
 }
 
 void MainWindow::on_pushButton_perfect_clicked()
 {
-    if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) return;
-
-    auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
-    if(!cameraViews.contains(cameraName)) return;
-    cameraViews[cameraName]->currentScale = 0.99;
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
+    deviceItem->cameraView->currentScale = 0.99;
 }
 
 void MainWindow::on_pushButton_take_clicked()
 {
-    if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) return;
-    auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
-    if(!cameraViews.contains(cameraName)) return;
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
 
     auto imageDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
     cout << imageDir.toStdString() << endl;
     auto time = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz");
     auto filePath = imageDir + "/mind-vision " + time + ".bmp";
-    cameraViews[cameraName]->background->pixmap().save(filePath);
+    deviceItem->cameraView->background->pixmap().save(filePath);
     QMessageBox::information(this, "抓拍", "图片已保存：" + filePath, QMessageBox::Ok);
 }
 
-void MainWindow::on_pushButton_record_clicked()
+//void MainWindow::on_pushButton_record_clicked()
+//{
+
+//}
+
+//void MainWindow::on_pushButton_customStatus_clicked()
+//{
+
+//}
+
+
+void MainWindow::on_pushButton_playOrStop_clicked()
 {
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
 
-}
-
-void MainWindow::on_pushButton_customStatus_clicked()
-{
-
-}
-
-
-void MainWindow::on_tabWidget_currentChanged(int index)
-{
-    for(auto o : ui->tab_main->findChildren<CameraView*>())
-        o->setParent(nullptr);
-
-    for(auto o : ui->tab_all->findChildren<CameraView*>())
-        o->setParent(nullptr);
-
-    switch(index) {
-    case 0:
-        break;
-    case 1:{
-        if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) break;
-
-        auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
-
-        auto it = cameraViews.find(cameraName);
-        if(it != cameraViews.end()) {
-            ui->tab_main_contents->addWidget(*it,0,0);
-        }
-        break;
-    }
-    case 2:
-        for(auto view : cameraViews) {
-            auto cameraName = view->camera->arguments()[1];
-
-            auto i=0,j=ui->tab_all_contents->columnCount();
-            if(ui->tab_all_contents->count() < j*j)
-                for(i=0;i< ui->tab_all_contents->columnCount();i++) {
-                    ui->tab_all_contents->setRowStretch(i,1);
-                    for (j=0;j < ui->tab_all_contents->columnCount();j++) {
-                        ui->tab_all_contents->setColumnStretch(j,1);
-                        auto item = ui->tab_all_contents->itemAtPosition(i,j);
-                        if(!item) goto NEW_ITEM;
-                    }
-                }
-NEW_ITEM:
-            ui->tab_all_contents->addWidget(view,i,j);
-        }
-        break;
-    default:
-        break;
-    }
-}
-
-void MainWindow::on_pushButton_playOrStop_clicked(bool checked)
-{
-    if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) return;
-    auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
-    if(!cameraViews.contains(cameraName)) {
-        auto cmd = new QProcess(this);
-        cmd->start("/home/sl.truman/Desktop/build-mind-vision-Desktop-Debug/mind-vision",{"open",cameraName});
-        cmd->waitForReadyRead();
-        auto res = cmd->readLine().split(' ');
-        QString ret = res[0];
-        if (ret == "False") {
+    if(QProcess::NotRunning == deviceItem->camera.state()) {
+        if(!deviceItem->open()){
             QMessageBox::critical(this, "错误", "连接相机失败！", QMessageBox::Ok);
             return;
         }
-
-        auto view = new CameraView(cmd);
-        cameraViews.insert(cameraName,view);
     }
-
-    if(checked) {
-        cout << cameraName.toStdString() << " play" << endl;
-        cameraViews[cameraName]->play(cameraName);
-    } else {
-        cout << cameraName.toStdString() << " stop" << endl;
-        cameraViews[cameraName]->stop();
+    else {
+        deviceItem->close();
+        deviceItem->cameraView->setParent(nullptr);
     }
-}
-
-void MainWindow::on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
-{
-    selectedCameraItem = nullptr;
-    if(current->data(0,Qt::UserRole).isNull()) return;
-    selectedCameraItem = current;
-
-    auto info = selectedCameraItem->data(0,Qt::UserRole).toStringList();
-    ui->label_series_2->setText(info[0]);
-    ui->label_deviceName_2->setText(info[1]);
-    auto cameraName = info[2];
-    ui->label_physicalAddress_2->setText(info[3]);
-    ui->label_sensor_2->setText(info[6]);
-    ui->label_ip_2->setText(info.size() > 10 ? info[10] : "");
-    ui->label_mask_2->setText(info.size() > 11 ? info[11] : "");
-    ui->label_gateway_2->setText(info.size() > 12 ? info[12] : "");
-    ui->label_manufacturer_2->setText("");
-
-    emit ui->tabWidget->currentChanged(1);
-}
-
-void MainWindow::on_action_open_triggered()
-{
-    if(!selectedCameraItem || selectedCameraItem->data(0,Qt::UserRole).isNull()) return;
-    auto cameraName = selectedCameraItem->data(0,Qt::UserRole).toStringList()[2];
-
-    if(!cameraViews.contains(cameraName)) {
-        auto cmd = new QProcess();
-        cmd->start("/home/sl.truman/Desktop/build-mind-vision-Desktop-Debug/mind-vision",{"open",cameraName});
-        cmd->waitForReadyRead();
-        auto res = cmd->readLine().split(' ');
-        QString ret = res[0];
-        if (ret == "False") {
-            QMessageBox::critical(this, "错误", "连接相机失败！", QMessageBox::Ok);
-            return;
-        }
-
-        auto view = new CameraView(cmd);
-        cameraViews.insert(cameraName,view);
-
-        if(!cameraViews[cameraName]->playing()) {
-            cameraViews[cameraName]->play(cameraName);
-        }
-
-    } else {
-        auto view = cameraViews.take(cameraName);
-        view->camera->write("exit\n");
-        delete view->camera;
-        delete view;
-
-    }
-
-    emit ui->tabWidget->currentChanged(1);
 }

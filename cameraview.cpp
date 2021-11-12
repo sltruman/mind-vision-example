@@ -10,10 +10,10 @@
 using std::endl;
 using std::cout;
 
-CameraView::CameraView(QProcess* camera,QWidget *parent) :
+CameraView::CameraView(QWidget *parent) :
     QGraphicsView(parent),
     ui(new Ui::CameraView),
-    camera(camera),currentScale(0.99f),displayFPS(0),frames(0)
+    currentScale(0.99f),displayFPS(0),frames(0)
 {
     ui->setupUi(this);
     setScene(new QGraphicsScene(this));

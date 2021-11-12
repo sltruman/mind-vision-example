@@ -14,6 +14,7 @@ SOURCES += \
     main.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
+    toplevelitemwidget.cpp \
     whitebalancedialog.cpp
 
 HEADERS += \
@@ -21,14 +22,15 @@ HEADERS += \
     exposuredialog.h \
     mainmenu.h \
     mainwindow.h \
+    toplevelitemwidget.h \
     whitebalancedialog.h
 
 FORMS += \
     cameraview.ui \
-    devicetreewidgetitem.ui \
     exposuredialog.ui \
     mainmenu.ui \
     mainwindow.ui \
+    toplevelitemwidget.ui \
     whitebalancedialog.ui
 
 

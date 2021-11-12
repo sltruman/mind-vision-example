@@ -17,7 +17,7 @@ class CameraView : public QGraphicsView
     Q_OBJECT
 
 public:
-    explicit CameraView(QProcess* camera,QWidget *parent = nullptr);
+    explicit CameraView(QWidget *parent = nullptr);
     ~CameraView();
 
     void play(QString pipeName);

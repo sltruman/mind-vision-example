@@ -71,7 +71,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>35</height>
+           <height>37</height>
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_59">
@@ -438,7 +438,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
 </string>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
         </property>
         <property name="usesScrollButtons">
          <bool>true</bool>
@@ -469,7 +469,10 @@ QTabBar::tab:selected, QTabBar::tab:hover {
          <attribute name="title">
           <string>当前相机</string>
          </attribute>
-         <layout class="QGridLayout" name="tab_main_contents">
+         <layout class="QVBoxLayout" name="tab_main_contents">
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -482,9 +485,6 @@ QTabBar::tab:selected, QTabBar::tab:hover {
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <property name="spacing">
-           <number>0</number>
-          </property>
          </layout>
         </widget>
         <widget class="QWidget" name="tab_all">
@@ -492,9 +492,6 @@ QTabBar::tab:selected, QTabBar::tab:hover {
           <string>全部相机</string>
          </attribute>
          <layout class="QGridLayout" name="tab_all_contents">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetDefaultConstraint</enum>
-          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -1185,7 +1182,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                     <string notr="true"/>
                    </property>
                    <property name="text">
-                    <string>Favorites</string>
+                    <string>曝光</string>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -1264,7 +1261,7 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                     <string notr="true"/>
                    </property>
                    <property name="text">
-                    <string>DeviceControl</string>
+                    <string>白平衡</string>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -1395,8 +1392,8 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>200</width>
-                <height>354</height>
+                <width>380</width>
+                <height>555</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -1700,8 +1697,8 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>254</width>
-                <height>549</height>
+                <width>380</width>
+                <height>555</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -2063,8 +2060,8 @@ QTabBar::tab:selected, QTabBar::tab:hover {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>181</width>
-                <height>381</height>
+                <width>380</width>
+                <height>555</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_15">
