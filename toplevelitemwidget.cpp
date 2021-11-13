@@ -102,3 +102,23 @@ void DeviceItem::close() {
     camera.waitForFinished();
 }
 
+#include <iostream>
+using namespace std;
+
+QStringList DeviceItem::exposureParams() {
+    camera.write("exposure-params\n");
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+    if(res[0] == "False") return {};
+    res.removeFirst();
+    return res;
+}
+
+QStringList DeviceItem::whiteBalanceParams() {
+    camera.write("white-balance-params\n");
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+    if(res[0] == "False") return {};
+    res.removeFirst();
+    return res;
+}

@@ -8,7 +8,6 @@
 #include <QProcess>
 #include <QTimer>
 
-
 namespace Ui {
 class TopLevelItemWidget;
 }
@@ -43,6 +42,8 @@ public:
     void close();
     int triggerMode();
     void triggerMode(int);
+    QStringList exposureParams();
+    QStringList whiteBalanceParams();
 
     QString cameraName;
     QProcess camera;

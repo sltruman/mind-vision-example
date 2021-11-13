@@ -1078,59 +1078,14 @@
                      <widget class="QComboBox" name="comboBox_exposureMode">
                       <item>
                        <property name="text">
-                        <string>自动</string>
+                        <string>手动</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>手动</string>
+                        <string>自动</string>
                        </property>
                       </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,6">
-                    <item>
-                     <widget class="QLabel" name="label_4">
-                      <property name="text">
-                       <string>增益</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QSlider" name="horizontalSlider_gain">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="invertedAppearance">
-                       <bool>false</bool>
-                      </property>
-                      <property name="invertedControls">
-                       <bool>false</bool>
-                      </property>
-                      <property name="tickPosition">
-                       <enum>QSlider::NoTicks</enum>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="2,6">
-                    <item>
-                     <widget class="QLabel" name="label_5">
-                      <property name="text">
-                       <string>曝光时间</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QSlider" name="horizontalSlider_exposure_time">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
                      </widget>
                     </item>
                    </layout>
@@ -1145,7 +1100,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="AE_horizontalSlider">
+                     <widget class="QSlider" name="slider_brightness">
                       <property name="maximum">
                        <number>300</number>
                       </property>
@@ -1162,14 +1117,14 @@
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_17">
                     <item>
-                     <widget class="QCheckBox" name="flicker_checkBox">
+                     <widget class="QCheckBox" name="checkBox_flicker">
                       <property name="text">
                        <string>抗频闪</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBox_exposureMode_2">
+                     <widget class="QComboBox" name="comboBox_frequency">
                       <item>
                        <property name="text">
                         <string>50HZ</string>
@@ -1194,7 +1149,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="horizontalSlider_gain_2">
+                     <widget class="QSlider" name="slider_gain">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1221,7 +1176,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="horizontalSlider_exposure_time_2">
+                     <widget class="QSlider" name="slider_exposureTime">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1270,15 +1225,15 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBox_exposureMode_3">
+                     <widget class="QComboBox" name="comboBox_whiteBalanceMode">
                       <item>
                        <property name="text">
-                        <string>自动</string>
+                        <string>手动</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>手动</string>
+                        <string>自动</string>
                        </property>
                       </item>
                      </widget>
@@ -1286,7 +1241,7 @@
                    </layout>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="AWB_once_button">
+                   <widget class="QPushButton" name="pushButton_onceWhiteBalance">
                     <property name="text">
                      <string>一键白平衡</string>
                     </property>
@@ -1297,12 +1252,12 @@
                     <item>
                      <widget class="QLabel" name="label_14">
                       <property name="text">
-                       <string>红色增益</string>
+                       <string>红</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="horizontalSlider_gain_r">
+                     <widget class="QSlider" name="slider_r">
                       <property name="maximum">
                        <number>400</number>
                       </property>
@@ -1321,12 +1276,12 @@
                     <item>
                      <widget class="QLabel" name="label_15">
                       <property name="text">
-                       <string>绿色增益</string>
+                       <string>绿</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="horizontalSlider_gain_g">
+                     <widget class="QSlider" name="slider_g">
                       <property name="maximum">
                        <number>400</number>
                       </property>
@@ -1342,12 +1297,12 @@
                     <item>
                      <widget class="QLabel" name="label_16">
                       <property name="text">
-                       <string>蓝色增益</string>
+                       <string>蓝</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="horizontalSlider_gain_b">
+                     <widget class="QSlider" name="slider_b">
                       <property name="maximum">
                        <number>400</number>
                       </property>
@@ -1359,7 +1314,7 @@
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_49" stretch="2,0">
+                   <layout class="QHBoxLayout" name="horizontalLayout_49" stretch="2,8">
                     <item>
                      <widget class="QLabel" name="label_17">
                       <property name="text">
@@ -1368,7 +1323,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="horizontalSlider_saturation">
+                     <widget class="QSlider" name="slider_saturation">
                       <property name="maximum">
                        <number>200</number>
                       </property>
@@ -1438,8 +1393,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>228</width>
-                <height>308</height>
+                <width>312</width>
+                <height>592</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_26">
@@ -1601,8 +1556,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>200</width>
-                <height>272</height>
+                <width>312</width>
+                <height>592</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_27">

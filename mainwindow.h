@@ -45,7 +45,21 @@ private slots:
 //    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 
-    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_treeWidget_devices_itemSelectionChanged();
+    void on_pushButton_onceWhiteBalance_clicked();
+
+
+    void on_comboBox_exposureMode_currentIndexChanged(int index);
+
+    void on_comboBox_whiteBalanceMode_currentIndexChanged(int index);
+
+    void on_slider_brightness_valueChanged(int value);
+
+    void on_checkBox_flicker_stateChanged(int arg1);
+
+    void on_slider_gain_valueChanged(int value);
+
+    void on_slider_exposureTime_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;
