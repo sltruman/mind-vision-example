@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1176</width>
-    <height>671</height>
+    <height>716</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -186,7 +186,7 @@
             <x>0</x>
             <y>0</y>
             <width>280</width>
-            <height>300</height>
+            <height>322</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -939,6 +939,12 @@
     </item>
     <item>
      <widget class="QWidget" name="widget_params" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>320</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
         <width>320</width>
@@ -982,7 +988,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideLeft</enum>
@@ -1040,7 +1046,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>312</width>
-                <height>592</height>
+                <height>637</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1144,7 +1150,7 @@
                     <item>
                      <widget class="QLabel" name="label_8">
                       <property name="text">
-                       <string>模拟增益(0)</string>
+                       <string>模拟增益</string>
                       </property>
                      </widget>
                     </item>
@@ -1171,7 +1177,7 @@
                     <item>
                      <widget class="QLabel" name="label_9">
                       <property name="text">
-                       <string>曝光时间(0)</string>
+                       <string>曝光时间</string>
                       </property>
                      </widget>
                     </item>
@@ -1338,6 +1344,51 @@
                 </widget>
                </item>
                <item>
+                <widget class="QGroupBox" name="groupBox_5">
+                 <property name="title">
+                  <string>查表变换</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_22">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="2,8">
+                    <item>
+                     <widget class="QLabel" name="label">
+                      <property name="text">
+                       <string>伽马</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QSlider" name="slider_gamma">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_21" stretch="2,8">
+                    <item>
+                     <widget class="QLabel" name="label_2">
+                      <property name="text">
+                       <string>对比度</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QSlider" name="slider_contrastRatio">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -1394,7 +1445,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>312</width>
-                <height>592</height>
+                <height>637</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_26">
@@ -1405,52 +1456,7 @@
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_24">
                   <item>
-                   <widget class="QComboBox" name="res_combobox"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="groupBox_5">
-                 <property name="title">
-                  <string>查表变换</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_22">
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_20">
-                    <item>
-                     <widget class="QLabel" name="label">
-                      <property name="text">
-                       <string>伽马</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QSlider" name="gamma_horizontalSlider">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_21">
-                    <item>
-                     <widget class="QLabel" name="label_2">
-                      <property name="text">
-                       <string>饱和度</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QSlider" name="contrast_horizontalSlider">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+                   <widget class="QComboBox" name="comboBox_resolution"/>
                   </item>
                  </layout>
                 </widget>
@@ -1464,14 +1470,14 @@
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_23">
                     <item>
-                     <widget class="QCheckBox" name="checkBox_isp_h">
+                     <widget class="QCheckBox" name="checkBox_horizontalMirror">
                       <property name="text">
                        <string>水平镜像</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QCheckBox" name="checkBox_isp_v">
+                     <widget class="QCheckBox" name="checkBox_verticalMirror">
                       <property name="text">
                        <string>垂直镜像</string>
                       </property>
@@ -1489,7 +1495,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QSlider" name="horizontalSlider_isp_acutance">
+                     <widget class="QSlider" name="slider_acutance">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1557,7 +1563,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>312</width>
-                <height>592</height>
+                <height>637</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -1577,7 +1583,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBox">
+                     <widget class="QComboBox" name="comboBox_triggerMode">
                       <item>
                        <property name="text">
                         <string>连续</string>
@@ -1598,7 +1604,7 @@
                    </layout>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="software_trigger_once_button">
+                   <widget class="QPushButton" name="pushButton_softTrigger">
                     <property name="text">
                      <string>软触发一次</string>
                     </property>
@@ -1623,15 +1629,15 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBox_3">
+                     <widget class="QComboBox" name="comboBox_flashMode">
                       <item>
                        <property name="text">
-                        <string>自动</string>
+                        <string>手动</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>手动</string>
+                        <string>自动</string>
                        </property>
                       </item>
                      </widget>
@@ -1648,15 +1654,15 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBox_2">
+                     <widget class="QComboBox" name="comboBox_flashPolarity">
                       <item>
                        <property name="text">
-                        <string>高</string>
+                        <string>低</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>低</string>
+                        <string>高</string>
                        </property>
                       </item>
                      </widget>

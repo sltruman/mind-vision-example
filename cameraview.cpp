@@ -89,6 +89,7 @@ void CameraView::process() {
 
     scene()->clear();
     background = scene()->addPixmap(QPixmap::fromImage(img));
+    setSceneRect(0,0,w,h);
 
     resetTransform();
 

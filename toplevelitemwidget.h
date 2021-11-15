@@ -40,10 +40,41 @@ public:
 
     bool open();
     void close();
-    int triggerMode();
+
+    QStringList exposure();
+    void exposureMode(int value);
+    void brightness(int value);
+    void flicker(int value);
+    void gain(int value);
+    void exposureTime(int value);
+    void frequency(int value);
+
+    QStringList whiteBalance();
+    void whiteBalanceMode(int index);
+    void onceWhiteBalance();
+    void r(int value);
+    void g(int value);
+    void b(int value);
+    void saturation(int value);
+
+    QStringList lookupTables();
+    void gamma(int value);
+    void contrastRatio(int value);
+
+    QStringList resolutions();
+    void resolution();
+    void resolution(int value);
+
+    QStringList isp();
+    void horizontalMirror(int value);
+    void verticalMirror(int value);
+    void acutance(int value);
+
+    QStringList controls();
     void triggerMode(int);
-    QStringList exposureParams();
-    QStringList whiteBalanceParams();
+    void onceSoftTrigger();
+    void flashMode(int);
+    void flashPolarity(int);
 
     QString cameraName;
     QProcess camera;

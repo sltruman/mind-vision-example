@@ -105,8 +105,8 @@ void DeviceItem::close() {
 #include <iostream>
 using namespace std;
 
-QStringList DeviceItem::exposureParams() {
-    camera.write("exposure-params\n");
+QStringList DeviceItem::exposure() {
+    camera.write("exposure\n");
     camera.waitForReadyRead();
     auto res = QString(camera.readLine()).split(' ');
     if(res[0] == "False") return {};
@@ -114,11 +114,180 @@ QStringList DeviceItem::exposureParams() {
     return res;
 }
 
-QStringList DeviceItem::whiteBalanceParams() {
-    camera.write("white-balance-params\n");
+void DeviceItem::exposureMode(int value) {
+    camera.write(QString("exposure-mode-set %1\n").arg(value).toLocal8Bit());
     camera.waitForReadyRead();
     auto res = QString(camera.readLine()).split(' ');
-    if(res[0] == "False") return {};
+}
+
+void DeviceItem::brightness(int value) {
+    camera.write(QString("brightness-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::flicker(int value) {
+    camera.write(QString("flicker-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::gain(int value) {
+    camera.write(QString("gain-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::exposureTime(int value) {
+    camera.write(QString("exposure-time-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::frequency(int value) {
+    camera.write(QString("frequency-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+QStringList DeviceItem::whiteBalance() {
+    camera.write("white-balance\n");
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
     res.removeFirst();
     return res;
+}
+
+void DeviceItem::whiteBalanceMode(int index){
+    camera.write(QString("white-balance-mode-set %1\n").arg(index).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::onceWhiteBalance(){
+    camera.write("once-white-balance\n");
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::r(int value){
+    camera.write(QString("r-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::g(int value){
+    camera.write(QString("g-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::b(int value){
+    camera.write(QString("b-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::saturation(int value) {
+    camera.write(QString("saturation-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+QStringList DeviceItem::lookupTables() {
+    camera.write("lookup-tables\n");
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+    res.removeFirst();
+    return res;
+}
+
+void DeviceItem::gamma(int value){
+    camera.write(QString("gamma-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::contrastRatio(int value) {
+    camera.write(QString("contrast-ratio-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+QStringList DeviceItem::resolutions() {
+    camera.write("resolutions\n");
+    camera.waitForReadyRead();
+    auto res = QString(camera.readAll()).split('\n');
+    res.removeLast();
+    return res;
+}
+
+void DeviceItem::resolution() {
+    camera.write("resolution-get\n");
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::resolution(int index) {
+    camera.write(QString("resolution-set %1\n").arg(index).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+QStringList DeviceItem::isp(){
+    camera.write("isp\n");
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+    res.removeFirst();
+    return res;
+}
+
+void DeviceItem::horizontalMirror(int value){
+    camera.write(QString("horizontal-mirror-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::verticalMirror(int value){
+    camera.write(QString("vertical-mirror-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::acutance(int value){
+    camera.write(QString("acutance-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+QStringList DeviceItem::controls() {
+    camera.write(QString("controls\n").toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+    res.removeFirst();
+    return res;
+}
+
+void DeviceItem::triggerMode(int value) {
+    camera.write(QString("trigger-mode-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::onceSoftTrigger() {
+    camera.write(QString("once-soft-trigger\n").toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::flashMode(int value) {
+    camera.write(QString("flash-mode-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::flashPolarity(int value) {
+    camera.write(QString("flash-polarity-set %1\n").arg(value).toLocal8Bit());
+    camera.waitForReadyRead();
+    auto res = QString(camera.readLine()).split(' ');
 }

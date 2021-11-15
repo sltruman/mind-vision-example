@@ -33,7 +33,6 @@ private slots:
     void at_cameraStatusUpdate_timeout();
     void on_treeWidget_devices_customContextMenuRequested(const QPoint &pos);
     void on_action_open_triggered();
-
     void on_pushButton_magnify_clicked();
     void on_pushButton_shrink_clicked();
     void on_pushButton_perfect_clicked();
@@ -43,23 +42,32 @@ private slots:
 //    void on_tabWidget_currentChanged(int index);
     void on_pushButton_playOrStop_clicked();
 //    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-
-
     void on_treeWidget_devices_itemSelectionChanged();
     void on_pushButton_onceWhiteBalance_clicked();
-
-
     void on_comboBox_exposureMode_currentIndexChanged(int index);
-
     void on_comboBox_whiteBalanceMode_currentIndexChanged(int index);
-
     void on_slider_brightness_valueChanged(int value);
-
     void on_checkBox_flicker_stateChanged(int arg1);
-
     void on_slider_gain_valueChanged(int value);
-
     void on_slider_exposureTime_valueChanged(int value);
+    void on_comboBox_frequency_currentIndexChanged(int index);
+    void on_slider_r_valueChanged(int value);
+    void on_slider_g_valueChanged(int value);
+    void on_slider_b_valueChanged(int value);
+    void on_slider_saturation_valueChanged(int value);
+    void on_slider_gamma_valueChanged(int value);
+    void on_slider_contrastRatio_valueChanged(int value);
+    void on_checkBox_horizontalMirror_stateChanged(int arg1);
+    void on_checkBox_verticalMirror_stateChanged(int arg1);
+    void on_slider_acutance_valueChanged(int value);
+    void on_pushButton_softTrigger_clicked();
+    void on_comboBox_triggerMode_currentIndexChanged(int index);
+
+    void on_comboBox_flashMode_currentIndexChanged(int index);
+
+    void on_comboBox_flashPolarity_currentIndexChanged(int index);
+
+    void on_comboBox_resolution_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;
