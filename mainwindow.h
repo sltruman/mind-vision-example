@@ -62,12 +62,10 @@ private slots:
     void on_slider_acutance_valueChanged(int value);
     void on_pushButton_softTrigger_clicked();
     void on_comboBox_triggerMode_currentIndexChanged(int index);
-
     void on_comboBox_flashMode_currentIndexChanged(int index);
-
     void on_comboBox_flashPolarity_currentIndexChanged(int index);
-
     void on_comboBox_resolution_currentIndexChanged(int index);
+    void on_MainWindow_cameraParamsUpdate();
 
 private:
     Ui::MainWindow *ui;

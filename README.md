@@ -2,9 +2,12 @@
 
 # 原型设计
 
-## 问题
+# 工作计划
 
-### 切图丢失
-
-![image-20211029135106355](/home/sl.truman/.config/Typora/typora-user-images/image-20211029135106355.png)![image-20211029135223423](/home/sl.truman/.config/Typora/typora-user-images/image-20211029135223423.png)![image-20211029135435837](/home/sl.truman/.config/Typora/typora-user-images/image-20211029135435837.png)![image-20211029135315785](/home/sl.truman/.config/Typora/typora-user-images/image-20211029135315785.png)![image-20211029145058745](/home/sl.truman/.config/Typora/typora-user-images/image-20211029145058745.png)![image-20211102133959512](/home/sl.truman/.config/Typora/typora-user-images/image-20211102133959512.png)
+| 项目                | 任务   | 问题                  | 人员 |
+| ------------------- | ------ | --------------------- | ---- |
+| mind-vision-example | 跨平台 | Windows/Linux平台版本 |      |
+|                     | 界面   | 字体调整              |      |
+|                     |        |                       |      |
+|                     |        |                       |      |
 

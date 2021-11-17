@@ -1,69 +1,74 @@
-#MainWindow {
+MainWindow {
     background-color: #191919;
 }
 
-#MainMenu #pushButton_file,#pushButton_previewControl,#pushButton_imageSetting,#pushButton_softwareSetting,#pushButton_tool,#pushButton_help {
+MainMenu #pushButton_file,#pushButton_previewControl,#pushButton_imageSetting,#pushButton_softwareSetting,#pushButton_tool,#pushButton_help {
+    font:bold 15px "Microsoft YaHei UI";
     border:none;
     color:white;
 }
 
-#MainMenu #pushButton_file:hover,#pushButton_previewControl:hover,#pushButton_imageSetting:hover,#pushButton_softwareSetting:hover,#pushButton_tool:hover,#pushButton_help:hover {
+MainMenu #pushButton_file:hover,#pushButton_previewControl:hover,#pushButton_imageSetting:hover,#pushButton_softwareSetting:hover,#pushButton_tool:hover,#pushButton_help:hover {
     background-color: #303030;
     border-bottom: 2px solid #2D84E5;
 }
 
-#MainMenu #pushButton_close {
+MainMenu #pushButton_close {
     background:transparent;
     background-image: url(:/切图-首页/关闭.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
-#MainMenu #pushButton_close:hover {
+MainMenu #pushButton_close:hover {
     background-color: #303030;
 }
 
-#MainMenu #pushButton_maximum {
+MainMenu #pushButton_maximum {
     background:transparent;
     background-image: url(:/切图-首页/页面变小.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
-#MainMenu #pushButton_maximum:hover {
+MainMenu #pushButton_maximum:hover {
     background-color: #303030;
 }
 
-#MainMenu #pushButton_minimum {
+MainMenu #pushButton_minimum {
     background:transparent;
     background-image: url(:/切图-首页/最小化.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
-#MainMenu #pushButton_minimum:hover {
+MainMenu #pushButton_minimum:hover {
     background-color: #303030;
 }
 
-#MainMenu #pushButton_language {
+MainMenu #pushButton_language {
     background:transparent;
     background-image: url(:/切图-首页/多种语言.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
-#MainMenu #pushButton_language:hover {
+MainMenu #pushButton_language:hover {
     background-color: #303030;
 }
 
-#MainMenu #widget_logo {
+MainMenu #widget_logo {
     background-color: #141519;
 }
 
-#MainMenu #widget_logo #label_logo {
+MainMenu #widget_logo #label_logo {
     background-image: url(:/切图-首页/LOGO.png);
     background-position:left center;
     background-repeat: no-repeat;
+}
+
+#tabWidget_preview {
+
 }
 
 #tabWidget_preview::pane {
@@ -76,7 +81,11 @@
 
 #tabWidget_preview QTabBar::tab {
     background-color:#1C1D22;
+    border-color:#1C1D22;
     color:white;
+    font: bold 15px "Microsoft YaHei UI";
+    width:80px;
+    height:37px;
 }
 
 #tabWidget_preview QTabBar::tab:selected, QTabBar::tab:hover {
@@ -104,6 +113,7 @@
 #widget_control QPushButton {
     border:none;
     color: #7F8082;
+    font: 15px "Microsoft YaHei UI";
 }
 
 #widget_control QPushButton:hover {
@@ -123,19 +133,20 @@
     background-color: #303030;
 }
 
-#widget_devices QMenu {
+#treeWidget_devices QMenu {
     background-color: #23262F;
     border: 1px solid gray;
     color: white;
 }
 
-#widget_devices QMenu::item:selected { /* when user selects item using mouse or keyboard */
+#treeWidget_devices QMenu::item:selected { /* when user selects item using mouse or keyboard */
     background-color: #303030;
 }
 
-#widget_devices #widget_deviceTitleBar {
+#widget_leftSide #widget_deviceTitleBar {
     background-color: #23262F;
     border-top:1px solid #444444;
+    font: bold 15px "Microsoft YaHei UI";
 }
 
 #widget_deviceTitleBar #pushButton_shrinkLeft {
@@ -147,6 +158,7 @@
 
 #widget_deviceTitleBar #label_devices {
     color: white;
+    font:bold 15px "Microsoft YaHei UI";
 }
 
 #treeWidget_devices {
@@ -154,6 +166,7 @@
     color: white;
     background-repeat: no-repeat;
     background-position:center;
+    font: 15px "Microsoft YaHei UI";
 }
 
 #treeWidget_devices::branch:has-siblings:!adjoins-item,
@@ -198,7 +211,11 @@
     border-left: 2px solid #2D84E5;
 }
 
-#scrollArea_info
+#widget_leftSide #layout_leftSideCameraInfo {
+    background-color:#191919;
+}
+
+#widget_leftSide #layout_leftSideCameraInfo
     #label_deviceName,
     #label_physicalAddress,
     #label_ip,
@@ -208,9 +225,10 @@
     #label_series,
     #label_manufacturer {
     color: #7F8082;
+    font: bold 15px "Microsoft YaHei UI";
 }
 
-#scrollArea_info
+#widget_leftSide #layout_leftSideCameraInfo
     #label_deviceName_2,
     #label_physicalAddress_2,
     #label_ip_2,
@@ -220,6 +238,7 @@
     #label_series_2,
     #label_manufacturer_2 {
     color: white;
+    font: 15px "Microsoft YaHei UI";
 }
 
 #tabWidget_params QGroupBox:title {
@@ -236,17 +255,16 @@
 
 #tabWidget_params QTabBar::tab {
     background-color:#1C1D22;
+    border-color:#1C1D22;
     color:white;
+    font: bold 15px "Microsoft YaHei UI";
+    width:80px;
+    height:37px;
 }
 
 #tabWidget_params QTabBar::tab:selected, QTabBar::tab:hover {
     background-color: #4D4D4D;
 }
-
-/*
-#widget_params {
-    border:1px solid #444444;
-}*/
 
 #widget_params #widget_paramsTitleBar {
     background-color: #262630;
@@ -259,10 +277,11 @@
     background-repeat: no-repeat;
 }
 
-#widget_params #tabWidget_params {
+#widget_params #layout_rightSideTab0,#layout_rightSideTab1,#layout_rightSideTab2 {
     background-color: #201B22;
 }
 
 #widget_params QGroupBox,QLabel,QCheckBox {
     color: #7F8082;
+    font: 15px "Microsoft YaHei UI";
 }

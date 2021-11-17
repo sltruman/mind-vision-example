@@ -41,10 +41,12 @@ bool CameraView::playing() {
 }
 
 void CameraView::play(QString pipeName) {
+    cout << "play " << pipeName.toStdString() << endl;
     sock.connectToServer(pipeName);
 }
 
 void CameraView::stop() {
+    cout << "stop " << sock.serverName().toStdString() << endl;
     scene()->clear();
     background = scene()->addPixmap(QPixmap());
     sock.disconnectFromServer();
@@ -57,6 +59,8 @@ void CameraView::process() {
         scene()->clear();
         return;
     }
+
+    cout << "process " << endl;
 
     sock.write("frame\n");
     while(sock.bytesAvailable() == 0) {
