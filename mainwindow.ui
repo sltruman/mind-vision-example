@@ -180,7 +180,7 @@
             <x>0</x>
             <y>0</y>
             <width>280</width>
-            <height>325</height>
+            <height>322</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -979,7 +979,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideLeft</enum>
@@ -1021,8 +1021,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>314</width>
-                <height>658</height>
+                <width>312</width>
+                <height>637</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1058,6 +1058,9 @@
                     </item>
                     <item>
                      <widget class="QComboBox" name="comboBox_exposureMode">
+                      <property name="currentIndex">
+                       <number>-1</number>
+                      </property>
                       <item>
                        <property name="text">
                         <string>手动</string>
@@ -1107,6 +1110,9 @@
                     </item>
                     <item>
                      <widget class="QComboBox" name="comboBox_frequency">
+                      <property name="currentIndex">
+                       <number>-1</number>
+                      </property>
                       <item>
                        <property name="text">
                         <string>50HZ</string>
@@ -1208,6 +1214,9 @@
                     </item>
                     <item>
                      <widget class="QComboBox" name="comboBox_whiteBalanceMode">
+                      <property name="currentIndex">
+                       <number>-1</number>
+                      </property>
                       <item>
                        <property name="text">
                         <string>手动</string>
@@ -1420,8 +1429,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>188</width>
-                <height>162</height>
+                <width>312</width>
+                <height>637</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_26">
@@ -1538,11 +1547,11 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>132</width>
-                <height>195</height>
+                <width>312</width>
+                <height>637</height>
                </rect>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_27">
+              <layout class="QVBoxLayout" name="verticalLayout_12">
                <item>
                 <widget class="QGroupBox" name="groupBox_7">
                  <property name="title">
@@ -1560,6 +1569,9 @@
                     </item>
                     <item>
                      <widget class="QComboBox" name="comboBox_triggerMode">
+                      <property name="currentIndex">
+                       <number>-1</number>
+                      </property>
                       <item>
                        <property name="text">
                         <string>连续</string>
@@ -1590,7 +1602,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QGroupBox" name="groupBox_8">
+                <widget class="QGroupBox" name="groupBox_flash">
                  <property name="title">
                   <string>闪光灯</string>
                  </property>
@@ -1606,6 +1618,9 @@
                     </item>
                     <item>
                      <widget class="QComboBox" name="comboBox_flashMode">
+                      <property name="currentIndex">
+                       <number>-1</number>
+                      </property>
                       <item>
                        <property name="text">
                         <string>手动</string>
@@ -1623,7 +1638,7 @@
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_35">
                     <item>
-                     <widget class="QLabel" name="label_26">
+                     <widget class="QLabel" name="label_flashPolarity">
                       <property name="text">
                        <string>有效极性</string>
                       </property>
@@ -1631,6 +1646,9 @@
                     </item>
                     <item>
                      <widget class="QComboBox" name="comboBox_flashPolarity">
+                      <property name="currentIndex">
+                       <number>-1</number>
+                      </property>
                       <item>
                        <property name="text">
                         <string>低</string>
@@ -1649,14 +1667,14 @@
                 </widget>
                </item>
                <item>
-                <spacer name="verticalSpacer_5">
+                <spacer name="verticalSpacer_2">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
                    <width>20</width>
-                   <height>232</height>
+                   <height>362</height>
                   </size>
                  </property>
                 </spacer>
@@ -1680,7 +1698,7 @@
      <x>0</x>
      <y>0</y>
      <width>1176</width>
-     <height>23</height>
+     <height>29</height>
     </rect>
    </property>
   </widget>

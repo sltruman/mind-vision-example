@@ -106,7 +106,6 @@ bool DeviceItem::open() {
     camera.start();
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readLine();
-//    QString s = "True ";
     cout << s.data();
     auto res = s.split(' ');
     cameraView->play(cameraName);
@@ -308,9 +307,13 @@ QStringList DeviceItem::controls() {
 }
 
 void DeviceItem::triggerMode(int value) {
+    cout << "trigger-mode " << value << endl;
     camera.write(QString("trigger-mode-set %1\n").arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readLine()).split(' ');
+    auto s = camera.readLine();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    if(res[0] == "False") throw runtime_error("");
 }
 
 void DeviceItem::onceSoftTrigger() {

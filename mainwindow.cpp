@@ -31,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->treeWidget_devices->setItemWidget(gige,0,new TopLevelItemWidget(gige,"GIGE",this));
     ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0",this));
+    ui->treeWidget_devices->expandAll();
+
     ui->widget_params->hide();
     ui->widget_status->hide();
 
@@ -254,12 +256,10 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
 
     if(QProcess::NotRunning == deviceItem->camera.state()) {
         ui->widget_params->hide();
-        return;
+    } else {
+        emit this->on_MainWindow_cameraParamsUpdate();
+        ui->widget_params->show();
     }
-
-    ui->widget_params->show();
-
-    emit this->on_MainWindow_cameraParamsUpdate();
 }
 
 void MainWindow::on_comboBox_exposureMode_currentIndexChanged(int index)
@@ -429,6 +429,12 @@ void MainWindow::on_comboBox_triggerMode_currentIndexChanged(int index)
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
+    if(index<2) {
+        ui->groupBox_flash->hide();
+    } else {
+        ui->groupBox_flash->show();
+    }
+
     deviceItem->triggerMode(index);
 }
 
@@ -444,6 +450,14 @@ void MainWindow::on_comboBox_flashMode_currentIndexChanged(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(index) {
+        ui->label_flashPolarity->hide();
+        ui->comboBox_flashPolarity->hide();
+    } else {
+        ui->label_flashPolarity->show();
+        ui->comboBox_flashPolarity->show();
+    }
 
     deviceItem->flashMode(index);
 }
@@ -475,6 +489,7 @@ void MainWindow::on_MainWindow_cameraParamsUpdate()
         ui->slider_exposureTime->setMinimum(exposure[9].toUInt());
         ui->slider_exposureTime->setMaximum(exposure[10].toUInt());
         ui->slider_exposureTime->setValue(exposure[11].toUInt());
+        QApplication::processEvents();
 
         auto whiteBalance = deviceItem->whiteBalance();
         ui->comboBox_whiteBalanceMode->setCurrentIndex(whiteBalance[0].toUInt());
@@ -490,6 +505,7 @@ void MainWindow::on_MainWindow_cameraParamsUpdate()
         ui->slider_saturation->setMinimum(whiteBalance[10].toUInt());
         ui->slider_saturation->setMaximum(whiteBalance[11].toUInt());
         ui->slider_saturation->setValue(whiteBalance[12].toUInt());
+        QApplication::processEvents();
 
         auto lookupTables = deviceItem->lookupTables();
         ui->slider_gamma->setMinimum(lookupTables[0].toUInt());
@@ -498,10 +514,12 @@ void MainWindow::on_MainWindow_cameraParamsUpdate()
         ui->slider_contrastRatio->setMinimum(lookupTables[3].toUInt());
         ui->slider_contrastRatio->setMaximum(lookupTables[4].toUInt());
         ui->slider_contrastRatio->setValue(lookupTables[5].toUInt());
+        QApplication::processEvents();
 
         auto resolutions = deviceItem->resolutions();
         ui->comboBox_resolution->clear();
         ui->comboBox_resolution->addItems(resolutions);
+        QApplication::processEvents();
 
         auto isp = deviceItem->isp();
         ui->checkBox_horizontalMirror->setChecked(isp[0].toUInt());
@@ -509,13 +527,16 @@ void MainWindow::on_MainWindow_cameraParamsUpdate()
         ui->slider_acutance->setMinimum(isp[2].toUInt());
         ui->slider_acutance->setMaximum(isp[3].toUInt());
         ui->slider_acutance->setValue(isp[4].toUInt());
+        QApplication::processEvents();
 
         auto controls= deviceItem->controls();
         ui->comboBox_triggerMode->setCurrentIndex(controls[0].toUInt());
         ui->comboBox_flashMode->setCurrentIndex(controls[1].toUInt());
         ui->comboBox_flashPolarity->setCurrentIndex(controls[2].toUInt());
+        QApplication::processEvents();
     }catch(...) {
         cout << "Failed to sync camera's params!" << endl;
+        QApplication::processEvents();
         emit on_MainWindow_cameraParamsUpdate();
     }
 }

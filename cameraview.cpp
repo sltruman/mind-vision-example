@@ -60,7 +60,7 @@ void CameraView::process() {
         return;
     }
 
-    cout << "process " << endl;
+    cout << "frame " << frames << endl;
 
     sock.write("frame\n");
     while(sock.bytesAvailable() == 0) {
@@ -103,13 +103,13 @@ void CameraView::process() {
 
     scale(scaleValue,scaleValue);
 
-    emit sock.connected();
-
     auto elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
     displayFPS = 1.0f / elapsedTime * 1000;
 
     tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
     frames++;
+
+    emit sock.connected();
 }
 
 void CameraView::on_pushButton_close_clicked()

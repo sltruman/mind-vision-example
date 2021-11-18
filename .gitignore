@@ -1,3 +1,7 @@
+Debug/
+Camera/
+*.pdb
+*.log
 ZnSTYF.json
 # C++ objects and libs
 *.slo
