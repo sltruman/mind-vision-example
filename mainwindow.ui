@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Mind Vision</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -37,7 +37,7 @@
      <number>6</number>
     </property>
     <item>
-     <widget class="QWidget" name="widget_devices" native="true">
+     <widget class="QWidget" name="widget_leftSide" native="true">
       <property name="minimumSize">
        <size>
         <width>280</width>
@@ -180,7 +180,7 @@
             <x>0</x>
             <y>0</y>
             <width>280</width>
-            <height>322</height>
+            <height>325</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -979,7 +979,10 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
+         </property>
+         <property name="elideMode">
+          <enum>Qt::ElideLeft</enum>
          </property>
          <widget class="QWidget" name="tab_3">
           <attribute name="icon">
@@ -1018,8 +1021,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>312</width>
-                <height>637</height>
+                <width>314</width>
+                <height>658</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1417,8 +1420,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>312</width>
-                <height>637</height>
+                <width>188</width>
+                <height>162</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_26">
@@ -1535,8 +1538,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>312</width>
-                <height>637</height>
+                <width>132</width>
+                <height>195</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -1677,7 +1680,7 @@
      <x>0</x>
      <y>0</y>
      <width>1176</width>
-     <height>29</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

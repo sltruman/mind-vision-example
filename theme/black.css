@@ -260,6 +260,7 @@ MainMenu #widget_logo #label_logo {
     font: bold 15px "Microsoft YaHei UI";
     width:80px;
     height:37px;
+    padding-left:10px;
 }
 
 #tabWidget_params QTabBar::tab:selected, QTabBar::tab:hover {
