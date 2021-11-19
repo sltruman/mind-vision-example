@@ -1551,7 +1551,7 @@
                 <height>637</height>
                </rect>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_12">
+              <layout class="QVBoxLayout" name="verticalLayout_13">
                <item>
                 <widget class="QGroupBox" name="groupBox_7">
                  <property name="title">
@@ -1659,6 +1659,71 @@
                         <string>高</string>
                        </property>
                       </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_2">
+                 <property name="title">
+                  <string>配置</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_12">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_14">
+                    <item>
+                     <widget class="QPushButton" name="pushButton_loadParamsFromFile">
+                      <property name="text">
+                       <string>从文件中加载</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBox_params">
+                      <property name="currentIndex">
+                       <number>0</number>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>A</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>B</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>C</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>D</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_15">
+                    <item>
+                     <widget class="QPushButton" name="pushButton_resetParams">
+                      <property name="text">
+                       <string>默认</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_saveParams">
+                      <property name="text">
+                       <string>保存</string>
+                      </property>
                      </widget>
                     </item>
                    </layout>

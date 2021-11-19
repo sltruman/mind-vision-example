@@ -317,7 +317,7 @@ void DeviceItem::triggerMode(int value) {
 }
 
 void DeviceItem::onceSoftTrigger() {
-    camera.write(QString("once-soft-trigger\n").toLocal8Bit());
+    camera.write("once-soft-trigger\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readLine()).split(' ');
 }
@@ -333,3 +333,34 @@ void DeviceItem::flashPolarity(int value) {
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readLine()).split(' ');
 }
+
+void DeviceItem::paramsReset() {
+    camera.write("params-reset\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::paramsSave(int value) {
+    camera.write(QString("params-save %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::paramsLoad(int value) {
+    camera.write(QString("params-load %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::paramsSaveToFile(QString filename) {
+    camera.write(QString("params-save-to-file %1\n").arg(filename).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readLine()).split(' ');
+}
+
+void DeviceItem::paramsLoadFromFile(QString filename) {
+    camera.write(QString("params-load-from-file %1\n").arg(filename).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readLine()).split(' ');
+}
+

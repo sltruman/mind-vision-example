@@ -534,10 +534,55 @@ void MainWindow::on_MainWindow_cameraParamsUpdate()
         ui->comboBox_flashMode->setCurrentIndex(controls[1].toUInt());
         ui->comboBox_flashPolarity->setCurrentIndex(controls[2].toUInt());
         QApplication::processEvents();
+
     }catch(...) {
         cout << "Failed to sync camera's params!" << endl;
         QApplication::processEvents();
         emit on_MainWindow_cameraParamsUpdate();
     }
+}
+
+
+void MainWindow::on_pushButton_resetParams_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->paramsReset();
+    emit on_MainWindow_cameraParamsUpdate();
+}
+
+
+void MainWindow::on_pushButton_loadParamsFromFile_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    auto filename = QFileDialog::getOpenFileName(this,tr("Select file"),"",tr("config Files(*.config )"));
+    deviceItem->paramsLoadFromFile(filename);
+    emit on_MainWindow_cameraParamsUpdate();
+}
+
+
+void MainWindow::on_pushButton_saveParams_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    auto index = ui->comboBox_params->currentIndex();
+
+    deviceItem->paramsSave(index);
+
+//    auto filename = QFileDialog::getSaveFileName(this,tr("File name"),"",tr("config Files(*.config )"));
+//    deviceItem->paramsSaveToFile(filename);
+}
+
+
+void MainWindow::on_comboBox_params_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->paramsLoad(index);
+    emit on_MainWindow_cameraParamsUpdate();
 }
 

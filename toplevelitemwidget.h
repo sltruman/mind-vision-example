@@ -76,6 +76,12 @@ public:
     void flashMode(int);
     void flashPolarity(int);
 
+    void paramsReset();
+    void paramsSave(int value);
+    void paramsLoad(int value);
+    void paramsSaveToFile(QString filename);
+    void paramsLoadFromFile(QString filename);
+
     QString cameraName;
     QProcess camera;
     CameraView* cameraView;

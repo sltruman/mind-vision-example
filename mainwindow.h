@@ -67,6 +67,15 @@ private slots:
     void on_comboBox_resolution_currentIndexChanged(int index);
     void on_MainWindow_cameraParamsUpdate();
 
+
+    void on_pushButton_resetParams_clicked();
+
+    void on_pushButton_loadParamsFromFile_clicked();
+
+    void on_pushButton_saveParams_clicked();
+
+    void on_comboBox_params_activated(int index);
+
 private:
     Ui::MainWindow *ui;
     QTreeWidgetItem* selectedCameraItem;
