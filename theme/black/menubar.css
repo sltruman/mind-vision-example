@@ -4,6 +4,7 @@ MainMenu QMenuBar {
 }
 
 MainMenu QMenuBar::item {
+    background-color: transparent;
     color:white;
     padding: 12px 27px;
 }
