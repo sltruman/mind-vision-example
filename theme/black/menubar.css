@@ -1,0 +1,82 @@
+MainMenu QMenuBar {
+    background-color: transparent;
+    font:bold 15px "Microsoft YaHei UI";
+}
+
+MainMenu QMenuBar::item {
+    color:white;
+    padding: 12px 27px;
+}
+
+MainMenu QMenuBar::item:selected {
+    border-bottom: 2px solid #2D84E5;
+    background-color: #303030;
+}
+
+MainMenu QMenu {
+    border: 1px solid black;
+    background-color: #303030;
+    font:bold 15px "Microsoft YaHei UI";
+}
+
+MainMenu QMenu::item {
+    color:white;
+    padding: 12px;
+}
+
+MainMenu QMenu::item:selected { /* when user selects item using mouse or keyboard */
+    border-bottom: 2px solid #2D84E5;
+    background-color: #303030;
+}
+
+MainMenu #pushButton_close {
+    background:transparent;
+    background-image: url(:/theme/icon/close.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+MainMenu #pushButton_close:hover {
+    background-color: #303030;
+}
+
+MainMenu #pushButton_maximum {
+    background:transparent;
+    background-image: url(:/theme/icon/maximum.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+MainMenu #pushButton_maximum:hover {
+    background-color: #303030;
+}
+
+MainMenu #pushButton_minimum {
+    background:transparent;
+    background-image: url(:/theme/icon/minimum.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+MainMenu #pushButton_minimum:hover {
+    background-color: #303030;
+}
+
+MainMenu #pushButton_language {
+    border:none;
+    color: #7F8082;
+}
+
+MainMenu #pushButton_language:hover {
+    background-color: #303030;
+}
+
+MainMenu #widget_logo {
+    background-color: #141519;
+}
+
+MainMenu #widget_logo #label_logo {
+    background-image: url(:/theme/icon/LOGO.png);
+    background-position:left center;
+    background-repeat: no-repeat;
+}

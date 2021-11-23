@@ -49,12 +49,10 @@
         <file>theme/icon/下底.png</file>
         <file>theme/icon/下拉.png</file>
         <file>theme/icon/产品图.png</file>
-        <file>theme/icon/关闭.png</file>
         <file>theme/icon/刷新.png</file>
         <file>theme/icon/单个采集.png</file>
         <file>theme/icon/右边底.png</file>
         <file>theme/icon/图像处理.png</file>
-        <file>theme/icon/多种语言.png</file>
         <file>theme/icon/导入.png</file>
         <file>theme/icon/导出.png</file>
         <file>theme/icon/小箭头.png</file>
@@ -74,7 +72,6 @@
         <file>theme/icon/暂停.png</file>
         <file>theme/icon/曝光.png</file>
         <file>theme/icon/最大化.png</file>
-        <file>theme/icon/最小化.png</file>
         <file>theme/icon/白平衡.png</file>
         <file>theme/icon/相机.png</file>
         <file>theme/icon/相机拷贝2.png</file>
@@ -88,7 +85,11 @@
         <file>theme/icon/触发控制.png</file>
         <file>theme/icon/返回.png</file>
         <file>theme/icon/链接.png</file>
-        <file>theme/icon/页面变小.png</file>
         <file>theme/icon/顶部.png</file>
+        <file>theme/icon/close.png</file>
+        <file>theme/icon/language-zh.png</file>
+        <file>theme/icon/language-en.png</file>
+        <file>theme/icon/maximum.png</file>
+        <file>theme/icon/minimum.png</file>
     </qresource>
 </RCC>

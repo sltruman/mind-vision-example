@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include "cameraview.h"
@@ -33,9 +33,9 @@ private slots:
     void at_cameraStatusUpdate_timeout();
     void on_treeWidget_devices_customContextMenuRequested(const QPoint &pos);
     void on_action_open_triggered();
-    void on_pushButton_magnify_clicked();
-    void on_pushButton_shrink_clicked();
-    void on_pushButton_perfect_clicked();
+    void on_pushButton_zoomIn_clicked();
+    void on_pushButton_zoomOut_clicked();
+    void on_pushButton_zoomFull_clicked();
     void on_pushButton_take_clicked();
 //    void on_pushButton_record_clicked();
 //    void on_pushButton_customStatus_clicked();

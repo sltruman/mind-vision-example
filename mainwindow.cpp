@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0",this));
     ui->treeWidget_devices->expandAll();
 
+
     ui->widget_params->hide();
     ui->widget_status->hide();
 
@@ -138,7 +139,6 @@ void MainWindow::on_treeWidget_devices_customContextMenuRequested(const QPoint &
     qMenu->setObjectName("menu_devices");
     qMenu->addAction(ui->action_open);
     qMenu->addAction(ui->action_modifyIp);
-    qMenu->addAction(ui->action_topOrNot);
     qMenu->addAction(ui->action_rename);
     qMenu->exec(QCursor::pos()); //在鼠标点击的位置显示鼠标右键菜单
 }
@@ -148,7 +148,7 @@ void MainWindow::on_action_open_triggered()
     emit ui->pushButton_playOrStop->clicked();
 }
 
-void MainWindow::on_pushButton_magnify_clicked()
+void MainWindow::on_pushButton_zoomIn_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
@@ -156,7 +156,7 @@ void MainWindow::on_pushButton_magnify_clicked()
     deviceItem->cameraView->currentScale += 0.1;
 }
 
-void MainWindow::on_pushButton_shrink_clicked()
+void MainWindow::on_pushButton_zoomOut_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
@@ -164,7 +164,7 @@ void MainWindow::on_pushButton_shrink_clicked()
     deviceItem->cameraView->currentScale -= 0.1;
 }
 
-void MainWindow::on_pushButton_perfect_clicked()
+void MainWindow::on_pushButton_zoomFull_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
@@ -178,10 +178,10 @@ void MainWindow::on_pushButton_take_clicked()
 
     auto imageDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
     cout << imageDir.toStdString() << endl;
-    auto time = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz");
-    auto filePath = imageDir + "/mind-vision " + time + ".bmp";
+    auto time = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+    auto filePath = imageDir + "/mindvision " + time + ".bmp";
     deviceItem->cameraView->background->pixmap().save(filePath);
-    QMessageBox::information(this, "抓拍", "图片已保存：" + filePath, QMessageBox::Ok);
+    QMessageBox::information(this, tr("Take a picture"), tr("Picture has been saved:") + filePath, QMessageBox::Ok);
 }
 
 //void MainWindow::on_pushButton_record_clicked()
@@ -201,7 +201,7 @@ void MainWindow::on_pushButton_playOrStop_clicked()
 
     if(QProcess::NotRunning == deviceItem->camera.state()) {
         if(!deviceItem->open()){
-            QMessageBox::critical(this, "错误", "连接相机失败！", QMessageBox::Ok);
+            QMessageBox::critical(this, tr("Device"), tr("Failed Connecting the camera!"), QMessageBox::Ok);
             return;
         }
     }

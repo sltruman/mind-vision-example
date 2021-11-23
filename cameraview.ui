@@ -14,7 +14,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -41,7 +41,7 @@
         </size>
        </property>
        <property name="text">
-        <string>x</string>
+        <string/>
        </property>
       </widget>
      </item>

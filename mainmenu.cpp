@@ -1,15 +1,43 @@
 #include "mainmenu.h"
 #include "ui_mainmenu.h"
 #include <QMenu>
+#include <QMenuBar>
+#include <QSettings>
+#include <QMessageBox>
 
 MainMenu::MainMenu(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainMenu)
+    ui(new Ui::MainMenu),
+    settings("MindVision","Example")
 {
     ui->setupUi(this);
     ui->pushButton_close->hide();
     ui->pushButton_minimum->hide();
     ui->pushButton_maximum->hide();
+
+    auto menubar = new QMenuBar(ui->widget_mainMenu);
+    auto file = new QMenu(tr("Files"),menubar);
+    menubar->addMenu(file);
+
+    auto preview = new QMenu(tr("Preview"),menubar);
+    menubar->addMenu(preview);
+
+    auto image = new QMenu(tr("Images"),menubar);
+    image->addAction(ui->action_takingSetting);
+    image->addAction(ui->action_recordingSetting);
+    menubar->addMenu(image);
+
+    auto software = new QMenu(tr("Softwares"),menubar);
+    menubar->addMenu(software);
+
+    auto tools= new QMenu(tr("Tools"),menubar);
+    menubar->addMenu(tools);
+
+    auto helper= new QMenu(tr("Helper"),menubar);
+    menubar->addMenu(helper);
+
+    ui->horizontalLayout->addWidget(menubar);
+    ui->pushButton_language->setChecked("zh" == settings.value("language","zh"));
 }
 
 MainMenu::~MainMenu()
@@ -22,10 +50,11 @@ void MainMenu::on_pushButton_close_clicked()
     parentWidget()->close();
 }
 
-void MainMenu::on_pushButton_imageSetting_clicked()
+void MainMenu::on_pushButton_language_clicked(bool checked)
 {
-    auto qMenu = new QMenu(ui->pushButton_imageSetting);
-    qMenu->addAction(ui->action_takingSetting);
-    qMenu->addAction(ui->action_recordingSetting);
-    qMenu->exec(QCursor::pos()); //在鼠标点击的位置显示鼠标右键菜单
+    cout << "language " << (checked ? "zh" : "en") << endl;
+    settings.setValue("language",(checked ? "zh" : "en"));
+    QMessageBox::information(this, tr("Luanguage"), tr("Luanguage has been switched and to restart the application!"), QMessageBox::Ok);
+    qApp->exit();
 }
+

@@ -1,4 +1,4 @@
-#ifndef CAMERAVIEW_H
+﻿#ifndef CAMERAVIEW_H
 #define CAMERAVIEW_H
 
 #include <QGraphicsView>

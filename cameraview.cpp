@@ -1,4 +1,4 @@
-#include "cameraview.h"
+﻿#include "cameraview.h"
 #include "ui_cameraview.h"
 
 #include <QApplication>

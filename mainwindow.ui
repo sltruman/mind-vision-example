@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1176</width>
+    <width>1271</width>
     <height>716</height>
    </rect>
   </property>
@@ -93,7 +93,7 @@
           <item>
            <widget class="QLabel" name="label_devices">
             <property name="text">
-             <string>   设备</string>
+             <string>   Devices</string>
             </property>
            </widget>
           </item>
@@ -113,6 +113,9 @@
            <width>16777215</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="contextMenuPolicy">
           <enum>Qt::CustomContextMenu</enum>
@@ -189,7 +192,7 @@
              <item>
               <widget class="QLabel" name="label_deviceName">
                <property name="text">
-                <string>设备名称：</string>
+                <string>Device Name：</string>
                </property>
               </widget>
              </item>
@@ -213,7 +216,7 @@
              <item>
               <widget class="QLabel" name="label_physicalAddress">
                <property name="text">
-                <string>物理地址：</string>
+                <string>Phycical Address：</string>
                </property>
               </widget>
              </item>
@@ -234,7 +237,7 @@
              <item>
               <widget class="QLabel" name="label_ip">
                <property name="text">
-                <string>IP地址：</string>
+                <string>IP：</string>
                </property>
               </widget>
              </item>
@@ -255,7 +258,7 @@
              <item>
               <widget class="QLabel" name="label_mask">
                <property name="text">
-                <string>子网掩码：</string>
+                <string>Net Mask：</string>
                </property>
               </widget>
              </item>
@@ -276,7 +279,7 @@
              <item>
               <widget class="QLabel" name="label_gateway">
                <property name="text">
-                <string>网关：</string>
+                <string>Gateway：</string>
                </property>
               </widget>
              </item>
@@ -297,7 +300,7 @@
              <item>
               <widget class="QLabel" name="label_sensor">
                <property name="text">
-                <string>传感器类型：</string>
+                <string>Sensor：</string>
                </property>
               </widget>
              </item>
@@ -318,7 +321,7 @@
              <item>
               <widget class="QLabel" name="label_series">
                <property name="text">
-                <string>设备类型：</string>
+                <string>Type：</string>
                </property>
               </widget>
              </item>
@@ -339,7 +342,7 @@
              <item>
               <widget class="QLabel" name="label_manufacturer">
                <property name="text">
-                <string>厂商：</string>
+                <string>Manufacturer：</string>
                </property>
               </widget>
              </item>
@@ -390,7 +393,7 @@
         </property>
         <widget class="QWidget" name="tab_welcome">
          <attribute name="title">
-          <string>主页</string>
+          <string>Welcome</string>
          </attribute>
          <layout class="QGridLayout" name="tab_welcome_contents">
           <property name="leftMargin">
@@ -412,7 +415,7 @@
         </widget>
         <widget class="QWidget" name="tab_main">
          <attribute name="title">
-          <string>当前相机</string>
+          <string>Current</string>
          </attribute>
          <layout class="QVBoxLayout" name="tab_main_contents">
           <property name="spacing">
@@ -434,7 +437,7 @@
         </widget>
         <widget class="QWidget" name="tab_all">
          <attribute name="title">
-          <string>全部相机</string>
+          <string>All</string>
          </attribute>
          <layout class="QGridLayout" name="tab_all_contents">
           <property name="leftMargin">
@@ -469,7 +472,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="pushButton_magnify">
+          <widget class="QPushButton" name="pushButton_zoomIn">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -483,7 +486,7 @@
             </size>
            </property>
            <property name="text">
-            <string>扩大</string>
+            <string>Zoom In</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
@@ -511,7 +514,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_shrink">
+          <widget class="QPushButton" name="pushButton_zoomOut">
            <property name="maximumSize">
             <size>
              <width>16777215</width>
@@ -519,7 +522,7 @@
             </size>
            </property>
            <property name="text">
-            <string>缩小</string>
+            <string>Zoom Out</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
@@ -547,7 +550,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_perfect">
+          <widget class="QPushButton" name="pushButton_zoomFull">
            <property name="maximumSize">
             <size>
              <width>16777215</width>
@@ -555,7 +558,7 @@
             </size>
            </property>
            <property name="text">
-            <string>适应</string>
+            <string>Zoom Full</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
@@ -582,9 +585,6 @@
              <width>44</width>
              <height>16777215</height>
             </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
            </property>
            <property name="text">
             <string/>
@@ -618,7 +618,7 @@
             </size>
            </property>
            <property name="text">
-            <string>抓拍</string>
+            <string>Take</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
@@ -654,7 +654,7 @@
             </size>
            </property>
            <property name="text">
-            <string>录像</string>
+            <string>Record</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
@@ -690,7 +690,7 @@
             </size>
            </property>
            <property name="text">
-            <string>布局</string>
+            <string>Lyaout</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
@@ -917,7 +917,7 @@
               </size>
              </property>
              <property name="text">
-              <string>自定义</string>
+              <string>custom</string>
              </property>
             </widget>
            </item>
@@ -990,7 +990,7 @@
             <normaloff>:/切图-首页/白平衡.png</normaloff>:/切图-首页/白平衡.png</iconset>
           </attribute>
           <attribute name="title">
-           <string>颜色</string>
+           <string>Color</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_14">
            <property name="spacing">
@@ -1021,15 +1021,15 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>312</width>
-                <height>637</height>
+                <width>298</width>
+                <height>640</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
                <item>
                 <widget class="QGroupBox" name="groupBox">
                  <property name="title">
-                  <string>曝光</string>
+                  <string>Exposure</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_3">
                   <item>
@@ -1052,7 +1052,7 @@
                     <item>
                      <widget class="QLabel" name="label_10">
                       <property name="text">
-                       <string>模式</string>
+                       <string>Mode</string>
                       </property>
                      </widget>
                     </item>
@@ -1063,12 +1063,12 @@
                       </property>
                       <item>
                        <property name="text">
-                        <string>手动</string>
+                        <string>Manual</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>自动</string>
+                        <string>Automation</string>
                        </property>
                       </item>
                      </widget>
@@ -1080,7 +1080,7 @@
                     <item>
                      <widget class="QLabel" name="label_3">
                       <property name="text">
-                       <string>亮度目标</string>
+                       <string>Brightness</string>
                       </property>
                      </widget>
                     </item>
@@ -1104,7 +1104,7 @@
                     <item>
                      <widget class="QCheckBox" name="checkBox_flicker">
                       <property name="text">
-                       <string>抗频闪</string>
+                       <string>Agenst Flicker</string>
                       </property>
                      </widget>
                     </item>
@@ -1132,7 +1132,7 @@
                     <item>
                      <widget class="QLabel" name="label_8">
                       <property name="text">
-                       <string>模拟增益</string>
+                       <string>Gain</string>
                       </property>
                      </widget>
                     </item>
@@ -1159,7 +1159,7 @@
                     <item>
                      <widget class="QLabel" name="label_9">
                       <property name="text">
-                       <string>曝光时间</string>
+                       <string>Exposure Time</string>
                       </property>
                      </widget>
                     </item>
@@ -1178,13 +1178,14 @@
                <item>
                 <widget class="QGroupBox" name="groupBox_3">
                  <property name="title">
-                  <string>白平衡</string>
+                  <string>White Balance</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_9">
                   <item>
                    <widget class="QLabel" name="label_12">
                     <property name="text">
-                     <string>该相机是黑白相机，某些参数无法调节</string>
+                     <string>If the camera is  monochrome,
+under params can't be controlled.</string>
                     </property>
                    </widget>
                   </item>
@@ -1208,7 +1209,7 @@
                     <item>
                      <widget class="QLabel" name="label_7">
                       <property name="text">
-                       <string>模式</string>
+                       <string>Mode</string>
                       </property>
                      </widget>
                     </item>
@@ -1234,7 +1235,7 @@
                   <item>
                    <widget class="QPushButton" name="pushButton_onceWhiteBalance">
                     <property name="text">
-                     <string>一键白平衡</string>
+                     <string>Once White Balance</string>
                     </property>
                    </widget>
                   </item>
@@ -1243,7 +1244,7 @@
                     <item>
                      <widget class="QLabel" name="label_14">
                       <property name="text">
-                       <string>红</string>
+                       <string>R</string>
                       </property>
                      </widget>
                     </item>
@@ -1267,7 +1268,7 @@
                     <item>
                      <widget class="QLabel" name="label_15">
                       <property name="text">
-                       <string>绿</string>
+                       <string>G</string>
                       </property>
                      </widget>
                     </item>
@@ -1288,7 +1289,7 @@
                     <item>
                      <widget class="QLabel" name="label_16">
                       <property name="text">
-                       <string>蓝</string>
+                       <string>B</string>
                       </property>
                      </widget>
                     </item>
@@ -1309,7 +1310,7 @@
                     <item>
                      <widget class="QLabel" name="label_17">
                       <property name="text">
-                       <string>饱和度</string>
+                       <string>Saturation</string>
                       </property>
                      </widget>
                     </item>
@@ -1331,7 +1332,7 @@
                <item>
                 <widget class="QGroupBox" name="groupBox_5">
                  <property name="title">
-                  <string>查表变换</string>
+                  <string>Look Table</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_22">
                   <item>
@@ -1339,7 +1340,7 @@
                     <item>
                      <widget class="QLabel" name="label">
                       <property name="text">
-                       <string>伽马</string>
+                       <string>Gamma</string>
                       </property>
                      </widget>
                     </item>
@@ -1357,7 +1358,7 @@
                     <item>
                      <widget class="QLabel" name="label_2">
                       <property name="text">
-                       <string>对比度</string>
+                       <string>Contrast</string>
                       </property>
                      </widget>
                     </item>
@@ -1398,7 +1399,7 @@
             <normaloff>:/切图-首页/图像处理.png</normaloff>:/切图-首页/图像处理.png</iconset>
           </attribute>
           <attribute name="title">
-           <string>图像</string>
+           <string>Image</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_19">
            <property name="spacing">
@@ -1437,7 +1438,7 @@
                <item>
                 <widget class="QGroupBox" name="groupBox_4">
                  <property name="title">
-                  <string>分辨率</string>
+                  <string>Resolution</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_24">
                   <item>
@@ -1449,7 +1450,7 @@
                <item>
                 <widget class="QGroupBox" name="groupBox_6">
                  <property name="title">
-                  <string>ISP图像处理</string>
+                  <string>ISP Image</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_23">
                   <item>
@@ -1457,14 +1458,14 @@
                     <item>
                      <widget class="QCheckBox" name="checkBox_horizontalMirror">
                       <property name="text">
-                       <string>水平镜像</string>
+                       <string>H-Mirror</string>
                       </property>
                      </widget>
                     </item>
                     <item>
                      <widget class="QCheckBox" name="checkBox_verticalMirror">
                       <property name="text">
-                       <string>垂直镜像</string>
+                       <string>V-Mirror</string>
                       </property>
                      </widget>
                     </item>
@@ -1475,7 +1476,7 @@
                     <item>
                      <widget class="QLabel" name="label_6">
                       <property name="text">
-                       <string>锐度</string>
+                       <string>Acutance</string>
                       </property>
                      </widget>
                     </item>
@@ -1516,7 +1517,7 @@
             <normaloff>:/切图-首页/触发控制.png</normaloff>:/切图-首页/触发控制.png</iconset>
           </attribute>
           <attribute name="title">
-           <string>控制</string>
+           <string>Control</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_25">
            <property name="spacing">
@@ -1555,7 +1556,7 @@
                <item>
                 <widget class="QGroupBox" name="groupBox_7">
                  <property name="title">
-                  <string>触发</string>
+                  <string>Trigger</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_20">
                   <item>
@@ -1563,7 +1564,7 @@
                     <item>
                      <widget class="QLabel" name="label_28">
                       <property name="text">
-                       <string>模式</string>
+                       <string>Mode</string>
                       </property>
                      </widget>
                     </item>
@@ -1574,17 +1575,17 @@
                       </property>
                       <item>
                        <property name="text">
-                        <string>连续</string>
+                        <string>Continuous</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>软触发</string>
+                        <string>Software</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>硬触发</string>
+                        <string>Hardware</string>
                        </property>
                       </item>
                      </widget>
@@ -1594,7 +1595,7 @@
                   <item>
                    <widget class="QPushButton" name="pushButton_softTrigger">
                     <property name="text">
-                     <string>软触发一次</string>
+                     <string>Once Software Triger</string>
                     </property>
                    </widget>
                   </item>
@@ -1604,7 +1605,7 @@
                <item>
                 <widget class="QGroupBox" name="groupBox_flash">
                  <property name="title">
-                  <string>闪光灯</string>
+                  <string>Flash</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_15">
                   <item>
@@ -1612,7 +1613,7 @@
                     <item>
                      <widget class="QLabel" name="label_27">
                       <property name="text">
-                       <string>模式</string>
+                       <string>Mode</string>
                       </property>
                      </widget>
                     </item>
@@ -1640,7 +1641,7 @@
                     <item>
                      <widget class="QLabel" name="label_flashPolarity">
                       <property name="text">
-                       <string>有效极性</string>
+                       <string>Polarity</string>
                       </property>
                      </widget>
                     </item>
@@ -1651,12 +1652,12 @@
                       </property>
                       <item>
                        <property name="text">
-                        <string>低</string>
+                        <string>Low</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>高</string>
+                        <string>High</string>
                        </property>
                       </item>
                      </widget>
@@ -1669,7 +1670,7 @@
                <item>
                 <widget class="QGroupBox" name="groupBox_2">
                  <property name="title">
-                  <string>配置</string>
+                  <string>Configuration</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_12">
                   <item>
@@ -1677,7 +1678,7 @@
                     <item>
                      <widget class="QPushButton" name="pushButton_loadParamsFromFile">
                       <property name="text">
-                       <string>从文件中加载</string>
+                       <string>From File</string>
                       </property>
                      </widget>
                     </item>
@@ -1715,14 +1716,14 @@
                     <item>
                      <widget class="QPushButton" name="pushButton_resetParams">
                       <property name="text">
-                       <string>默认</string>
+                       <string>Default</string>
                       </property>
                      </widget>
                     </item>
                     <item>
                      <widget class="QPushButton" name="pushButton_saveParams">
                       <property name="text">
-                       <string>保存</string>
+                       <string>Save</string>
                       </property>
                      </widget>
                     </item>
@@ -1762,41 +1763,24 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1176</width>
+     <width>1271</width>
      <height>29</height>
     </rect>
    </property>
   </widget>
   <action name="action_open">
    <property name="text">
-    <string>打开/关闭</string>
-   </property>
-   <property name="toolTip">
-    <string>打开/关闭</string>
+    <string>Open/Close</string>
    </property>
   </action>
   <action name="action_modifyIp">
    <property name="text">
-    <string>修改IP</string>
-   </property>
-   <property name="toolTip">
-    <string>修改IP</string>
-   </property>
-  </action>
-  <action name="action_topOrNot">
-   <property name="text">
-    <string>置顶/取消置顶</string>
-   </property>
-   <property name="toolTip">
-    <string>置顶/取消置顶</string>
+    <string>Modify IP</string>
    </property>
   </action>
   <action name="action_rename">
    <property name="text">
-    <string>重命名</string>
-   </property>
-   <property name="toolTip">
-    <string>重命名</string>
+    <string>Rename</string>
    </property>
   </action>
  </widget>

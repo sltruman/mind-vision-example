@@ -1,4 +1,4 @@
-#ifndef TOPLEVELITEMWIDGET_H
+﻿#ifndef TOPLEVELITEMWIDGET_H
 #define TOPLEVELITEMWIDGET_H
 
 #include "cameraview.h"

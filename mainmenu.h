@@ -1,8 +1,9 @@
-#ifndef MAINMENU_H
+﻿#ifndef MAINMENU_H
 #define MAINMENU_H
 
 #include <QWidget>
 #include <QMouseEvent>
+#include <QSettings>
 
 #include <iostream>
 using namespace std;
@@ -22,10 +23,14 @@ public:
 
 private slots:
     void on_pushButton_close_clicked();
-    void on_pushButton_imageSetting_clicked();
+
+    void on_pushButton_language_clicked(bool checked);
+
+
 
 private:
     Ui::MainMenu *ui;
+    QSettings settings;
 };
 
 #endif // MAINMENU_H
