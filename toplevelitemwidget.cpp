@@ -249,6 +249,8 @@ QStringList DeviceItem::resolutions() {
     cout << s.data();
     auto res = QString(s).split('\n');
     res.removeLast();
+
+    snapshotDialog.resolutions(res);
     return res;
 }
 
@@ -364,3 +366,34 @@ void DeviceItem::paramsLoadFromFile(QString filename) {
     auto res = QString(camera.readLine()).split(' ');
 }
 
+void DeviceItem::snapshotStart(QString dir,int resolution,int format,int period) {
+    cout << "snapshot-start " << dir.toStdString() << resolution << format << period << endl;
+    camera.write(QString("snapshot-start %1 %2 %3 %4\n").arg(dir).arg(resolution).arg(format).arg(period).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readLine();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+}
+
+bool DeviceItem::snapshotState() {
+    cout << "snapshot-state " << endl;
+    if(camera.state() == QProcess::NotRunning) {
+        cout << "False 0" << endl;
+        return false;
+    }
+
+    camera.write("snapshot-state\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readLine();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    return res[1] == "1";
+}
+
+void DeviceItem::snapshotStop() {
+    camera.write("snapshot-stop\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readLine();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+}

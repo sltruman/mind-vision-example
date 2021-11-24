@@ -2,6 +2,7 @@
 #define TOPLEVELITEMWIDGET_H
 
 #include "cameraview.h"
+#include "snapshotdialog.h"
 
 #include <QWidget>
 #include <QTreeWidgetItem>
@@ -82,9 +83,14 @@ public:
     void paramsSaveToFile(QString filename);
     void paramsLoadFromFile(QString filename);
 
+    void snapshotStart(QString dir,int resolution,int format,int period);
+    bool snapshotState();
+    void snapshotStop();
+
     QString cameraName;
     QProcess camera;
     CameraView* cameraView;
+    SnapshotDialog snapshotDialog;
 };
 
 

@@ -36,7 +36,7 @@ private slots:
     void on_pushButton_zoomIn_clicked();
     void on_pushButton_zoomOut_clicked();
     void on_pushButton_zoomFull_clicked();
-    void on_pushButton_take_clicked();
+    void on_pushButton_snapshot_clicked();
 //    void on_pushButton_record_clicked();
 //    void on_pushButton_customStatus_clicked();
 //    void on_tabWidget_currentChanged(int index);

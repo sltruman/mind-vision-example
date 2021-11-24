@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1271</width>
+    <width>1274</width>
     <height>716</height>
    </rect>
   </property>
@@ -567,6 +567,25 @@
           </widget>
          </item>
          <item>
+          <widget class="Line" name="line_3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButton_playOrStop">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -610,7 +629,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_take">
+          <widget class="QPushButton" name="pushButton_snapshot">
            <property name="maximumSize">
             <size>
              <width>16777215</width>
@@ -618,7 +637,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Take</string>
+            <string>Snapshot</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
@@ -1763,7 +1782,7 @@ under params can't be controlled.</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1271</width>
+     <width>1274</width>
      <height>29</height>
     </rect>
    </property>

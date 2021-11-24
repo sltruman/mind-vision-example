@@ -13,18 +13,21 @@ SOURCES += \
     main.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
+    snapshotdialog.cpp \
     toplevelitemwidget.cpp
 
 HEADERS += \
     cameraview.h \
     mainmenu.h \
     mainwindow.h \
+    snapshotdialog.h \
     toplevelitemwidget.h
 
 FORMS += \
     cameraview.ui \
     mainmenu.ui \
     mainwindow.ui \
+    snapshotdialog.ui \
     toplevelitemwidget.ui
 
 

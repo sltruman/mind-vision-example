@@ -33,9 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0",this));
     ui->treeWidget_devices->expandAll();
 
-
     ui->widget_params->hide();
     ui->widget_status->hide();
+    ui->pushButton_playOrStop->hide();
 
     connect(&cameraStatusUpdate,SIGNAL(timeout()),SLOT(at_cameraStatusUpdate_timeout()),Qt::QueuedConnection);
     cameraStatusUpdate.setInterval(1000);
@@ -82,7 +82,11 @@ void MainWindow::at_cameraStatusUpdate_timeout()
         ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
         ui->label_frames->setText(QString::number(deviceItem->cameraView->frames));
         ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing());
+
+        ui->pushButton_snapshot->setText(deviceItem->snapshotState() ? tr("Stop") : tr("Snapshot"));
+        ui->pushButton_snapshot->setCheckable(deviceItem->snapshotState());
     }
+
 
     switch(ui->tabWidget_preview->currentIndex()) {
     case 0:
@@ -171,17 +175,21 @@ void MainWindow::on_pushButton_zoomFull_clicked()
     deviceItem->cameraView->currentScale = 0.99;
 }
 
-void MainWindow::on_pushButton_take_clicked()
+void MainWindow::on_pushButton_snapshot_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem) return;
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
-    auto imageDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-    cout << imageDir.toStdString() << endl;
-    auto time = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
-    auto filePath = imageDir + "/mindvision " + time + ".bmp";
-    deviceItem->cameraView->background->pixmap().save(filePath);
-    QMessageBox::information(this, tr("Take a picture"), tr("Picture has been saved:") + filePath, QMessageBox::Ok);
+    if(ui->pushButton_snapshot->isChecked()) {
+        cout << "snapshot-state" << endl;
+        deviceItem->snapshotStop();
+        return;
+    }
+
+    if(!deviceItem->snapshotDialog.exec()) return;
+
+    cout << "snapshot-start" << endl;
+    deviceItem->snapshotStart(deviceItem->snapshotDialog.dir(),deviceItem->snapshotDialog.resolution(),deviceItem->snapshotDialog.format(),deviceItem->snapshotDialog.period());
 }
 
 //void MainWindow::on_pushButton_record_clicked()
@@ -200,12 +208,11 @@ void MainWindow::on_pushButton_playOrStop_clicked()
     if(!deviceItem) return;
 
     if(QProcess::NotRunning == deviceItem->camera.state()) {
-        if(!deviceItem->open()){
+        if(!deviceItem->open()) {
             QMessageBox::critical(this, tr("Device"), tr("Failed Connecting the camera!"), QMessageBox::Ok);
             return;
         }
-    }
-    else {
+    } else {
         deviceItem->close();
         deviceItem->cameraView->setParent(nullptr);
     }
@@ -233,8 +240,7 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
 //        ui->tabWidget_preview->tabBar()->setTabVisible(0,false);
         if(ui->tabWidget_preview->currentIndex() == 0)
             ui->tabWidget_preview->setCurrentIndex(1);
-    }
-    else {
+    } else {
 //        ui->tabWidget_preview->tabBar()->setTabVisible(0,true);
         if(ui->tabWidget_preview->currentIndex() != 0)
             ui->tabWidget_preview->setCurrentIndex(0);
