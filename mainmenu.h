@@ -1,6 +1,8 @@
 ﻿#ifndef MAINMENU_H
 #define MAINMENU_H
 
+#include "snapshotdialog.h"
+
 #include <QWidget>
 #include <QMouseEvent>
 #include <QSettings>
@@ -25,8 +27,7 @@ private slots:
     void on_pushButton_close_clicked();
 
     void on_pushButton_language_clicked(bool checked);
-
-
+    void on_action_takingSetting_triggered();
 
 private:
     Ui::MainMenu *ui;

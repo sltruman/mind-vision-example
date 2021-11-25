@@ -41,7 +41,7 @@ int SnapshotDialog::resolution() {
     return ui->comboBox_resolution->currentIndex();
 }
 
-QString SnapshotDialog::dir(){
+QString SnapshotDialog::dir() {
     return ui->edit_dir->text();
 }
 

@@ -62,9 +62,11 @@ void CameraView::process() {
 
     cout << "frame " << frames << endl;
 
-    sock.write("frame\n");
+    sock.write("size\n");
+    sock.waitForBytesWritten();
+
     while(sock.bytesAvailable() == 0) {
-        sock.waitForReadyRead(10);
+        sock.waitForReadyRead(100);
         QApplication::processEvents();
         if (QLocalSocket::ConnectedState != sock.state()) return;
     }
@@ -74,16 +76,19 @@ void CameraView::process() {
     auto h = whb[1].toUInt();
     auto b = whb[2].toUInt();
     auto length = w*h*b;
+    rgbBuffer.resize(length);
 
+    sock.write("frame\n");
     while(sock.bytesAvailable() < length) {
-        sock.waitForReadyRead(10);
+        cout << sock.bytesAvailable() << endl;
+        sock.waitForReadyRead(100);
         QApplication::processEvents();
 
         if (QLocalSocket::ConnectedState != sock.state()) return;
     }
 
-    auto rgbBuff = sock.readAll();
-    QImage img((unsigned char*)rgbBuff.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
+    sock.read(rgbBuffer.data(),rgbBuffer.size());
+    QImage img((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
 
     if(QImage::Format::Format_Indexed8 == img.format()){
         QVector<QRgb> grayColorTable;
@@ -108,6 +113,8 @@ void CameraView::process() {
 
     tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
     frames++;
+
+
 
     emit sock.connected();
 }

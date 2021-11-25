@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     auto gige = ui->treeWidget_devices->topLevelItem(0);
     auto usb = ui->treeWidget_devices->topLevelItem(1);
 
-    ui->treeWidget_devices->setItemWidget(gige,0,new TopLevelItemWidget(gige,"GIGE",this));
+    ui->treeWidget_devices->setItemWidget(gige,0,new TopLevelItemWidget(gige,"GIGE,GiGeCamera",this));
     ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0",this));
     ui->treeWidget_devices->expandAll();
 
@@ -49,6 +49,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event){
     ui->tabWidget_preview->setCurrentIndex(0);
+
+    for(auto topItemIndex=0;topItemIndex<ui->treeWidget_devices->topLevelItemCount();topItemIndex++) {
+        auto topLevelItem = ui->treeWidget_devices->topLevelItem(topItemIndex);
+
+        for(auto subItemIndex=0;subItemIndex< topLevelItem->childCount();subItemIndex++) {
+            auto deviceItem = dynamic_cast<DeviceItem*>(topLevelItem->child(subItemIndex));
+
+            if(QProcess::NotRunning == deviceItem->camera.state()) continue;
+            deviceItem->cameraView->stop();
+            deviceItem->close();
+        }
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -259,6 +271,8 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
     ui->label_mask_2->setText(info.size() > 10 ? info[10] : "");
     ui->label_gateway_2->setText(info.size() > 11 ? info[11] : "");
     ui->label_manufacturer_2->setText("Mind Vision");
+
+
 
     if(QProcess::NotRunning == deviceItem->camera.state()) {
         ui->widget_params->hide();
@@ -543,9 +557,10 @@ void MainWindow::on_MainWindow_cameraParamsUpdate()
 
     }catch(...) {
         cout << "Failed to sync camera's params!" << endl;
-        QApplication::processEvents();
         emit on_MainWindow_cameraParamsUpdate();
     }
+
+    QApplication::processEvents();
 }
 
 

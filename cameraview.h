@@ -36,14 +36,13 @@ protected:
 
 private slots:
     void process();
-
-
     void on_pushButton_close_clicked();
 
 private:
     Ui::CameraView *ui;
     QLocalSocket sock;
     QTimer t;
+    QByteArray rgbBuffer;
 };
 
 #endif // CAMERAVIEW_H

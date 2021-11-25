@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QMessageBox>
 
+
 MainMenu::MainMenu(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainMenu),
@@ -56,5 +57,11 @@ void MainMenu::on_pushButton_language_clicked(bool checked)
     settings.setValue("language",(checked ? "zh" : "en"));
     QMessageBox::information(this, tr("Luanguage"), tr("Luanguage has been switched and to restart the application!"), QMessageBox::Ok);
     qApp->exit();
+}
+
+
+void MainMenu::on_action_takingSetting_triggered()
+{
+
 }
 
