@@ -1,0 +1,69 @@
+MainWindow {
+    background-color: #191919;
+}
+
+#tabWidget_preview {
+
+}
+
+#tabWidget_preview::pane {
+    border-image: url(:/切图-首页/右边底.png);
+}
+
+#tabWidget_preview::tab-bar {
+    top:0px;
+}
+
+#tabWidget_preview QTabBar::tab {
+    background-color:#1C1D22;
+    border-color:#1C1D22;
+    color:white;
+    font: bold 15px "Microsoft YaHei UI";
+    width:80px;
+    height:37px;
+}
+
+#tabWidget_preview QTabBar::tab:selected, QTabBar::tab:hover {
+    background-color: #4D4D4D;
+}
+
+#tabWidget_preview #tab_welcome {
+    background-color: #38393B;
+    background-image: url(:/切图-首页/产品图.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#tabWidget_preview QGraphicsView {
+    background-color: #38393B;
+    background-image: url(:/切图-首页/相机.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#widget_control {
+    border-image: url(:/切图-首页/下底.png);
+}
+
+#widget_control QPushButton {
+    border:none;
+    color: #7F8082;
+    font: 15px "Microsoft YaHei UI";
+}
+
+#widget_control QPushButton:hover {
+    background-color: #303030;
+}
+
+#widget_status QLabel{
+    color: #7F8082;
+}
+
+#widget_status QPushButton{
+    border:none;
+    color: #7F8082;
+}
+
+#widget_status QPushButton:hover {
+    background-color: #303030;
+}

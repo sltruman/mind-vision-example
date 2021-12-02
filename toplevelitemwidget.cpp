@@ -56,7 +56,8 @@ FOUND_DEVICE:
         auto info = line.split(','); //产品系列 产品名称 产品昵称 内核符号连接名 驱动版本 sensor类型 接口类型 产品唯一序列号 实例索引号 相机IP 相机子网掩码 相机网关 网卡IP 网卡子网掩码 网卡网关
         if(-1 == series.indexOf(info[0])) continue;
 
-        auto deviceName = QString("%1#%2").arg(info[1]).arg(info[0] == "GIGE" ? info[9] : info[8]);
+        auto deviceName = QString("%1#%2").arg(info[1]).arg(info.size() > 9 ? info[9] : info[8]);
+
         auto child = new DeviceItem(topLevelItem,deviceName);
         child->setData(0,Qt::UserRole,info);
         child->cameraName = info[7];
@@ -111,7 +112,11 @@ bool DeviceItem::open() {
     auto s = camera.readAll();
     cout << s.data();
     auto res = s.split(' ');
-    cameraView->play(cameraName);
+    cameraView->pipeName = cameraName;
+    if(res[0] == "True")
+        cameraView->play();
+    else
+        camera.waitForFinished();
     return res[0] == "True";
 }
 
@@ -196,20 +201,8 @@ void DeviceItem::onceWhiteBalance(){
     auto res = QString(camera.readAll()).split(' ');
 }
 
-void DeviceItem::r(int value){
-    camera.write(QString("r-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
-}
-
-void DeviceItem::g(int value){
-    camera.write(QString("g-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
-}
-
-void DeviceItem::b(int value){
-    camera.write(QString("b-set %1\n").arg(value).toLocal8Bit());
+void DeviceItem::rgb(int r,int g,int b){
+    camera.write(QString("rgb-set %1 %2 %3\n").arg(r).arg(g).arg(b).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
@@ -220,9 +213,54 @@ void DeviceItem::saturation(int value) {
     auto res = QString(camera.readAll()).split(' ');
 }
 
-QStringList DeviceItem::lookupTables() {
-    cout << "lookupTables " << endl;
-    camera.write("lookup-tables\n");
+void DeviceItem::monochrome(int enable) {
+    camera.write(QString("monochrome-set %1\n").arg(enable).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::inverse(int enable) {
+    camera.write(QString("inverse-set %1\n").arg(enable).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::algorithm(int index) {
+    cout << "algorithm " << index << endl;
+    camera.write(QString("algorithm-set %1\n").arg(index).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::colorTemrature(int index) {
+    cout << "colorTemrature " << index << endl;
+    camera.write(QString("color-temrature-set %1\n").arg(index).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+QString DeviceItem::lookupTableMode() {
+    cout << "lookupTableMode " << endl;
+    camera.write("lookup-table-mode\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    if(res[0] != "True") throw runtime_error("");
+    return res[1];
+}
+
+void DeviceItem::lookupTableMode(int index) {
+    cout << "lookupTableMode " << endl;
+    camera.write(QString("lookup-table-mode-set %1\n").arg(index).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = camera.readAll().split(' ');
+    if(res[0] != "True") throw runtime_error("");
+}
+
+QStringList DeviceItem::lookupTablesForDynamic() {
+    cout << "lookupTablesForDynamic " << endl;
+    camera.write("lookup-tables-for-dynamic\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readAll();
     cout << s.data();
@@ -240,6 +278,36 @@ void DeviceItem::gamma(int value){
 
 void DeviceItem::contrastRatio(int value) {
     camera.write(QString("contrast-ratio-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+QStringList DeviceItem::lookupTablesForPreset() {
+    cout << "lookupTablesForPreset " << endl;
+    camera.write("lookup-tables-for-preset\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    if(res[0] != "True") throw runtime_error("");
+    res.removeFirst();
+    return res;
+}
+
+QStringList DeviceItem::lookupTablesForCustom(int index) {
+    cout << "lookupTablesForCustom " << endl;
+    camera.write(QString("lookup-tables-for-custom %1\n").arg(index).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    if(res[0] != "True") throw runtime_error("");
+    res.removeFirst();
+    return res;
+}
+
+void DeviceItem::lookupTablePreset(int index) {
+    camera.write(QString("lookup-table-preset-set %1\n").arg(index).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
@@ -379,7 +447,7 @@ void DeviceItem::snapshotStart(QString dir,int resolution,int format,int period)
 }
 
 bool DeviceItem::snapshotState() {
-    cout << "snapshot-state " << endl;
+//    cout << "snapshot-state " << endl;
     if(camera.state() == QProcess::NotRunning) {
         cout << "False 0" << endl;
         return false;

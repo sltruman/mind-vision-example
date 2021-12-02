@@ -1,0 +1,37 @@
+
+#tabWidget_params QGroupBox:title {
+    color:white;
+}
+
+#tabWidget_params::pane {
+    border-image: url(:/theme/icon/right-side.png);
+}
+
+#tabWidget_params::tab-bar {
+/*    top:0px;*/
+}
+
+#tabWidget_params QTabBar::tab {
+    border-color:#1C1D22;
+    color:white;
+    font: bold 12px "Microsoft YaHei UI";
+    width:30px;
+    height:70px;
+}
+
+#tabWidget_params QTabBar::tab:selected, QTabBar::tab:hover {
+    background-color: #4D4D4D;
+}
+
+#tabWidget_params #widget_paramsTitleBar {
+    background-color: #262630;
+}
+
+#tabWidget_params #layout_rightSideTab0,#layout_rightSideTab1,#layout_rightSideTab2 {
+    background-color: #201B22;
+}
+
+#tabWidget_params QGroupBox,QLabel,QCheckBox {
+    color: #7F8082;
+    font: 15px "Microsoft YaHei UI";
+}

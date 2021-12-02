@@ -17,7 +17,7 @@ CameraView::CameraView(QWidget *parent) :
 {
     ui->setupUi(this);
     setScene(new QGraphicsScene(this));
-    background = scene()->addPixmap(QPixmap());
+    background = scene()->addPixmap(QPixmap(0,0));
     connect(&sock,SIGNAL(connected()),SLOT(process()),Qt::QueuedConnection);
     ui->pushButton_close->hide();
 }
@@ -40,7 +40,7 @@ bool CameraView::playing() {
     return QLocalSocket::ConnectedState == sock.state();
 }
 
-void CameraView::play(QString pipeName) {
+void CameraView::play() {
     cout << "play " << pipeName.toStdString() << endl;
     sock.connectToServer(pipeName);
 }
@@ -48,7 +48,7 @@ void CameraView::play(QString pipeName) {
 void CameraView::stop() {
     cout << "stop " << sock.serverName().toStdString() << endl;
     scene()->clear();
-    background = scene()->addPixmap(QPixmap());
+    background = scene()->addPixmap(QPixmap(0,0));
     sock.disconnectFromServer();
 }
 
@@ -59,8 +59,6 @@ void CameraView::process() {
         scene()->clear();
         return;
     }
-
-    cout << "frame " << frames << endl;
 
     sock.write("size\n");
     sock.waitForBytesWritten();
@@ -80,7 +78,6 @@ void CameraView::process() {
 
     sock.write("frame\n");
     while(sock.bytesAvailable() < length) {
-        cout << sock.bytesAvailable() << endl;
         sock.waitForReadyRead(100);
         QApplication::processEvents();
 
@@ -113,8 +110,6 @@ void CameraView::process() {
 
     tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
     frames++;
-
-
 
     emit sock.connected();
 }

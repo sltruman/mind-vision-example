@@ -285,14 +285,42 @@
     </layout>
    </item>
   </layout>
-  <action name="action_takingSetting">
+  <action name="action_snapshotSetting">
    <property name="text">
-    <string>Taking Setting</string>
+    <string>Snapshot Setting</string>
    </property>
   </action>
   <action name="action_recordingSetting">
    <property name="text">
     <string>Recording Setting</string>
+   </property>
+  </action>
+  <action name="action_ipConfiguration">
+   <property name="text">
+    <string>IP Configuration</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="action_demo">
+   <property name="text">
+    <string>Demo</string>
+   </property>
+  </action>
+  <action name="action_sdk">
+   <property name="text">
+    <string>Sdk</string>
+   </property>
+   <property name="toolTip">
+    <string>Sdk</string>
+   </property>
+  </action>
+  <action name="action_log">
+   <property name="text">
+    <string>Log</string>
    </property>
   </action>
  </widget>

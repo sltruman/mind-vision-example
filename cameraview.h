@@ -20,11 +20,12 @@ public:
     explicit CameraView(QWidget *parent = nullptr);
     ~CameraView();
 
-    void play(QString pipeName);
+    void play();
     void stop();
     bool playing();
 
     QProcess* camera;
+    QString pipeName;
     QGraphicsPixmapItem* background;
     float currentScale;
     int displayFPS;

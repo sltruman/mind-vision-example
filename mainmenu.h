@@ -6,7 +6,6 @@
 #include <QWidget>
 #include <QMouseEvent>
 #include <QSettings>
-
 #include <iostream>
 using namespace std;
 
@@ -27,7 +26,20 @@ private slots:
     void on_pushButton_close_clicked();
 
     void on_pushButton_language_clicked(bool checked);
-    void on_action_takingSetting_triggered();
+
+    void on_action_snapshotSetting_triggered();
+
+    void on_action_ipConfiguration_triggered();
+
+    void on_action_demo_triggered();
+
+    void on_action_sdk_triggered();
+
+    void on_action_log_triggered();
+
+    void on_action_about_triggered();
+
+    void on_action_recordingSetting_triggered();
 
 private:
     Ui::MainMenu *ui;

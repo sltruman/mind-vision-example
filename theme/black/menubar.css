@@ -76,8 +76,8 @@ MainMenu #widget_logo {
     background-color: #141519;
 }
 
-MainMenu #widget_logo #label_logo {
-    background-image: url(:/theme/icon/LOGO.png);
+MainMenu #label_logo {
+    background-image: url(":/theme/icon/LOGO.png");
     background-position:left center;
     background-repeat: no-repeat;
 }

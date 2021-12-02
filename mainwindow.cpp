@@ -33,9 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0",this));
     ui->treeWidget_devices->expandAll();
 
-    ui->widget_params->hide();
+    ui->tabWidget_params->hide();
+    ui->widget_control->hide();
     ui->widget_status->hide();
-    ui->pushButton_playOrStop->hide();
 
     connect(&cameraStatusUpdate,SIGNAL(timeout()),SLOT(at_cameraStatusUpdate_timeout()),Qt::QueuedConnection);
     cameraStatusUpdate.setInterval(1000);
@@ -47,7 +47,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::closeEvent(QCloseEvent *event){
+void MainWindow::closeEvent(QCloseEvent *event) {
     ui->tabWidget_preview->setCurrentIndex(0);
 
     for(auto topItemIndex=0;topItemIndex<ui->treeWidget_devices->topLevelItemCount();topItemIndex++) {
@@ -90,7 +90,7 @@ void MainWindow::at_cameraStatusUpdate_timeout()
     if(deviceItem) {
         auto resolution = deviceItem->cameraView->background->pixmap().size();
         ui->label_resolution->setText(QString("%1x%2").arg(resolution.width()).arg(resolution.height()));
-        ui->label_scale->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
+        ui->label_zoom->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
         ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
         ui->label_frames->setText(QString::number(deviceItem->cameraView->frames));
         ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing());
@@ -98,7 +98,6 @@ void MainWindow::at_cameraStatusUpdate_timeout()
         ui->pushButton_snapshot->setText(deviceItem->snapshotState() ? tr("Stop") : tr("Snapshot"));
         ui->pushButton_snapshot->setCheckable(deviceItem->snapshotState());
     }
-
 
     switch(ui->tabWidget_preview->currentIndex()) {
     case 0:
@@ -136,7 +135,6 @@ NEW_ITEM:
                 ui->tab_all_contents->addWidget(deviceItem->cameraView,i,j);
 OLD_ITEM:
                 ;
-
             }
         }
         break;
@@ -154,14 +152,28 @@ void MainWindow::on_treeWidget_devices_customContextMenuRequested(const QPoint &
     auto qMenu = new QMenu(ui->treeWidget_devices);
     qMenu->setObjectName("menu_devices");
     qMenu->addAction(ui->action_open);
-    qMenu->addAction(ui->action_modifyIp);
-    qMenu->addAction(ui->action_rename);
+    qMenu->addAction(ui->actionTop);
+//    qMenu->addAction(ui->action_modifyIp);
+//    qMenu->addAction(ui->action_rename);
     qMenu->exec(QCursor::pos()); //在鼠标点击的位置显示鼠标右键菜单
 }
 
 void MainWindow::on_action_open_triggered()
 {
-    emit ui->pushButton_playOrStop->clicked();
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
+
+    if(QProcess::NotRunning == deviceItem->camera.state()) {
+        if(!deviceItem->open()) {
+            QMessageBox::critical(nullptr, tr("Device"), tr("Failed Connecting the camera!"), QMessageBox::Ok);
+            return;
+        }
+    } else {
+        deviceItem->close();
+        deviceItem->cameraView->setParent(nullptr);
+    }
+
+    emit ui->treeWidget_devices->itemSelectionChanged();
 }
 
 void MainWindow::on_pushButton_zoomIn_clicked()
@@ -219,17 +231,11 @@ void MainWindow::on_pushButton_playOrStop_clicked()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
 
-    if(QProcess::NotRunning == deviceItem->camera.state()) {
-        if(!deviceItem->open()) {
-            QMessageBox::critical(this, tr("Device"), tr("Failed Connecting the camera!"), QMessageBox::Ok);
-            return;
-        }
+    if(deviceItem->cameraView->playing()) {
+        deviceItem->cameraView->stop();
     } else {
-        deviceItem->close();
-        deviceItem->cameraView->setParent(nullptr);
+        deviceItem->cameraView->play();
     }
-
-    emit ui->treeWidget_devices->itemSelectionChanged();
 }
 
 void MainWindow::on_treeWidget_devices_itemSelectionChanged()
@@ -259,6 +265,19 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
     }
 
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) {
+        ui->tabWidget_params->hide();
+        ui->widget_control->hide();
+        ui->widget_status->hide();
+    } else {
+        ui->tabWidget_params->show();
+        ui->widget_control->show();
+        ui->widget_status->show();
+
+        emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
+    }
+
     if(!deviceItem) return;
 
     auto info = deviceItem->data(0,Qt::UserRole).toStringList();
@@ -271,15 +290,6 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
     ui->label_mask_2->setText(info.size() > 10 ? info[10] : "");
     ui->label_gateway_2->setText(info.size() > 11 ? info[11] : "");
     ui->label_manufacturer_2->setText("Mind Vision");
-
-
-
-    if(QProcess::NotRunning == deviceItem->camera.state()) {
-        ui->widget_params->hide();
-    } else {
-        emit this->on_MainWindow_cameraParamsUpdate();
-        ui->widget_params->show();
-    }
 }
 
 void MainWindow::on_comboBox_exposureMode_currentIndexChanged(int index)
@@ -287,11 +297,8 @@ void MainWindow::on_comboBox_exposureMode_currentIndexChanged(int index)
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
-    ui->slider_brightness->setEnabled(index);
-    ui->checkBox_flicker->setEnabled(index);
-    ui->comboBox_frequency->setEnabled(index);
-    ui->slider_gain->setDisabled(index);
-    ui->slider_exposureTime->setDisabled(index);
+    ui->groupBox_automationExposure->setVisible(index);
+    ui->groupBox_manualExposure->setHidden(index);
 
     deviceItem->exposureMode(index);
 }
@@ -355,7 +362,8 @@ void MainWindow::on_pushButton_onceWhiteBalance_clicked()
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     deviceItem->onceWhiteBalance();
-    emit ui->treeWidget_devices->itemSelectionChanged();
+
+    emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
 
 void MainWindow::on_slider_r_valueChanged(int value)
@@ -363,7 +371,8 @@ void MainWindow::on_slider_r_valueChanged(int value)
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
-    deviceItem->r(value);
+
+    deviceItem->rgb(value,ui->slider_g->value(),ui->slider_b->value());
 }
 
 
@@ -372,7 +381,7 @@ void MainWindow::on_slider_g_valueChanged(int value)
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
-    deviceItem->g(value);
+    deviceItem->rgb(ui->slider_r->value(),value,ui->slider_b->value());
 }
 
 
@@ -381,7 +390,7 @@ void MainWindow::on_slider_b_valueChanged(int value)
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
-    deviceItem->b(value);
+    deviceItem->rgb(ui->slider_r->value(),ui->slider_g->value(),value);
 }
 
 
@@ -400,14 +409,27 @@ void MainWindow::on_slider_gamma_valueChanged(int value)
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     deviceItem->gamma(value);
+
+    auto lookupTables = deviceItem->lookupTablesForDynamic();
+
+    auto line = new QSplineSeries();
+    auto values = lookupTables[6].split(',');
+    for(int i=0;i < values.size();i++) {
+        line->append(i, values[i].toInt());
+    }
+
+    ui->chartView_lut->chart()->removeAllSeries();
+    ui->chartView_lut->chart()->addSeries(line);
+    ui->chartView_lut->chart()->createDefaultAxes();
 }
 
-void MainWindow::on_slider_contrastRatio_valueChanged(int value)
+
+void MainWindow::on_slider_contrastRatio_sliderMoved(int position)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
-    deviceItem->contrastRatio(value);
+    deviceItem->contrastRatio(position);
 }
 
 
@@ -436,7 +458,7 @@ void MainWindow::on_checkBox_verticalMirror_stateChanged(int arg1)
 }
 
 
-void MainWindow::on_slider_acutance_valueChanged(int value)
+void MainWindow::on_slider_acutance_sliderMoved(int value)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
@@ -490,87 +512,13 @@ void MainWindow::on_comboBox_flashPolarity_currentIndexChanged(int index)
     deviceItem->flashPolarity(index);
 }
 
-void MainWindow::on_MainWindow_cameraParamsUpdate()
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    try {
-        auto exposure = deviceItem->exposure();
-        ui->comboBox_exposureMode->setCurrentIndex(exposure[0].toUInt());
-        ui->slider_brightness->setMinimum(exposure[1].toUInt());
-        ui->slider_brightness->setMaximum(exposure[2].toUInt());
-        ui->slider_brightness->setValue(exposure[3].toUInt());
-        ui->checkBox_flicker->setChecked(exposure[4].toUInt());
-        ui->comboBox_frequency->setCurrentIndex(exposure[5].toUInt());
-        ui->slider_gain->setMinimum(exposure[6].toUInt());
-        ui->slider_gain->setMaximum(exposure[7].toUInt());
-        ui->slider_gain->setValue(exposure[8].toUInt());
-        ui->slider_exposureTime->setMinimum(exposure[9].toUInt());
-        ui->slider_exposureTime->setMaximum(exposure[10].toUInt());
-        ui->slider_exposureTime->setValue(exposure[11].toUInt());
-        QApplication::processEvents();
-
-        auto whiteBalance = deviceItem->whiteBalance();
-        ui->comboBox_whiteBalanceMode->setCurrentIndex(whiteBalance[0].toUInt());
-        ui->slider_r->setMinimum(whiteBalance[1].toUInt());
-        ui->slider_r->setMaximum(whiteBalance[2].toUInt());
-        ui->slider_r->setValue(whiteBalance[3].toUInt());
-        ui->slider_g->setMinimum(whiteBalance[4].toUInt());
-        ui->slider_g->setMaximum(whiteBalance[5].toUInt());
-        ui->slider_g->setValue(whiteBalance[6].toUInt());
-        ui->slider_b->setMinimum(whiteBalance[7].toUInt());
-        ui->slider_b->setMaximum(whiteBalance[8].toUInt());
-        ui->slider_b->setValue(whiteBalance[9].toUInt());
-        ui->slider_saturation->setMinimum(whiteBalance[10].toUInt());
-        ui->slider_saturation->setMaximum(whiteBalance[11].toUInt());
-        ui->slider_saturation->setValue(whiteBalance[12].toUInt());
-        QApplication::processEvents();
-
-        auto lookupTables = deviceItem->lookupTables();
-        ui->slider_gamma->setMinimum(lookupTables[0].toUInt());
-        ui->slider_gamma->setMaximum(lookupTables[1].toUInt());
-        ui->slider_gamma->setValue(lookupTables[2].toUInt());
-        ui->slider_contrastRatio->setMinimum(lookupTables[3].toUInt());
-        ui->slider_contrastRatio->setMaximum(lookupTables[4].toUInt());
-        ui->slider_contrastRatio->setValue(lookupTables[5].toUInt());
-        QApplication::processEvents();
-
-        auto resolutions = deviceItem->resolutions();
-        ui->comboBox_resolution->clear();
-        ui->comboBox_resolution->addItems(resolutions);
-        QApplication::processEvents();
-
-        auto isp = deviceItem->isp();
-        ui->checkBox_horizontalMirror->setChecked(isp[0].toUInt());
-        ui->checkBox_verticalMirror->setChecked(isp[1].toUInt());
-        ui->slider_acutance->setMinimum(isp[2].toUInt());
-        ui->slider_acutance->setMaximum(isp[3].toUInt());
-        ui->slider_acutance->setValue(isp[4].toUInt());
-        QApplication::processEvents();
-
-        auto controls= deviceItem->controls();
-        ui->comboBox_triggerMode->setCurrentIndex(controls[0].toUInt());
-        ui->comboBox_flashMode->setCurrentIndex(controls[1].toUInt());
-        ui->comboBox_flashPolarity->setCurrentIndex(controls[2].toUInt());
-        QApplication::processEvents();
-
-    }catch(...) {
-        cout << "Failed to sync camera's params!" << endl;
-        emit on_MainWindow_cameraParamsUpdate();
-    }
-
-    QApplication::processEvents();
-}
-
-
 void MainWindow::on_pushButton_resetParams_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     deviceItem->paramsReset();
-    emit on_MainWindow_cameraParamsUpdate();
+    emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
 
 
@@ -581,9 +529,8 @@ void MainWindow::on_pushButton_loadParamsFromFile_clicked()
 
     auto filename = QFileDialog::getOpenFileName(this,tr("Select file"),"",tr("config Files(*.config )"));
     deviceItem->paramsLoadFromFile(filename);
-    emit on_MainWindow_cameraParamsUpdate();
+    emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
-
 
 void MainWindow::on_pushButton_saveParams_clicked()
 {
@@ -597,13 +544,186 @@ void MainWindow::on_pushButton_saveParams_clicked()
 //    deviceItem->paramsSaveToFile(filename);
 }
 
-
 void MainWindow::on_comboBox_params_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     deviceItem->paramsLoad(index);
-    emit on_MainWindow_cameraParamsUpdate();
+    emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
 
+
+void MainWindow::on_actionTop_triggered()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem) return;
+
+    auto topTreeItem = deviceItem->parent();
+    topTreeItem->removeChild(deviceItem);
+    topTreeItem->insertChild(0,deviceItem);
+}
+
+void MainWindow::on_tabWidget_params_currentChanged(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    try {
+        if(index == 0) {
+            auto exposure = deviceItem->exposure();
+            ui->comboBox_exposureMode->setCurrentIndex(exposure[0].toUInt());
+            ui->slider_brightness->setMinimum(exposure[1].toUInt());
+            ui->slider_brightness->setMaximum(exposure[2].toUInt());
+            ui->slider_brightness->setValue(exposure[3].toUInt());
+            ui->checkBox_flicker->setChecked(exposure[4].toUInt());
+            ui->comboBox_frequency->setCurrentIndex(exposure[5].toUInt());
+            ui->slider_gain->setMinimum(exposure[6].toUInt());
+            ui->slider_gain->setMaximum(exposure[7].toUInt());
+            ui->slider_gain->setValue(exposure[8].toUInt());
+            ui->slider_exposureTime->setMinimum(exposure[9].toUInt());
+            ui->slider_exposureTime->setMaximum(exposure[10].toUInt());
+            ui->slider_exposureTime->setValue(exposure[11].toUInt());
+        } else if(index == 1) {
+            auto whiteBalance = deviceItem->whiteBalance();
+            ui->comboBox_whiteBalanceMode->setCurrentIndex(whiteBalance[0].toUInt());
+            ui->slider_r->setMinimum(whiteBalance[1].toUInt());
+            ui->slider_r->setMaximum(whiteBalance[2].toUInt());
+            ui->slider_r->setValue(whiteBalance[3].toUInt());
+            ui->slider_g->setMinimum(whiteBalance[4].toUInt());
+            ui->slider_g->setMaximum(whiteBalance[5].toUInt());
+            ui->slider_g->setValue(whiteBalance[6].toUInt());
+            ui->slider_b->setMinimum(whiteBalance[7].toUInt());
+            ui->slider_b->setMaximum(whiteBalance[8].toUInt());
+            ui->slider_b->setValue(whiteBalance[9].toUInt());
+            ui->slider_saturation->setMinimum(whiteBalance[10].toUInt());
+            ui->slider_saturation->setMaximum(whiteBalance[11].toUInt());
+            ui->slider_saturation->setValue(whiteBalance[12].toUInt());
+            ui->checkBox_monochrome->setChecked(whiteBalance[13].toUInt());
+            ui->checkBox_inverse->setChecked(whiteBalance[14].toUInt());
+            ui->comboBox_algorithm->setCurrentIndex(whiteBalance[15].toInt());
+            ui->comboBox_colorTemrature->setCurrentIndex(whiteBalance[16].toInt());
+        } else if(index == 2) {
+            auto lookupTableMode = deviceItem->lookupTableMode();
+            ui->comboBox_lutMode->setCurrentIndex(lookupTableMode.toInt());
+        } else {
+            auto resolutions = deviceItem->resolutions();
+            ui->comboBox_resolution->clear();
+            ui->comboBox_resolution->addItems(resolutions);
+
+            auto isp = deviceItem->isp();
+            ui->checkBox_horizontalMirror->setChecked(isp[0].toUInt());
+            ui->checkBox_verticalMirror->setChecked(isp[1].toUInt());
+            ui->slider_acutance->setMinimum(isp[2].toUInt());
+            ui->slider_acutance->setMaximum(isp[3].toUInt());
+            ui->slider_acutance->setValue(isp[4].toUInt());
+
+            auto controls= deviceItem->controls();
+            ui->comboBox_triggerMode->setCurrentIndex(controls[0].toUInt());
+            ui->comboBox_flashMode->setCurrentIndex(controls[1].toUInt());
+            ui->comboBox_flashPolarity->setCurrentIndex(controls[2].toUInt());
+        }
+    }catch(...) {
+        cout << "Failed to sync camera's params!" << endl;
+        emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
+    }
+}
+
+void MainWindow::on_checkBox_monochrome_stateChanged(int enable)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->monochrome(enable);
+}
+
+void MainWindow::on_checkBox_inverse_stateChanged(int enable)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->inverse(enable);
+}
+
+void MainWindow::on_comboBox_algorithm_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->algorithm(index);
+}
+
+void MainWindow::on_comboBox_colorTemrature_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->colorTemrature(index);
+}
+
+void MainWindow::on_comboBox_lutMode_currentIndexChanged(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->lookupTableMode(index);
+
+    ui->groupBox_lutDynamic->hide();
+    ui->groupBox_lutPreset->hide();
+    ui->groupBox_lutCustom->hide();
+
+    if(index == 0) {
+        auto lookupTables = deviceItem->lookupTablesForDynamic();
+        ui->slider_gamma->setMinimum(lookupTables[0].toUInt());
+        ui->slider_gamma->setMaximum(lookupTables[1].toUInt());
+        ui->slider_gamma->setValue(lookupTables[2].toUInt());
+        ui->slider_contrastRatio->setMinimum(lookupTables[3].toUInt());
+        ui->slider_contrastRatio->setMaximum(lookupTables[4].toUInt());
+        ui->slider_contrastRatio->setValue(lookupTables[5].toUInt());
+        ui->groupBox_lutDynamic->show();
+    } else if(index == 1) {
+        auto lookupTables = deviceItem->lookupTablesForPreset();
+        ui->comboBox_lutPreset->setCurrentIndex(lookupTables[0].toUInt());
+        ui->groupBox_lutPreset->show();
+    } else if(index == 2) {
+        ui->comboBox_lutColorChannel->setCurrentIndex(0);
+        ui->groupBox_lutCustom->show();
+    } else {}
+}
+
+void MainWindow::on_comboBox_lutPreset_currentIndexChanged(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->lookupTablePreset(index);
+    auto lookupTables = deviceItem->lookupTablesForPreset();
+
+    auto line = new QSplineSeries();
+    auto values = lookupTables[1].split(',');
+    for(int i=0;i < values.size();i++) {
+        line->append(i, values[i].toInt());
+    }
+
+    ui->chartView_lut->chart()->removeAllSeries();
+    ui->chartView_lut->chart()->addSeries(line);
+    ui->chartView_lut->chart()->createDefaultAxes();
+}
+
+void MainWindow::on_comboBox_lutColorChannel_currentIndexChanged(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    auto lookupTables = deviceItem->lookupTablesForCustom(index);
+
+    auto line = new QSplineSeries();
+    auto values = lookupTables[0].split(',');
+    for(int i=0;i < values.size();i++) {
+        line->append(i, values[i].toInt());
+    }
+
+    ui->chartView_lut->chart()->removeAllSeries();
+    ui->chartView_lut->chart()->addSeries(line);
+    ui->chartView_lut->chart()->createDefaultAxes();
+}

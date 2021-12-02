@@ -10,7 +10,6 @@ SnapshotDialog::SnapshotDialog(QWidget *parent) :
     ui->setupUi(this);
     auto imageDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
     ui->edit_dir->setText(imageDir);
-
 }
 
 SnapshotDialog::~SnapshotDialog()

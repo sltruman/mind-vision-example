@@ -23,15 +23,25 @@ int main(int argc, char *argv[])
 
     QString css;
 
-    QFile cssOther("theme/black/black.css");
-    cssOther.open(QFile::ReadOnly);
-    css += cssOther.readAll();
-    cssOther.close();
-
     QFile cssMenubar("theme/black/menubar.css");
     cssMenubar.open(QFile::ReadOnly);
     css += cssMenubar.readAll();
     cssMenubar.close();
+
+    QFile cssPreview("theme/black/preview.css");
+    cssPreview.open(QFile::ReadOnly);
+    css += cssPreview.readAll();
+    cssPreview.close();
+
+    QFile cssLeftSide("theme/black/leftside.css");
+    cssLeftSide.open(QFile::ReadOnly);
+    css += cssLeftSide.readAll();
+    cssLeftSide.close();
+
+    QFile cssRightSide("theme/black/rightside.css");
+    cssRightSide.open(QFile::ReadOnly);
+    css += cssRightSide.readAll();
+    cssRightSide.close();
 
     qApp->setStyleSheet(css);
 

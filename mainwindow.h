@@ -7,6 +7,8 @@
 #include <QProcess>
 #include <QWidget>
 #include <QTreeWidgetItem>
+#include <QtCharts/QtCharts>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -55,18 +57,16 @@ private slots:
     void on_slider_g_valueChanged(int value);
     void on_slider_b_valueChanged(int value);
     void on_slider_saturation_valueChanged(int value);
-    void on_slider_gamma_valueChanged(int value);
-    void on_slider_contrastRatio_valueChanged(int value);
+    void on_slider_gamma_valueChanged(int position);
+    void on_slider_contrastRatio_sliderMoved(int position);
     void on_checkBox_horizontalMirror_stateChanged(int arg1);
     void on_checkBox_verticalMirror_stateChanged(int arg1);
-    void on_slider_acutance_valueChanged(int value);
+    void on_slider_acutance_sliderMoved(int value);
     void on_pushButton_softTrigger_clicked();
     void on_comboBox_triggerMode_currentIndexChanged(int index);
     void on_comboBox_flashMode_currentIndexChanged(int index);
     void on_comboBox_flashPolarity_currentIndexChanged(int index);
     void on_comboBox_resolution_currentIndexChanged(int index);
-    void on_MainWindow_cameraParamsUpdate();
-
 
     void on_pushButton_resetParams_clicked();
 
@@ -75,6 +75,25 @@ private slots:
     void on_pushButton_saveParams_clicked();
 
     void on_comboBox_params_activated(int index);
+
+    void on_actionTop_triggered();
+
+    void on_tabWidget_params_currentChanged(int index);
+
+    void on_checkBox_monochrome_stateChanged(int arg1);
+
+    void on_checkBox_inverse_stateChanged(int arg1);
+
+    void on_comboBox_algorithm_activated(int index);
+
+    void on_comboBox_colorTemrature_activated(int index);
+
+    void on_comboBox_lutMode_currentIndexChanged(int index);
+
+    void on_comboBox_lutPreset_currentIndexChanged(int index);
+
+    void on_comboBox_lutColorChannel_currentIndexChanged(int index);
+
 
 private:
     Ui::MainWindow *ui;

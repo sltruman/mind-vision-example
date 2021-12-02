@@ -53,14 +53,21 @@ public:
     QStringList whiteBalance();
     void whiteBalanceMode(int index);
     void onceWhiteBalance();
-    void r(int value);
-    void g(int value);
-    void b(int value);
+    void rgb(int r,int g,int b);
     void saturation(int value);
+    void monochrome(int enable);
+    void inverse(int enable);
+    void algorithm(int index);
+    void colorTemrature(int index);
 
-    QStringList lookupTables();
+    QString lookupTableMode();
+    void lookupTableMode(int index);
+    QStringList lookupTablesForDynamic();
     void gamma(int value);
     void contrastRatio(int value);
+    QStringList lookupTablesForPreset();
+    QStringList lookupTablesForCustom(int index);
+    void lookupTablePreset(int index);
 
     QStringList resolutions();
     void resolution();
