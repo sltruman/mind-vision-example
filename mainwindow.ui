@@ -1102,7 +1102,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>7</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -1711,6 +1711,9 @@
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_lutCustom">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="title">
            <string>Custom</string>
           </property>
@@ -1775,7 +1778,7 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>172</height>
+               <height>0</height>
               </size>
              </property>
             </widget>
@@ -1849,7 +1852,7 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_22">
            <item>
-            <widget class="QCheckBox" name="checkBox_horizontalMirror_2">
+            <widget class="QCheckBox" name="checkBox_noise">
              <property name="text">
               <string>2D</string>
              </property>
@@ -1866,7 +1869,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox_2">
+            <widget class="QComboBox" name="comboBox_noise3D">
              <item>
               <property name="text">
                <string>Disable</string>
@@ -1919,7 +1922,7 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_33">
            <item>
-            <widget class="QComboBox" name="comboBox_3">
+            <widget class="QComboBox" name="comboBox_rotate">
              <item>
               <property name="text">
                <string>Disable</string>
@@ -1947,12 +1950,15 @@
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_24">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="title">
            <string>Anamorphose Correct</string>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_38">
            <item>
-            <widget class="QCheckBox" name="checkBox_horizontalMirror_3">
+            <widget class="QCheckBox" name="checkBox_anamorphose">
              <property name="text">
               <string>Enable</string>
              </property>
@@ -1960,6 +1966,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_3">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Edit</string>
              </property>
@@ -1970,6 +1979,9 @@
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_25">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="title">
            <string>Color Point</string>
           </property>
@@ -1983,6 +1995,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_4">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Edit</string>
              </property>
@@ -1993,6 +2008,9 @@
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_26">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="title">
            <string>Flat Field Correct</string>
           </property>
@@ -2070,7 +2088,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_33">
            <item>
-            <widget class="QComboBox" name="comboBox_4">
+            <widget class="QComboBox" name="comboBox_frameRateSpeed">
              <item>
               <property name="text">
                <string>Low</string>
@@ -2089,11 +2107,11 @@
         <item>
          <widget class="QGroupBox" name="groupBox_21">
           <property name="title">
-           <string>Frame Frate Limit</string>
+           <string>Frame Rate Limit</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_34">
            <item>
-            <widget class="QSpinBox" name="spinBox"/>
+            <widget class="QSpinBox" name="spinBox_frameRateLimit"/>
            </item>
           </layout>
          </widget>
@@ -2101,7 +2119,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox_22">
           <property name="title">
-           <string>Frame Frate Limit</string>
+           <string>Output Format</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_35">
            <item>
@@ -2180,10 +2198,13 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_31">
            <item>
-            <widget class="QComboBox" name="comboBox_6">
+            <widget class="QComboBox" name="comboBox_resolutionMode">
+             <property name="currentIndex">
+              <number>-1</number>
+             </property>
              <item>
               <property name="text">
-               <string>Defined</string>
+               <string>Presest</string>
               </property>
              </item>
              <item>
@@ -2197,9 +2218,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_4">
+         <widget class="QGroupBox" name="groupBox_resolutionPreset">
           <property name="title">
-           <string>Defined</string>
+           <string>Preset</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_24">
            <item>
@@ -2209,20 +2230,20 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_28">
+         <widget class="QGroupBox" name="groupBox_resolutionCustom">
           <property name="title">
            <string>Costom</string>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_41">
            <item>
-            <widget class="QSpinBox" name="spinBox_3">
+            <widget class="QSpinBox" name="spinBox_resolutionX">
              <property name="prefix">
               <string>x:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="spinBox_2">
+            <widget class="QSpinBox" name="spinBox_resolutionY">
              <property name="prefix">
               <string>y:</string>
              </property>
@@ -2247,6 +2268,9 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tab_8">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <attribute name="title">
         <string>IO</string>
        </attribute>
@@ -2340,7 +2364,7 @@
           <item>
            <widget class="QLabel" name="label_22">
             <property name="text">
-             <string>In2:</string>
+             <string>In3:</string>
             </property>
            </widget>
           </item>
@@ -2672,7 +2696,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_7">
+              <widget class="QSpinBox" name="spinBox_frameCount">
                <property name="minimum">
                 <number>1</number>
                </property>
@@ -2690,7 +2714,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_9"/>
+              <widget class="QSpinBox" name="spinBox_delay"/>
              </item>
             </layout>
            </item>
@@ -2704,7 +2728,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_10"/>
+              <widget class="QSpinBox" name="spinBox_interval"/>
              </item>
             </layout>
            </item>
@@ -2727,7 +2751,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_triggerMode_3">
+              <widget class="QComboBox" name="comboBox_outsideTriggerMode">
                <property name="currentIndex">
                 <number>0</number>
                </property>
@@ -2765,7 +2789,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_11"/>
+              <widget class="QSpinBox" name="spinBox_debounce"/>
              </item>
             </layout>
            </item>
@@ -2779,7 +2803,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_triggerMode_4">
+              <widget class="QComboBox" name="comboBox_shutter">
                <property name="currentIndex">
                 <number>0</number>
                </property>

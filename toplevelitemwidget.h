@@ -69,14 +69,22 @@ public:
     QStringList lookupTablesForCustom(int index);
     void lookupTablePreset(int index);
 
-    QStringList resolutions();
-    void resolution();
-    void resolution(int value);
-
     QStringList isp();
     void horizontalMirror(int value);
     void verticalMirror(int value);
     void acutance(int value);
+    void noise(int enable);
+    void noise3d(int enable,int value);
+    void rotate(int value);
+
+    QStringList video();
+    void frameRateSpeed(int index);
+    void frameRateLimit(int value);
+
+    QString resolutionMode();
+    QStringList resolutions();
+    QString resolution();
+    void resolution(int value);
 
     QStringList controls();
     void triggerMode(int);

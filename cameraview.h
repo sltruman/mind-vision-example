@@ -21,8 +21,9 @@ public:
     ~CameraView();
 
     void play();
+    void pause();
     void stop();
-    bool playing();
+    bool playing;
 
     QProcess* camera;
     QString pipeName;

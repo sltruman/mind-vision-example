@@ -80,9 +80,9 @@ private slots:
 
     void on_tabWidget_params_currentChanged(int index);
 
-    void on_checkBox_monochrome_stateChanged(int arg1);
+    void on_checkBox_monochrome_clicked(bool checked);
 
-    void on_checkBox_inverse_stateChanged(int arg1);
+    void on_checkBox_inverse_clicked(bool checked);
 
     void on_comboBox_algorithm_activated(int index);
 
@@ -94,6 +94,18 @@ private slots:
 
     void on_comboBox_lutColorChannel_currentIndexChanged(int index);
 
+
+    void on_checkBox_noise_clicked(bool checked);
+
+    void on_comboBox_noise3D_activated(int index);
+
+    void on_comboBox_rotate_activated(int index);
+
+    void on_comboBox_frameRate_activated(int index);
+
+    void on_spinBox_frameRateLimit_editingFinished();
+
+    void on_comboBox_resolutionMode_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;

@@ -74,7 +74,7 @@ void TopLevelItemWidget::statusUpdate() {
             continue;
         }
 
-        if(deviceItem->cameraView->playing()) deviceItem->setIcon(0,QIcon(":/theme/icon/playing.png"));
+        if(deviceItem->cameraView->playing) deviceItem->setIcon(0,QIcon(":/theme/icon/playing.png"));
         else deviceItem->setIcon(0,QIcon(":/theme/icon/stopped.png"));
     }
 }
@@ -112,6 +112,7 @@ bool DeviceItem::open() {
     auto s = camera.readAll();
     cout << s.data();
     auto res = s.split(' ');
+    cameraView->camera = &camera;
     cameraView->pipeName = cameraName;
     if(res[0] == "True")
         cameraView->play();
@@ -312,23 +313,34 @@ void DeviceItem::lookupTablePreset(int index) {
     auto res = QString(camera.readAll()).split(' ');
 }
 
+QString DeviceItem::resolutionMode() {
+    cout << "resolutions " << endl;
+    camera.write("resolutions\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    return res[1];
+}
+
 QStringList DeviceItem::resolutions() {
     cout << "resolutions " << endl;
     camera.write("resolutions\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readAll();
     cout << s.data();
-    auto res = QString(s).split('\n');
-    res.removeLast();
-
-    snapshotDialog.resolutions(res);
-    return res;
+    auto res = QString(s).split(' ');
+    return res[2].split(',');
 }
 
-void DeviceItem::resolution() {
-    camera.write("resolution-get\n");
+QString DeviceItem::resolution() {
+    cout << "resolutions " << endl;
+    camera.write("resolutions\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    return res[3];
 }
 
 void DeviceItem::resolution(int index) {
@@ -338,8 +350,8 @@ void DeviceItem::resolution(int index) {
 }
 
 QStringList DeviceItem::isp(){
-    cout << "isp " << endl;
-    camera.write("isp\n");
+    cout << "transform " << endl;
+    camera.write("transform\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readAll();
     cout << s.data();
@@ -363,6 +375,48 @@ void DeviceItem::verticalMirror(int value){
 
 void DeviceItem::acutance(int value){
     camera.write(QString("acutance-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::noise(int enable) {
+    camera.write(QString("noise-set %1\n").arg(enable).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::noise3d(int enable,int value) {
+    camera.write(QString("noise3d-set %1 %2\n").arg(enable).arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::rotate(int value) {
+    camera.write(QString("rotate-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+QStringList DeviceItem::video() {
+    cout << "video " << endl;
+    camera.write("video\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    if(res[0] != "True") throw runtime_error("");
+    res.removeFirst();
+    return res;
+}
+
+void DeviceItem::frameRateSpeed(int index) {
+    camera.write(QString("frame-rate-speed-set %1\n").arg(index).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::frameRateLimit(int value) {
+    camera.write(QString("frame-rate-limit-set %1\n").arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }

@@ -13,7 +13,7 @@ using std::cout;
 CameraView::CameraView(QWidget *parent) :
     QGraphicsView(parent),
     ui(new Ui::CameraView),
-    currentScale(0.99f),displayFPS(0),frames(0)
+    currentScale(0.99f),displayFPS(0),frames(0),playing(false)
 {
     ui->setupUi(this);
     setScene(new QGraphicsScene(this));
@@ -36,27 +36,36 @@ void CameraView::leaveEvent(QEvent *event) {
 //    ui->pushButton_close->hide();
 }
 
-bool CameraView::playing() {
-    return QLocalSocket::ConnectedState == sock.state();
-}
-
 void CameraView::play() {
     cout << "play " << pipeName.toStdString() << endl;
     sock.connectToServer(pipeName);
+    camera->write("play\n");
+    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
+    auto s = camera->readAll();
+    playing = true;
+}
+
+void CameraView::pause() {
+    cout << "pause " << sock.serverName().toStdString() << endl;
+    camera->write("pause\n");
+    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
+    auto s = camera->readAll();
+    playing = false;
 }
 
 void CameraView::stop() {
     cout << "stop " << sock.serverName().toStdString() << endl;
-    scene()->clear();
-    background = scene()->addPixmap(QPixmap(0,0));
+    camera->write("stop\n");
+    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
+    auto s = camera->readAll();
     sock.disconnectFromServer();
+    playing = false;
 }
 
 void CameraView::process() {
     static auto tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
 
     if (QLocalSocket::ConnectedState != sock.state()) {
-        scene()->clear();
         return;
     }
 
