@@ -86,11 +86,22 @@ public:
     QString resolution();
     void resolution(int value);
 
+    QStringList io();
+    void ioMode(QString type,int index,int value);
+    void ioState(QString type,int index,int value);
+
     QStringList controls();
     void triggerMode(int);
     void onceSoftTrigger();
+    void triggerFrames(int);
+    void triggerDelay(int);
+    void triggerInterval(int);
+    void outsideTriggerMode(int);
+    void outsideTriggerDebounce(int);
     void flashMode(int);
     void flashPolarity(int);
+    void strobeDelay(int);
+    void strobePulse(int);
 
     void paramsReset();
     void paramsSave(int value);

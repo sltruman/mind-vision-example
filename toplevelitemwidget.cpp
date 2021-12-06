@@ -421,16 +421,41 @@ void DeviceItem::frameRateLimit(int value) {
     auto res = QString(camera.readAll()).split(' ');
 }
 
+QStringList DeviceItem::io() {
+    cout << "io " << endl;
+    camera.write(QString("io\n").toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split("\r\n");
+    if(res[0] != "True") throw runtime_error("");
+    res.removeFirst();
+    res.removeLast();
+    return res;
+}
+
+void DeviceItem::ioMode(QString type,int index,int value) {
+    cout << "io-mode-set " <<  type.toLocal8Bit().data() << ' ' << index << ' ' << value << endl;
+    camera.write(QString("io-mode-set %1 %2 %3\n").arg(type).arg(index).arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+}
+
+void DeviceItem::ioState(QString type,int index,int value) {
+    cout << "io-state-set " <<  type.toLocal8Bit().data() << ' ' << index << ' ' << value << endl;
+    camera.write(QString("io-state-set %1 %2 %3\n").arg(type).arg(index).arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+}
+
 QStringList DeviceItem::controls() {
     cout << "controls " << endl;
     camera.write(QString("controls\n").toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
-    cout << s.data();
-    auto res = QString(s).split(' ');
-    if(res[0] != "True") throw runtime_error("");
-    res.removeFirst();
-    return res;
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
+    auto res = camera.readLine();
+    cout << res.data();
+    return QString(res).split(',');
 }
 
 void DeviceItem::triggerMode(int value) {
@@ -438,15 +463,42 @@ void DeviceItem::triggerMode(int value) {
     camera.write(QString("trigger-mode-set %1\n").arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readAll();
-    cout << s.data();
-    auto res = QString(s).split(' ');
-    if(res[0] != "True") throw runtime_error("");
 }
 
 void DeviceItem::onceSoftTrigger() {
     camera.write("once-soft-trigger\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::triggerFrames(int value) {
+    camera.write(QString("trigger-frames-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
+}
+
+void DeviceItem::triggerDelay(int value) {
+    camera.write(QString("trigger-delay-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
+}
+
+void DeviceItem::triggerInterval(int value) {
+    camera.write(QString("trigger-interval-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
+}
+
+void DeviceItem::outsideTriggerMode(int value) {
+    camera.write(QString("outside-trigger-mode-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
+}
+
+void DeviceItem::outsideTriggerDebounce(int value) {
+    camera.write(QString("outside-trigger-debounce-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
 }
 
 void DeviceItem::flashMode(int value) {
@@ -457,6 +509,18 @@ void DeviceItem::flashMode(int value) {
 
 void DeviceItem::flashPolarity(int value) {
     camera.write(QString("flash-polarity-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::strobeDelay(int value) {
+    camera.write(QString("flash-delay-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::strobePulse(int value) {
+    camera.write(QString("flash-pulse-set %1\n").arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }

@@ -465,51 +465,6 @@ void MainWindow::on_slider_acutance_sliderMoved(int value)
     deviceItem->acutance(value);
 }
 
-void MainWindow::on_comboBox_triggerMode_currentIndexChanged(int index)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    if(index<2) {
-        ui->groupBox_flash->hide();
-    } else {
-        ui->groupBox_flash->show();
-    }
-
-    deviceItem->triggerMode(index);
-}
-
-void MainWindow::on_pushButton_softTrigger_clicked()
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->onceSoftTrigger();
-}
-
-void MainWindow::on_comboBox_flashMode_currentIndexChanged(int index)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    if(index) {
-        ui->label_flashPolarity->hide();
-        ui->comboBox_flashPolarity->hide();
-    } else {
-        ui->label_flashPolarity->show();
-        ui->comboBox_flashPolarity->show();
-    }
-
-    deviceItem->flashMode(index);
-}
-
-void MainWindow::on_comboBox_flashPolarity_currentIndexChanged(int index)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->flashPolarity(index);
-}
 
 void MainWindow::on_pushButton_resetParams_clicked()
 {
@@ -624,11 +579,41 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             auto resolutionMode = deviceItem->resolutionMode();
             ui->comboBox_resolutionMode->setCurrentIndex(resolutionMode.toUInt());
         } else if(index == 6) {
+            auto i=0,j=0;
+            auto io = deviceItem->io();
+            for(auto line : io) {
+                auto columns = line.split(',');
+                auto type = columns[0];
+                auto mode = columns[1].toUInt();
+                auto state = columns[2].toUInt();
+
+                if(type == "Input"){
+                    auto comboBox_ioMode = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_ioMode%1").arg(i));
+                    comboBox_ioMode->setCurrentIndex(mode ? 1 : 0);
+                    auto comboBox_ioState = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_ioState%1").arg(i));
+                    comboBox_ioState->setCurrentIndex(state);
+                    i++;
+                } else {
+                    auto comboBox_outputIoMode = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_outputIoMode%1").arg(j));
+                    comboBox_outputIoMode->setCurrentIndex(mode == 1 ? 0 : 1);
+                    auto comboBox_outputIoState = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_outputIoState%1").arg(j));
+                    comboBox_outputIoState->setCurrentIndex(state);
+                    j++;
+                }
+            }
         } else if(index == 7) {
             auto controls= deviceItem->controls();
             ui->comboBox_triggerMode->setCurrentIndex(controls[0].toUInt());
-            ui->comboBox_flashMode->setCurrentIndex(controls[1].toUInt());
-            ui->comboBox_flashPolarity->setCurrentIndex(controls[2].toUInt());
+            ui->spinBox_frameCount->setValue(controls[1].toUInt());
+            ui->spinBox_delay->setValue(controls[2].toUInt());
+            ui->spinBox_interval->setValue(controls[3].toUInt());
+            ui->comboBox_outsideTriggerMode->setCurrentIndex(controls[4].toUInt());
+            ui->spinBox_debounce->setValue(controls[5].toUInt());
+
+            ui->comboBox_flashMode->setCurrentIndex(controls[6].toUInt());
+            ui->comboBox_flashPolarity->setCurrentIndex(controls[7].toUInt());
+            ui->spinBox_strobeDelay->setValue(controls[8].toUInt());
+            ui->spinBox_strobePulse->setValue(controls[9].toUInt());
         }
     } catch(...) {
         cout << "Failed to sync camera's params!" << endl;
@@ -760,7 +745,7 @@ void MainWindow::on_comboBox_rotate_activated(int index)
     deviceItem->rotate(index);
 }
 
-void MainWindow::on_comboBox_frameRate_activated(int index)
+void MainWindow::on_comboBox_frameRateSpeed_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
@@ -793,3 +778,230 @@ void MainWindow::on_comboBox_resolutionMode_currentIndexChanged(int index)
     }
 }
 
+
+void MainWindow::on_comboBox_ioMode0_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioMode("Input",0,index ? 0 : 2);
+}
+
+void MainWindow::on_comboBox_ioState0_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->ioState("Input",0,index);
+}
+
+void MainWindow::on_comboBox_ioMode1_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioMode("Input",1,index ? 0 : 2);
+}
+
+void MainWindow::on_comboBox_ioState1_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->ioState("Input",1,index);
+}
+
+void MainWindow::on_comboBox_ioMode2_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioMode("Input",2,index ? 0 : 2);
+}
+
+void MainWindow::on_comboBox_ioState2_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioState("Input",2,index);
+}
+
+void MainWindow::on_comboBox_outputIoMode0_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioMode("Output",0,index ? 0 : 2);
+}
+
+void MainWindow::on_comboBox_outputIoState0_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioState("Output",0,index);
+}
+
+void MainWindow::on_comboBox_outputIoMode1_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioMode("Output",1,index ? 0 : 2);
+}
+
+void MainWindow::on_comboBox_outputIoState1_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioState("Output",1,index);
+}
+
+void MainWindow::on_comboBox_outputIoMode2_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioMode("Output",2,index ? 0 : 2);
+}
+
+void MainWindow::on_comboBox_outputIoState2_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioState("Output",2,index);
+}
+
+void MainWindow::on_comboBox_outputIoMode3_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioMode("Output",3,index ? 0 : 2);
+}
+
+void MainWindow::on_comboBox_outputIoState3_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioState("Output",3,index);
+}
+void MainWindow::on_comboBox_outputIoMode4_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioMode("Output",3,index ? 0 : 2);
+}
+
+void MainWindow::on_comboBox_outputIoState4_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->ioState("Output",3,index);
+}
+
+void MainWindow::on_comboBox_triggerMode_currentIndexChanged(int index)
+{
+    ui->groupBox_trigger->hide();
+    ui->groupBox_outsideTrigger->hide();
+    ui->groupBox_strobe->hide();
+
+    if(index > 0) {
+        ui->groupBox_trigger->show();
+    }
+
+    if(index > 1) {
+        ui->groupBox_outsideTrigger->show();
+        ui->groupBox_strobe->show();
+    }
+}
+
+void MainWindow::on_comboBox_triggerMode_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->triggerMode(index);
+}
+
+void MainWindow::on_pushButton_softTrigger_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->onceSoftTrigger();
+}
+
+void MainWindow::on_spinBox_frameCount_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->triggerFrames(ui->spinBox_frameCount->value());
+}
+
+void MainWindow::on_spinBox_delay_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->triggerDelay(ui->spinBox_delay->value());
+}
+
+void MainWindow::on_spinBox_interval_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->triggerInterval(ui->spinBox_interval->value());
+}
+
+void MainWindow::on_comboBox_outsideTriggerMode_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->outsideTriggerMode(index);
+}
+
+void MainWindow::on_spinBox_debounce_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->outsideTriggerDebounce(ui->spinBox_debounce->value());
+}
+
+void MainWindow::on_comboBox_flashMode_currentIndexChanged(int index)
+{
+    if(index) {
+        ui->label_flashPolarity->hide();
+        ui->comboBox_flashPolarity->hide();
+    } else {
+        ui->label_flashPolarity->show();
+        ui->comboBox_flashPolarity->show();
+    }
+}
+
+void MainWindow::on_comboBox_flashMode_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    deviceItem->flashMode(index);
+}
+
+void MainWindow::on_comboBox_flashPolarity_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->flashPolarity(index);
+}
+
+void MainWindow::on_spinBox_strobeDelay_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->strobeDelay(ui->spinBox_strobeDelay->value());
+}
+
+void MainWindow::on_spinBox_strobePulse_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->strobePulse(ui->spinBox_strobePulse->value());
+}

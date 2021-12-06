@@ -62,50 +62,60 @@ private slots:
     void on_checkBox_horizontalMirror_stateChanged(int arg1);
     void on_checkBox_verticalMirror_stateChanged(int arg1);
     void on_slider_acutance_sliderMoved(int value);
-    void on_pushButton_softTrigger_clicked();
-    void on_comboBox_triggerMode_currentIndexChanged(int index);
-    void on_comboBox_flashMode_currentIndexChanged(int index);
-    void on_comboBox_flashPolarity_currentIndexChanged(int index);
+
     void on_comboBox_resolution_currentIndexChanged(int index);
-
     void on_pushButton_resetParams_clicked();
-
     void on_pushButton_loadParamsFromFile_clicked();
-
     void on_pushButton_saveParams_clicked();
-
     void on_comboBox_params_activated(int index);
-
     void on_actionTop_triggered();
-
     void on_tabWidget_params_currentChanged(int index);
-
     void on_checkBox_monochrome_clicked(bool checked);
-
     void on_checkBox_inverse_clicked(bool checked);
-
     void on_comboBox_algorithm_activated(int index);
-
     void on_comboBox_colorTemrature_activated(int index);
-
     void on_comboBox_lutMode_currentIndexChanged(int index);
-
     void on_comboBox_lutPreset_currentIndexChanged(int index);
-
     void on_comboBox_lutColorChannel_currentIndexChanged(int index);
-
-
     void on_checkBox_noise_clicked(bool checked);
-
     void on_comboBox_noise3D_activated(int index);
-
     void on_comboBox_rotate_activated(int index);
-
-    void on_comboBox_frameRate_activated(int index);
-
+    void on_comboBox_frameRateSpeed_activated(int index);
     void on_spinBox_frameRateLimit_editingFinished();
-
     void on_comboBox_resolutionMode_currentIndexChanged(int index);
+    void on_comboBox_ioMode0_activated(int index);
+    void on_comboBox_ioState0_activated(int index);
+    void on_comboBox_ioMode1_activated(int index);
+    void on_comboBox_ioState1_activated(int index);
+    void on_comboBox_ioMode2_activated(int index);
+    void on_comboBox_ioState2_activated(int index);
+    void on_comboBox_outputIoMode0_activated(int index);
+    void on_comboBox_outputIoState0_activated(int index);
+    void on_comboBox_outputIoMode1_activated(int index);
+    void on_comboBox_outputIoState1_activated(int index);
+    void on_comboBox_outputIoMode2_activated(int index);
+    void on_comboBox_outputIoState2_activated(int index);
+    void on_comboBox_outputIoMode3_activated(int index);
+    void on_comboBox_outputIoState3_activated(int index);
+    void on_comboBox_outputIoMode4_activated(int index);
+    void on_comboBox_outputIoState4_activated(int index);
+
+    void on_comboBox_triggerMode_currentIndexChanged(int index);
+    void on_comboBox_triggerMode_activated(int index);
+    void on_pushButton_softTrigger_clicked();
+    void on_spinBox_frameCount_editingFinished();
+    void on_spinBox_delay_editingFinished();
+    void on_spinBox_interval_editingFinished();
+    void on_comboBox_outsideTriggerMode_activated(int index);
+    void on_spinBox_debounce_editingFinished();
+    void on_comboBox_flashMode_currentIndexChanged(int index);
+    void on_comboBox_flashMode_activated(int index);
+    void on_comboBox_flashPolarity_activated(int index);
+
+
+    void on_spinBox_strobeDelay_editingFinished();
+
+    void on_spinBox_strobePulse_editingFinished();
 
 private:
     Ui::MainWindow *ui;
