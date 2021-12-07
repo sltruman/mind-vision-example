@@ -1,12 +1,13 @@
 ﻿#ifndef CAMERAVIEW_H
 #define CAMERAVIEW_H
 
+#include <QMap>
 #include <QGraphicsView>
 #include <QProcess>
 #include <QLocalSocket>
 #include <QTimer>
 #include <QGraphicsPixmapItem>
-
+#include <tuple>
 
 namespace Ui {
 class CameraView;
@@ -31,6 +32,7 @@ public:
     float currentScale;
     int displayFPS;
     unsigned long long frames;
+    QMap<int,std::tuple<int,int,QPen>> lines;
 
 protected:
     void enterEvent(QEvent *event) override;

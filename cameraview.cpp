@@ -73,7 +73,7 @@ void CameraView::process() {
     sock.waitForBytesWritten();
 
     while(sock.bytesAvailable() == 0) {
-        sock.waitForReadyRead(100);
+        sock.waitForReadyRead(10);
         QApplication::processEvents();
         if (QLocalSocket::ConnectedState != sock.state()) return;
     }
@@ -86,8 +86,9 @@ void CameraView::process() {
     rgbBuffer.resize(length);
 
     sock.write("frame\n");
+
     while(sock.bytesAvailable() < length) {
-        sock.waitForReadyRead(100);
+        sock.waitForReadyRead(10);
         QApplication::processEvents();
 
         if (QLocalSocket::ConnectedState != sock.state()) return;
@@ -104,8 +105,16 @@ void CameraView::process() {
 
     scene()->clear();
     background = scene()->addPixmap(QPixmap::fromImage(img));
-    setSceneRect(0,0,w,h);
 
+    for(auto line : lines) {
+        auto x = std::get<0>(line);
+        auto y = std::get<1>(line);
+        auto pen = std::get<2>(line);
+        scene()->addLine(x,0,x,h,pen);
+        scene()->addLine(0,y,w,y,pen);
+    }
+
+    setSceneRect(0,0,w,h);
     resetTransform();
 
     auto sw = width() / float(w);

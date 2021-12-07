@@ -12,6 +12,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QDateTime>
+#include <QColorDialog>
 
 #include <iostream>
 using namespace std;
@@ -1004,4 +1005,139 @@ void MainWindow::on_spinBox_strobePulse_editingFinished()
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     deviceItem->strobePulse(ui->spinBox_strobePulse->value());
+}
+
+void MainWindow::on_checkBox_line1_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x1->value();
+        auto lineY = ui->spinBox_y1->value();
+        auto pen = QPen(QColor(255,0,0));
+        deviceItem->cameraView->lines.insert(0,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(0);
+    }
+}
+
+void MainWindow::on_checkBox_line2_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x2->value();
+        auto lineY = ui->spinBox_y2->value();
+        auto pen = QPen(QColor(0,255,0));
+        deviceItem->cameraView->lines.insert(1,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(1);
+    }
+}
+
+void MainWindow::on_checkBox_line3_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x3->value();
+        auto lineY = ui->spinBox_y3->value();
+        auto pen = QPen(QColor(0,0,255));
+        deviceItem->cameraView->lines.insert(2,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(2);
+    }
+}
+
+void MainWindow::on_checkBox_line4_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x4->value();
+        auto lineY = ui->spinBox_y4->value();
+        auto pen = QPen(QColor(255,255,0));
+        deviceItem->cameraView->lines.insert(3,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(3);
+    }
+}
+
+void MainWindow::on_checkBox_line5_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x5->value();
+        auto lineY = ui->spinBox_y5->value();
+        auto pen = QPen(QColor(255,0,255));
+        deviceItem->cameraView->lines.insert(4,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(4);
+    }
+}
+
+void MainWindow::on_checkBox_line6_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x6->value();
+        auto lineY = ui->spinBox_y6->value();
+        auto pen = QPen(QColor(85,255,255));
+        deviceItem->cameraView->lines.insert(5,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(5);
+    }
+}
+
+void MainWindow::on_checkBox_line7_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x7->value();
+        auto lineY = ui->spinBox_y7->value();
+        auto pen = QPen(QColor(170, 85, 0));
+        deviceItem->cameraView->lines.insert(6,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(6);
+    }
+}
+
+void MainWindow::on_checkBox_line8_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x8->value();
+        auto lineY = ui->spinBox_y8->value();
+        auto pen = QPen(QColor(85, 0, 127));
+        deviceItem->cameraView->lines.insert(7,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(7);
+    }
+}
+
+void MainWindow::on_checkBox_line9_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    if(arg1) {
+        auto lineX = ui->spinBox_x9->value();
+        auto lineY = ui->spinBox_y9->value();
+        auto pen = QPen(QColor(85, 85, 127));
+        deviceItem->cameraView->lines.insert(8,std::make_tuple(lineX,lineY,pen));
+    } else {
+        deviceItem->cameraView->lines.remove(8);
+    }
 }

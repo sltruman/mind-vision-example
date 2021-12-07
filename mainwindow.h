@@ -111,11 +111,18 @@ private slots:
     void on_comboBox_flashMode_currentIndexChanged(int index);
     void on_comboBox_flashMode_activated(int index);
     void on_comboBox_flashPolarity_activated(int index);
-
-
     void on_spinBox_strobeDelay_editingFinished();
-
     void on_spinBox_strobePulse_editingFinished();
+
+    void on_checkBox_line1_stateChanged(int arg1);
+    void on_checkBox_line2_stateChanged(int arg1);
+    void on_checkBox_line3_stateChanged(int arg1);
+    void on_checkBox_line4_stateChanged(int arg1);
+    void on_checkBox_line5_stateChanged(int arg1);
+    void on_checkBox_line6_stateChanged(int arg1);
+    void on_checkBox_line7_stateChanged(int arg1);
+    void on_checkBox_line8_stateChanged(int arg1);
+    void on_checkBox_line9_stateChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;

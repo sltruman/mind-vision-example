@@ -1102,7 +1102,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>7</number>
+       <number>9</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -2269,7 +2269,7 @@
       </widget>
       <widget class="QWidget" name="tab_8">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <attribute name="title">
         <string>IO</string>
@@ -2285,7 +2285,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_13">
+           <widget class="QComboBox" name="comboBox_ioMode0">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Trigger</string>
@@ -2299,10 +2302,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_16"/>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_19">
+           <widget class="QComboBox" name="comboBox_ioState0">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Low</string>
@@ -2327,7 +2330,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_14">
+           <widget class="QComboBox" name="comboBox_ioMode1">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Trigger</string>
@@ -2341,10 +2347,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_17"/>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_20">
+           <widget class="QComboBox" name="comboBox_ioState1">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Low</string>
@@ -2369,7 +2375,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_15">
+           <widget class="QComboBox" name="comboBox_ioMode2">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Trigger</string>
@@ -2383,10 +2392,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_18"/>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_21">
+           <widget class="QComboBox" name="comboBox_ioState2">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Low</string>
@@ -2411,24 +2420,27 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_22">
+           <widget class="QComboBox" name="comboBox_outputIoMode0">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
-              <string>Trigger</string>
+              <string>Flash</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Input</string>
+              <string>Output</string>
              </property>
             </item>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_23"/>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_24">
+           <widget class="QComboBox" name="comboBox_outputIoState0">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Low</string>
@@ -2453,24 +2465,27 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_25">
+           <widget class="QComboBox" name="comboBox_outputIoMode1">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
-              <string>Trigger</string>
+              <string>Flash</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Input</string>
+              <string>Output</string>
              </property>
             </item>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_26"/>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_27">
+           <widget class="QComboBox" name="comboBox_outputIoState1">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Low</string>
@@ -2495,24 +2510,27 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_28">
+           <widget class="QComboBox" name="comboBox_outputIoMode2">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
-              <string>Trigger</string>
+              <string>Flash</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Input</string>
+              <string>Output</string>
              </property>
             </item>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_29"/>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_30">
+           <widget class="QComboBox" name="comboBox_outputIoState2">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Low</string>
@@ -2537,24 +2555,27 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_31">
+           <widget class="QComboBox" name="comboBox_outputIoMode3">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
-              <string>Trigger</string>
+              <string>Flash</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Input</string>
+              <string>Output</string>
              </property>
             </item>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_32"/>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_33">
+           <widget class="QComboBox" name="comboBox_outputIoState3">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Low</string>
@@ -2579,24 +2600,27 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_34">
+           <widget class="QComboBox" name="comboBox_outputIoMode4">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
-              <string>Trigger</string>
+              <string>Flash</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Input</string>
+              <string>Output</string>
              </property>
             </item>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_35"/>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_36">
+           <widget class="QComboBox" name="comboBox_outputIoState4">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
             <item>
              <property name="text">
               <string>Low</string>
@@ -2681,7 +2705,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_57">
+         <widget class="QGroupBox" name="groupBox_trigger">
           <property name="title">
            <string>Trigger Params</string>
           </property>
@@ -2714,7 +2738,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_delay"/>
+              <widget class="QSpinBox" name="spinBox_delay">
+               <property name="maximum">
+                <number>999999</number>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -2728,7 +2756,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_interval"/>
+              <widget class="QSpinBox" name="spinBox_interval">
+               <property name="maximum">
+                <number>99999</number>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -2736,7 +2768,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_58">
+         <widget class="QGroupBox" name="groupBox_outsideTrigger">
           <property name="title">
            <string>Outside Trigger Params</string>
           </property>
@@ -2746,14 +2778,14 @@
              <item>
               <widget class="QLabel" name="label_64">
                <property name="text">
-                <string>TriggerMode</string>
+                <string>Mode</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QComboBox" name="comboBox_outsideTriggerMode">
                <property name="currentIndex">
-                <number>0</number>
+                <number>-1</number>
                </property>
                <item>
                 <property name="text">
@@ -2789,29 +2821,10 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_debounce"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_96">
-             <item>
-              <widget class="QLabel" name="label_65">
-               <property name="text">
-                <string>Shutter</string>
+              <widget class="QSpinBox" name="spinBox_debounce">
+               <property name="maximum">
+                <number>99999</number>
                </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_shutter">
-               <property name="currentIndex">
-                <number>0</number>
-               </property>
-               <item>
-                <property name="text">
-                 <string>Standard</string>
-                </property>
-               </item>
               </widget>
              </item>
             </layout>
@@ -2820,9 +2833,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_flash">
+         <widget class="QGroupBox" name="groupBox_strobe">
           <property name="title">
-           <string>Flash</string>
+           <string>Strobe</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_15">
            <item>
@@ -2881,6 +2894,42 @@
              </item>
             </layout>
            </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_98">
+             <item>
+              <widget class="QLabel" name="label_66">
+               <property name="text">
+                <string>Delay(us)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="spinBox_strobeDelay">
+               <property name="maximum">
+                <number>99999</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_99">
+             <item>
+              <widget class="QLabel" name="label_67">
+               <property name="text">
+                <string>Pulse Wide(us)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="spinBox_strobePulse">
+               <property name="maximum">
+                <number>999999</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
           </layout>
          </widget>
         </item>
@@ -2907,7 +2956,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_97">
           <item>
-           <widget class="QCheckBox" name="checkBox_5">
+           <widget class="QCheckBox" name="checkBox_line1">
             <property name="layoutDirection">
              <enum>Qt::RightToLeft</enum>
             </property>
@@ -2917,21 +2966,382 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="spinBox_8">
+           <widget class="QSpinBox" name="spinBox_x1">
             <property name="prefix">
              <string>x:</string>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="spinBox_12">
-            <property name="prefix">
-             <string>y:</string>
+            <property name="maximum">
+             <number>500000</number>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_17">
+           <widget class="QSpinBox" name="spinBox_y1">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_color0">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 0, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_100">
+          <item>
+           <widget class="QCheckBox" name="checkBox_line2">
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>line2</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_x2">
+            <property name="prefix">
+             <string>x:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_y2">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_18">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0, 255, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_101">
+          <item>
+           <widget class="QCheckBox" name="checkBox_line3">
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>line3</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_x3">
+            <property name="prefix">
+             <string>x:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_y3">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_19">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0, 0, 255);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_102">
+          <item>
+           <widget class="QCheckBox" name="checkBox_line4">
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>line4</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_x4">
+            <property name="prefix">
+             <string>x:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_y4">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_20">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_103">
+          <item>
+           <widget class="QCheckBox" name="checkBox_line5">
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>line5</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_x5">
+            <property name="prefix">
+             <string>x:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_y5">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_21">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 0, 255);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_104">
+          <item>
+           <widget class="QCheckBox" name="checkBox_line6">
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>line6</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_x6">
+            <property name="prefix">
+             <string>x:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_y6">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_22">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(85, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_105">
+          <item>
+           <widget class="QCheckBox" name="checkBox_line17">
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>line7</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_x7">
+            <property name="prefix">
+             <string>x:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_y7">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_23">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(170, 85, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_106">
+          <item>
+           <widget class="QCheckBox" name="checkBox_line8">
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>line8</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_x8">
+            <property name="prefix">
+             <string>x:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_y8">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_24">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(85, 0, 127);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_107">
+          <item>
+           <widget class="QCheckBox" name="checkBox_line9">
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>line9</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_x9">
+            <property name="prefix">
+             <string>x:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_y9">
+            <property name="prefix">
+             <string>y:</string>
+            </property>
+            <property name="maximum">
+             <number>500000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_25">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(85, 85, 127);</string>
+            </property>
             <property name="text">
              <string/>
             </property>
