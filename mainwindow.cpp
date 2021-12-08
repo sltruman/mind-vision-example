@@ -97,6 +97,8 @@ void MainWindow::at_cameraStatusUpdate_timeout()
 
         ui->pushButton_snapshot->setText(deviceItem->snapshotState() ? tr("Stop") : tr("Snapshot"));
         ui->pushButton_snapshot->setCheckable(deviceItem->snapshotState());
+        ui->pushButton_record->setText(deviceItem->recordState() ? tr("Stop") : tr("Record"));
+        ui->pushButton_record->setCheckable(deviceItem->recordState());
     }
 
     switch(ui->tabWidget_preview->currentIndex()) {
@@ -210,16 +212,27 @@ void MainWindow::on_pushButton_snapshot_clicked()
         return;
     }
 
-    if(!deviceItem->snapshotDialog.exec()) return;
-
     cout << "snapshot-start" << endl;
-    deviceItem->snapshotStart(deviceItem->snapshotDialog.dir(),deviceItem->snapshotDialog.resolution(),deviceItem->snapshotDialog.format(),deviceItem->snapshotDialog.period());
+    auto mainMenu = dynamic_cast<MainMenu*>(this->menuWidget());
+    deviceItem->snapshotStart(mainMenu->snapshotDialog.dir(),mainMenu->snapshotDialog.resolution(),mainMenu->snapshotDialog.format(),mainMenu->snapshotDialog.period());
+    emit at_cameraStatusUpdate_timeout();
 }
 
-//void MainWindow::on_pushButton_record_clicked()
-//{
+void MainWindow::on_pushButton_record_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
-//}
+    if(ui->pushButton_record->isChecked()) {
+        cout << "record-state" << endl;
+        deviceItem->recordStop();
+        return;
+    }
+
+    auto mainMenu = dynamic_cast<MainMenu*>(this->menuWidget());
+    deviceItem->recordStart(mainMenu->recordDialog.dir(),mainMenu->recordDialog.format(),mainMenu->recordDialog.quality(),mainMenu->recordDialog.frames());
+    emit at_cameraStatusUpdate_timeout();
+}
 
 //void MainWindow::on_pushButton_customStatus_clicked()
 //{
@@ -236,6 +249,16 @@ void MainWindow::on_pushButton_playOrStop_clicked()
     } else {
         deviceItem->cameraView->play();
     }
+}
+
+void MainWindow::on_pushButton_whiteBalance_clicked()
+{
+    emit ui->pushButton_onceWhiteBalance->clicked();
+}
+
+void MainWindow::on_pushButton_softwareTrigger_clicked()
+{
+    emit ui->pushButton_softTrigger->clicked();
 }
 
 void MainWindow::on_treeWidget_devices_itemSelectionChanged()
@@ -615,6 +638,16 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             ui->comboBox_flashPolarity->setCurrentIndex(controls[7].toUInt());
             ui->spinBox_strobeDelay->setValue(controls[8].toUInt());
             ui->spinBox_strobePulse->setValue(controls[9].toUInt());
+        } else if(index == 8) {
+        } else if(index == 9) {
+            auto firmware= deviceItem->firmware();
+            ui->label_firmware->setText(firmware[0]);
+            ui->label_interface->setText(firmware[1]);
+            ui->label_platform->setText(firmware[2]);
+            ui->label_driver->setText(firmware[3]);
+            ui->label_updatable->setText(firmware[4].toUInt() ? tr("older") : tr("newest"));
+            ui->lineEdit_nickname->setText(firmware[5]);
+            ui->lineEdit_SN->setText(firmware[6]);
         }
     } catch(...) {
         cout << "Failed to sync camera's params!" << endl;
@@ -1140,4 +1173,12 @@ void MainWindow::on_checkBox_line9_stateChanged(int arg1)
     } else {
         deviceItem->cameraView->lines.remove(8);
     }
+}
+
+void MainWindow::on_pushButton_modifyNickname_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->rename(ui->lineEdit_nickname->text());
 }

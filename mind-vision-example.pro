@@ -14,6 +14,7 @@ SOURCES += \
     main.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
+    recorddialog.cpp \
     snapshotdialog.cpp \
     toplevelitemwidget.cpp
 
@@ -22,6 +23,7 @@ HEADERS += \
     cameraview.h \
     mainmenu.h \
     mainwindow.h \
+    recorddialog.h \
     snapshotdialog.h \
     toplevelitemwidget.h
 
@@ -30,6 +32,7 @@ FORMS += \
     cameraview.ui \
     mainmenu.ui \
     mainwindow.ui \
+    recorddialog.ui \
     snapshotdialog.ui \
     toplevelitemwidget.ui
 

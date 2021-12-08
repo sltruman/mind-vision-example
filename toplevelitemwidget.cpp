@@ -525,6 +525,21 @@ void DeviceItem::strobePulse(int value) {
     auto res = QString(camera.readAll()).split(' ');
 }
 
+QStringList DeviceItem::firmware() {
+    camera.write("firmware\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
+    auto res = camera.readLine();
+    cout << res.data();
+    return QString(res).split(',');
+}
+
+void DeviceItem::rename(QString name) {
+    camera.write(QString("rename %1\n").arg(name).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
 void DeviceItem::paramsReset() {
     camera.write("params-reset\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
@@ -581,6 +596,39 @@ bool DeviceItem::snapshotState() {
 
 void DeviceItem::snapshotStop() {
     camera.write("snapshot-stop\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+}
+
+
+void DeviceItem::recordStart(QString dir,int format,int quality,int frames) {
+    cout << "record-start " << dir.toStdString()<< ' ' <<  format << ' ' << quality << ' ' << frames << endl;
+    camera.write(QString("record-start %1 %2 %3 %4\n").arg(dir).arg(format).arg(quality).arg(frames).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+}
+
+bool DeviceItem::recordState() {
+//    cout << "snapshot-state " << endl;
+    if(camera.state() == QProcess::NotRunning) {
+        cout << "False 0" << endl;
+        return false;
+    }
+
+    camera.write("record-state\n");
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+    cout << s.data();
+    auto res = QString(s).split(' ');
+    return res[1] == "1";
+}
+
+void DeviceItem::recordStop() {
+    camera.write("record-stop\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readAll();
     cout << s.data();

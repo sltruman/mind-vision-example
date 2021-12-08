@@ -2,6 +2,7 @@
 #include "ui_snapshotdialog.h"
 
 #include <QStandardPaths>
+#include <QFileDialog>
 
 SnapshotDialog::SnapshotDialog(QWidget *parent) :
     QDialog(parent),
@@ -65,3 +66,7 @@ void SnapshotDialog::on_checkBox_period_stateChanged(int enable)
     ui->spinBox_period->setEnabled(enable);
 }
 
+void SnapshotDialog::on_pushButton_snap_path_clicked()
+{
+    ui->edit_dir->setText(QFileDialog::getExistingDirectory(this,tr("Save Path"),ui->edit_dir->text()));
+}

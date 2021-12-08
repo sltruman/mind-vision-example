@@ -2,7 +2,6 @@
 #define TOPLEVELITEMWIDGET_H
 
 #include "cameraview.h"
-#include "snapshotdialog.h"
 
 #include <QWidget>
 #include <QTreeWidgetItem>
@@ -103,6 +102,8 @@ public:
     void strobeDelay(int);
     void strobePulse(int);
 
+    QStringList firmware();
+    void rename(QString name);
     void paramsReset();
     void paramsSave(int value);
     void paramsLoad(int value);
@@ -112,11 +113,14 @@ public:
     void snapshotStart(QString dir,int resolution,int format,int period);
     bool snapshotState();
     void snapshotStop();
+    void recordStart(QString dir,int format,int quality,int frames);
+    bool recordState();
+    void recordStop();
+
 
     QString cameraName;
     QProcess camera;
     CameraView* cameraView;
-    SnapshotDialog snapshotDialog;
 };
 
 

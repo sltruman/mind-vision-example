@@ -28,6 +28,8 @@ private slots:
 
     void on_checkBox_period_stateChanged(int arg1);
 
+    void on_pushButton_snap_path_clicked();
+
 private:
     Ui::SnapshotDialog *ui;
 };

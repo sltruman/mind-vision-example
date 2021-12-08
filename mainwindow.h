@@ -39,10 +39,12 @@ private slots:
     void on_pushButton_zoomOut_clicked();
     void on_pushButton_zoomFull_clicked();
     void on_pushButton_snapshot_clicked();
-//    void on_pushButton_record_clicked();
+    void on_pushButton_record_clicked();
 //    void on_pushButton_customStatus_clicked();
 //    void on_tabWidget_currentChanged(int index);
     void on_pushButton_playOrStop_clicked();
+    void on_pushButton_whiteBalance_clicked();
+    void on_pushButton_softwareTrigger_clicked();
 //    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_treeWidget_devices_itemSelectionChanged();
     void on_pushButton_onceWhiteBalance_clicked();
@@ -123,6 +125,10 @@ private slots:
     void on_checkBox_line7_stateChanged(int arg1);
     void on_checkBox_line8_stateChanged(int arg1);
     void on_checkBox_line9_stateChanged(int arg1);
+
+
+
+    void on_pushButton_modifyNickname_clicked();
 
 private:
     Ui::MainWindow *ui;

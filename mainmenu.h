@@ -2,6 +2,8 @@
 #define MAINMENU_H
 
 #include "snapshotdialog.h"
+#include "aboutdialog.h"
+#include "recorddialog.h"
 
 #include <QWidget>
 #include <QMouseEvent>
@@ -21,13 +23,13 @@ public:
     explicit MainMenu(QWidget *parent = nullptr);
     ~MainMenu();
 
-
+    SnapshotDialog snapshotDialog;
+    RecordDialog recordDialog;
+    AboutDialog dialog;
 private slots:
     void on_pushButton_close_clicked();
 
     void on_pushButton_language_clicked(bool checked);
-
-    void on_action_snapshotSetting_triggered();
 
     void on_action_ipConfiguration_triggered();
 
@@ -39,6 +41,7 @@ private slots:
 
     void on_action_about_triggered();
 
+    void on_action_snapshotSetting_triggered();
     void on_action_recordingSetting_triggered();
 
 private:

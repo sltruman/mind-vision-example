@@ -88,16 +88,15 @@ void MainMenu::on_action_log_triggered()
 
 void MainMenu::on_action_about_triggered()
 {
-    AboutDialog dialog;
     dialog.exec();
 }
 
 void MainMenu::on_action_snapshotSetting_triggered()
 {
-
+    snapshotDialog.exec();
 }
 
 void MainMenu::on_action_recordingSetting_triggered()
 {
-
+    recordDialog.exec();
 }
