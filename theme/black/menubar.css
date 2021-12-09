@@ -31,10 +31,7 @@ MainMenu QMenu::item:selected { /* when user selects item using mouse or keyboar
 }
 
 MainMenu #pushButton_close {
-    background:transparent;
-    background-image: url(:/theme/icon/close.png);
-    background-position:center;
-    background-repeat: no-repeat;
+    border:none;
 }
 
 MainMenu #pushButton_close:hover {
@@ -42,10 +39,7 @@ MainMenu #pushButton_close:hover {
 }
 
 MainMenu #pushButton_maximum {
-    background:transparent;
-    background-image: url(:/theme/icon/maximum.png);
-    background-position:center;
-    background-repeat: no-repeat;
+    border:none;
 }
 
 MainMenu #pushButton_maximum:hover {
@@ -53,10 +47,7 @@ MainMenu #pushButton_maximum:hover {
 }
 
 MainMenu #pushButton_minimum {
-    background:transparent;
-    background-image: url(:/theme/icon/minimum.png);
-    background-position:center;
-    background-repeat: no-repeat;
+    border:none;
 }
 
 MainMenu #pushButton_minimum:hover {
@@ -65,7 +56,6 @@ MainMenu #pushButton_minimum:hover {
 
 MainMenu #pushButton_language {
     border:none;
-    color: #7F8082;
 }
 
 MainMenu #pushButton_language:hover {
