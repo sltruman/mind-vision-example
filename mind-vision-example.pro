@@ -23,6 +23,7 @@ HEADERS += \
     cameraview.h \
     mainmenu.h \
     mainwindow.h \
+    mainwindow_frameless.hpp \
     recorddialog.h \
     snapshotdialog.h \
     toplevelitemwidget.h
@@ -140,4 +141,4 @@ TRANSLATIONS += language/app_zh.ts \
                 language/app_en.ts
 
 
-
+RC_ICONS = theme/icon/app.ico

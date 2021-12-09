@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1041</width>
+    <width>1043</width>
     <height>57</height>
    </rect>
   </property>
@@ -230,6 +230,16 @@
        <property name="text">
         <string/>
        </property>
+       <property name="icon">
+        <iconset resource="resource.qrc">
+         <normaloff>:/theme/icon/minimum.png</normaloff>:/theme/icon/minimum.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
       </widget>
      </item>
      <item>
@@ -255,6 +265,21 @@
        <property name="text">
         <string/>
        </property>
+       <property name="icon">
+        <iconset>
+         <activeoff>:/theme/icon/maximum.png</activeoff>
+         <activeon>:/theme/icon/normal.png</activeon>
+        </iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -279,6 +304,16 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="resource.qrc">
+         <normaloff>:/theme/icon/close.png</normaloff>:/theme/icon/close.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -324,6 +359,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

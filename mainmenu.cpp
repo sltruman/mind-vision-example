@@ -14,15 +14,12 @@ MainMenu::MainMenu(QWidget *parent) :
     settings("MindVision","Example")
 {
     ui->setupUi(this);
-    ui->pushButton_close->hide();
-    ui->pushButton_minimum->hide();
-    ui->pushButton_maximum->hide();
 
     auto menubar = new QMenuBar(ui->widget_mainMenu);
-    auto file = new QMenu(tr("Files"),menubar);
+//    auto file = new QMenu(tr("Files"),menubar);
 //    menubar->addMenu(file);
 
-    auto preview = new QMenu(tr("Preview"),menubar);
+//    auto preview = new QMenu(tr("Preview"),menubar);
 //    menubar->addMenu(preview);
 
     auto image = new QMenu(tr("Images"),menubar);
@@ -30,7 +27,7 @@ MainMenu::MainMenu(QWidget *parent) :
     image->addAction(ui->action_recordingSetting);
     menubar->addMenu(image);
 
-    auto software = new QMenu(tr("Softwares"),menubar);
+//    auto software = new QMenu(tr("Softwares"),menubar);
 //    menubar->addMenu(software);
 
     auto tools= new QMenu(tr("Tools"),menubar);
@@ -43,6 +40,8 @@ MainMenu::MainMenu(QWidget *parent) :
     helper->addAction(ui->action_sdk);
     helper->addAction(ui->action_demo);
     menubar->addMenu(helper);
+
+    menubar->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
 
     ui->horizontalLayout->addWidget(menubar);
     ui->pushButton_language->setChecked("zh" == settings.value("language","zh"));
@@ -100,3 +99,17 @@ void MainMenu::on_action_recordingSetting_triggered()
 {
     recordDialog.exec();
 }
+
+void MainMenu::on_pushButton_minimum_clicked()
+{
+    parentWidget()->showMinimized();
+}
+
+void MainMenu::on_pushButton_maximum_clicked(bool checked)
+{
+    if(checked)
+        parentWidget()->showMaximized();
+    else
+        parentWidget()->showNormal();
+}
+

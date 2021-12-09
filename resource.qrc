@@ -91,5 +91,6 @@
         <file>theme/icon/language-en.png</file>
         <file>theme/icon/maximum.png</file>
         <file>theme/icon/minimum.png</file>
+        <file>theme/icon/normal.png</file>
     </qresource>
 </RCC>

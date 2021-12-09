@@ -1,5 +1,6 @@
 ﻿#include "mainmenu.h"
 #include "mainwindow.h"
+#include "mainwindow_frameless.hpp"
 #include "ui_mainwindow.h"
 #include "toplevelitemwidget.h"
 
@@ -23,8 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     , selectedCameraItem(nullptr)
 {
     ui->setupUi(this);
-
-    //setWindowFlag(Qt::FramelessWindowHint);
+    MainWindow_FrameLess(parent);
     this->setMenuWidget(new MainMenu(this));
 
     auto gige = ui->treeWidget_devices->topLevelItem(0);
@@ -60,26 +60,6 @@ void MainWindow::closeEvent(QCloseEvent *event) {
             if(QProcess::NotRunning == deviceItem->camera.state()) continue;
             deviceItem->close();
         }
-    }
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
-    if(event->button() == Qt::LeftButton) {
-        mMousePressed = true;
-        mRelativeSrcPos = event->globalPos() - pos();
-    }
-}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent *event)
-{
-    mMousePressed = false;
-}
-
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
-{
-    if(mMousePressed) {
-       move(event->globalPos() - mRelativeSrcPos);  //当前位置减去相对的原点位置得到的是移动距离
     }
 }
 

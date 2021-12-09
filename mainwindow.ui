@@ -34,7 +34,7 @@
      <number>6</number>
     </property>
     <property name="bottomMargin">
-     <number>0</number>
+     <number>6</number>
     </property>
     <item>
      <widget class="QWidget" name="widget_leftSide" native="true">
@@ -183,7 +183,7 @@
             <x>0</x>
             <y>0</y>
             <width>280</width>
-            <height>354</height>
+            <height>351</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -914,7 +914,7 @@
               </size>
              </property>
              <property name="text">
-              <string>?%</string>
+              <string>?</string>
              </property>
             </widget>
            </item>
@@ -1041,38 +1041,6 @@
            </property>
           </spacer>
          </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_10">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>6</number>
-           </property>
-           <property name="rightMargin">
-            <number>6</number>
-           </property>
-           <item>
-            <widget class="QPushButton" name="pushButton_customStatus">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>99999</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>custom</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
         </layout>
        </widget>
       </item>
@@ -1102,7 +1070,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>9</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>

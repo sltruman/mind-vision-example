@@ -73,8 +73,8 @@ void CameraView::process() {
     sock.waitForBytesWritten();
 
     while(sock.bytesAvailable() == 0) {
-        sock.waitForReadyRead(10);
         QApplication::processEvents();
+        sock.waitForReadyRead(20);
         if (QLocalSocket::ConnectedState != sock.state()) return;
     }
 
@@ -87,14 +87,12 @@ void CameraView::process() {
 
     sock.write("frame\n");
 
-    while(sock.bytesAvailable() < length) {
-        sock.waitForReadyRead(10);
+    for(auto i=0;i < length;i += sock.read(rgbBuffer.data() + i,length - i)) {
         QApplication::processEvents();
-
+        sock.waitForReadyRead(20);
         if (QLocalSocket::ConnectedState != sock.state()) return;
     }
 
-    sock.read(rgbBuffer.data(),rgbBuffer.size());
     QImage img((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
 
     if(QImage::Format::Format_Indexed8 == img.format()){
