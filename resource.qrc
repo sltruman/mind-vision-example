@@ -1,53 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>切图-首页/LOGO.png</file>
-        <file>切图-首页/下底.png</file>
-        <file>切图-首页/下拉.png</file>
-        <file>切图-首页/产品图.png</file>
-        <file>切图-首页/关闭.png</file>
-        <file>切图-首页/刷新.png</file>
-        <file>切图-首页/单个采集.png</file>
-        <file>切图-首页/右边底.png</file>
-        <file>切图-首页/图像处理.png</file>
-        <file>切图-首页/多种语言.png</file>
-        <file>切图-首页/导入.png</file>
-        <file>切图-首页/导出.png</file>
-        <file>切图-首页/小箭头.png</file>
-        <file>切图-首页/展开.png</file>
-        <file>切图-首页/属性树.png</file>
-        <file>切图-首页/左边底.png</file>
-        <file>切图-首页/布局.png</file>
-        <file>切图-首页/常用属性.png</file>
-        <file>切图-首页/录像.png</file>
-        <file>切图-首页/扩大.png</file>
-        <file>切图-首页/批量暂停.png</file>
-        <file>切图-首页/批量采集.png</file>
-        <file>切图-首页/抓拍.png</file>
-        <file>切图-首页/搜索.png</file>
-        <file>切图-首页/播放.png</file>
-        <file>切图-首页/文件夹1.png</file>
-        <file>切图-首页/暂停.png</file>
-        <file>切图-首页/曝光.png</file>
-        <file>切图-首页/最大化.png</file>
-        <file>切图-首页/最小化.png</file>
-        <file>切图-首页/白平衡.png</file>
-        <file>切图-首页/相机.png</file>
-        <file>切图-首页/相机拷贝2.png</file>
-        <file>切图-首页/箭头拷贝2.png</file>
-        <file>切图-首页/红.png</file>
-        <file>切图-首页/红色.png</file>
-        <file>切图-首页/绿.png</file>
-        <file>切图-首页/绿色.png</file>
-        <file>切图-首页/缩小.png</file>
-        <file>切图-首页/缩进.png</file>
-        <file>切图-首页/触发控制.png</file>
-        <file>切图-首页/返回.png</file>
-        <file>切图-首页/链接.png</file>
-        <file>切图-首页/页面变小.png</file>
-        <file>切图-首页/顶部.png</file>
         <file>theme/icon/LOGO.png</file>
         <file>theme/icon/bottom-side.png</file>
-        <file>theme/icon/down-list.png</file>
         <file>theme/icon/index.png</file>
         <file>theme/icon/refresh.png</file>
         <file>theme/icon/add.png</file>
@@ -61,7 +15,7 @@
         <file>theme/icon/left-side.png</file>
         <file>theme/icon/laout.png</file>
         <file>theme/icon/info.png</file>
-        <file>theme/icon/camera.png</file>
+        <file>theme/icon/record.png</file>
         <file>theme/icon/zoom-in.png</file>
         <file>theme/icon/1.png</file>
         <file>theme/icon/2.png</file>
@@ -71,10 +25,9 @@
         <file>theme/icon/dir.png</file>
         <file>theme/icon/play.png</file>
         <file>theme/icon/exposure.png</file>
-        <file>theme/icon/3.png</file>
+        <file>theme/icon/full-screen.png</file>
         <file>theme/icon/wb.png</file>
         <file>theme/icon/camera-background.png</file>
-        <file>theme/icon/10.png</file>
         <file>theme/icon/12.png</file>
         <file>theme/icon/stopped.png</file>
         <file>theme/icon/8.png</file>
@@ -92,5 +45,6 @@
         <file>theme/icon/maximum.png</file>
         <file>theme/icon/minimum.png</file>
         <file>theme/icon/normal.png</file>
+        <file>theme/icon/camera.png</file>
     </qresource>
 </RCC>

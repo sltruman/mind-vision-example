@@ -1,3 +1,13 @@
+#dockWidget_leftSide {
+    color: white;
+    font:bold 15px "Microsoft YaHei UI";
+}
+
+#dockWidget_leftSide::title {
+    background-color: #23262F;
+    border-top:1px solid #444444;
+}
+
 #treeWidget_devices QMenu {
     background-color: #23262F;
     border: 1px solid gray;
@@ -8,25 +18,7 @@
     background-color: #303030;
 }
 
-#widget_leftSide #widget_deviceTitleBar {
-    background-color: #23262F;
-    border-top:1px solid #444444;
-    font: bold 15px "Microsoft YaHei UI";
-}
-
-#widget_deviceTitleBar #pushButton_shrinkLeft {
-    background: transparent;
-    background-image: url(:/切图-首页/箭头拷贝2.png);
-    background-position:center;
-    background-repeat: no-repeat;
-}
-
-#widget_deviceTitleBar #label_devices {
-    color: white;
-    font:bold 15px "Microsoft YaHei UI";
-}
-
-#widget_leftSide {
+#treeWidget_devices {
     border-image: url(:/theme/icon/left-side.png);
 }
 
@@ -45,34 +37,31 @@
 }
 
 #treeWidget_devices::branch:closed:has-children:has-siblings {
-    background-image: url(:/切图-首页/小箭头.png);
+    background-image: url(:/theme/icon/collect.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
 #treeWidget_devices::branch:has-children:!has-siblings:closed {
-    background-image: url(:/切图-首页/小箭头.png);
+    background-image: url(:/theme/icon/collect.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
 #treeWidget_devices::branch:open:has-children:has-siblings {
-    background-image: url(:/切图-首页/下拉.png);
+    background-image: url(:/theme/icon/expand.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
 #treeWidget_devices::branch:open:has-children:!has-siblings {
-    background-image: url(:/切图-首页/下拉.png);
+    background-image: url(:/theme/icon/expand.png);
     background-position:center;
     background-repeat: no-repeat;
 }
 
 #treeWidget_devices #toolButton_refresh {
     background:transparent;
-    background-image: url(:/theme/icon/refresh.png);
-    background-position:center;
-    background-repeat: no-repeat;
 }
 
 #treeWidget_devices #toolButton_refresh:hover {
@@ -80,39 +69,36 @@
     border:none;
 }
 
-
 #treeWidget_devices::item:selected {
     background-color: #303030;
     border-left: 2px solid #2D84E5;
     color: white;
 }
 
-#widget_leftSide #layout_leftSideCameraInfo {
+#dockWidget_leftSide #layout_leftSideCameraInfo {
     background-color:#191919;
 }
 
-#widget_leftSide #layout_leftSideCameraInfo
-    #label_deviceName,
-    #label_physicalAddress,
-    #label_ip,
-    #label_mask,
-    #label_gateway,
-    #label_sensor,
-    #label_series,
-    #label_manufacturer {
+#label_deviceName,
+#label_physicalAddress,
+#label_ip,
+#label_mask,
+#label_gateway,
+#label_sensor,
+#label_series,
+#label_manufacturer {
     color: #7F8082;
     font: bold 15px "Microsoft YaHei UI";
 }
 
-#widget_leftSide #layout_leftSideCameraInfo
-    #label_deviceName_2,
-    #label_physicalAddress_2,
-    #label_ip_2,
-    #label_mask_2,
-    #label_gateway_2,
-    #label_sensor_2,
-    #label_series_2,
-    #label_manufacturer_2 {
+#label_deviceName_2,
+#label_physicalAddress_2,
+#label_ip_2,
+#label_mask_2,
+#label_gateway_2,
+#label_sensor_2,
+#label_series_2,
+#label_manufacturer_2 {
     color: white;
     font: 15px "Microsoft YaHei UI";
 }

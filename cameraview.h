@@ -8,6 +8,8 @@
 #include <QTimer>
 #include <QGraphicsPixmapItem>
 #include <tuple>
+#include <QMouseEvent>
+#include <QKeyEvent>
 
 namespace Ui {
 class CameraView;
@@ -35,8 +37,12 @@ public:
     QMap<int,std::tuple<int,int,QPen>> lines;
 
 protected:
+    void closeEvent(QCloseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
     void enterEvent(QEvent *event) override;
     void leaveEvent(QEvent *event) override;
+    void mouseMoveEvent(QMouseEvent * event) override;
+    void mousePressEvent(QMouseEvent * event) override;
 
 private slots:
     void process();

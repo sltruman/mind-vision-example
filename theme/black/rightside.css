@@ -31,7 +31,9 @@
     background-color: #201B22;
 }
 
-#tabWidget_params QGroupBox,QLabel,QCheckBox {
+#tabWidget_params QGroupBox,
+#tabWidget_params QLabel,
+#tabWidget_params QCheckBox {
     color: #7F8082;
     font: 15px "Microsoft YaHei UI";
 }

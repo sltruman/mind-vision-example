@@ -16,8 +16,6 @@ int main(int argc, char *argv[])
 
     if("zh" == settings.value("language","zh"))
         qtTranslator.load("language/app_zh.qm");
-    else
-        qtTranslator.load("language/app_en.qm");
 
     a.installTranslator(&qtTranslator);
 

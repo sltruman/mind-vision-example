@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1375</width>
-    <height>770</height>
+    <width>1490</width>
+    <height>813</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,7 +25,7 @@
      <number>0</number>
     </property>
     <property name="leftMargin">
-     <number>6</number>
+     <number>0</number>
     </property>
     <property name="topMargin">
      <number>0</number>
@@ -36,363 +36,6 @@
     <property name="bottomMargin">
      <number>6</number>
     </property>
-    <item>
-     <widget class="QWidget" name="widget_leftSide" native="true">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>260</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_16">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QWidget" name="widget_deviceTitleBar" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>37</height>
-          </size>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_59">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="label_devices">
-            <property name="text">
-             <string>   Devices</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTreeWidget" name="treeWidget_devices">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="contextMenuPolicy">
-          <enum>Qt::CustomContextMenu</enum>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
-         </property>
-         <property name="headerHidden">
-          <bool>true</bool>
-         </property>
-         <attribute name="headerVisible">
-          <bool>false</bool>
-         </attribute>
-         <attribute name="headerCascadingSectionResizes">
-          <bool>false</bool>
-         </attribute>
-         <column>
-          <property name="text">
-           <string notr="true"/>
-          </property>
-         </column>
-         <item>
-          <property name="text">
-           <string>GIGE</string>
-          </property>
-          <property name="icon">
-           <iconset resource="resource.qrc">
-            <normaloff>:/theme/icon/dir.png</normaloff>:/theme/icon/dir.png</iconset>
-          </property>
-          <property name="flags">
-           <set>ItemIsUserCheckable|ItemIsEnabled</set>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>USB</string>
-          </property>
-          <property name="icon">
-           <iconset resource="resource.qrc">
-            <normaloff>:/theme/icon/dir.png</normaloff>:/theme/icon/dir.png</iconset>
-          </property>
-          <property name="flags">
-           <set>ItemIsUserCheckable|ItemIsEnabled</set>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QScrollArea" name="scrollArea_info">
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="layout_leftSideCameraInfo">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>280</width>
-            <height>351</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <property name="spacing">
-            <number>6</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>6</number>
-           </property>
-           <property name="rightMargin">
-            <number>6</number>
-           </property>
-           <property name="bottomMargin">
-            <number>6</number>
-           </property>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLabel" name="label_deviceName">
-               <property name="text">
-                <string>Device Name：</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_deviceName_2">
-               <property name="layoutDirection">
-                <enum>Qt::LeftToRight</enum>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="QLabel" name="label_physicalAddress">
-               <property name="text">
-                <string>MAC：</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_physicalAddress_2">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <widget class="QLabel" name="label_ip">
-               <property name="text">
-                <string>IP：</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_ip_2">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_5">
-             <item>
-              <widget class="QLabel" name="label_mask">
-               <property name="text">
-                <string>Net Mask：</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_mask_2">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <widget class="QLabel" name="label_gateway">
-               <property name="text">
-                <string>Gateway：</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_gateway_2">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_7">
-             <item>
-              <widget class="QLabel" name="label_sensor">
-               <property name="text">
-                <string>Sensor：</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_sensor_2">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_8">
-             <item>
-              <widget class="QLabel" name="label_series">
-               <property name="text">
-                <string>Type：</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_series_2">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_10">
-             <item>
-              <widget class="QLabel" name="label_manufacturer">
-               <property name="text">
-                <string>Manufacturer：</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_manufacturer_2">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item>
      <layout class="QVBoxLayout" name="layout_preview">
       <property name="spacing">
@@ -478,9 +121,15 @@
        <widget class="QWidget" name="widget_control" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <property name="spacing">
+          <number>1</number>
+         </property>
+         <property name="leftMargin">
           <number>0</number>
          </property>
          <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
           <number>0</number>
          </property>
          <property name="bottomMargin">
@@ -506,12 +155,17 @@
              <height>30</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>6</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Zoom In</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/扩大.png</normaloff>:/切图-首页/扩大.png</iconset>
+             <normaloff>:/theme/icon/zoom-in.png</normaloff>:/theme/icon/zoom-in.png</iconset>
            </property>
           </widget>
          </item>
@@ -528,6 +182,9 @@
              <width>16777215</width>
              <height>25</height>
             </size>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
            </property>
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -548,12 +205,17 @@
              <height>30</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>6</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Zoom Out</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/缩小.png</normaloff>:/切图-首页/缩小.png</iconset>
+             <normaloff>:/theme/icon/zoom-out.png</normaloff>:/theme/icon/zoom-out.png</iconset>
            </property>
           </widget>
          </item>
@@ -590,12 +252,17 @@
              <height>30</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>6</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>Zoom Full</string>
+            <string>Full Screen</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/最大化.png</normaloff>:/切图-首页/最大化.png</iconset>
+             <normaloff>:/theme/icon/full-screen.png</normaloff>:/theme/icon/full-screen.png</iconset>
            </property>
           </widget>
          </item>
@@ -632,12 +299,17 @@
              <height>30</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>6</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Snapshot</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/抓拍.png</normaloff>:/切图-首页/抓拍.png</iconset>
+             <normaloff>:/theme/icon/snapshot.png</normaloff>:/theme/icon/snapshot.png</iconset>
            </property>
           </widget>
          </item>
@@ -666,8 +338,8 @@
            </property>
            <property name="icon">
             <iconset>
-             <activeoff>:/切图-首页/暂停.png</activeoff>
-             <activeon>:/切图-首页/播放.png</activeon>
+             <activeoff>:/theme/icon/play.png</activeoff>
+             <activeon>:/theme/icon/pause.png</activeon>
             </iconset>
            </property>
            <property name="iconSize">
@@ -698,12 +370,17 @@
              <height>30</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>6</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Record</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/录像.png</normaloff>:/切图-首页/录像.png</iconset>
+             <normaloff>:/theme/icon/record.png</normaloff>:/theme/icon/record.png</iconset>
            </property>
           </widget>
          </item>
@@ -740,8 +417,13 @@
              <height>30</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>6</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>WB</string>
+            <string>White Blance</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
@@ -781,6 +463,11 @@
              <width>16777215</width>
              <height>30</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>6</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Trigger</string>
@@ -824,12 +511,17 @@
              <height>30</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>6</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Lyaout</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
-             <normaloff>:/切图-首页/布局.png</normaloff>:/切图-首页/布局.png</iconset>
+             <normaloff>:/theme/icon/laout.png</normaloff>:/theme/icon/laout.png</iconset>
            </property>
           </widget>
          </item>
@@ -867,6 +559,11 @@
                <height>25</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Size</string>
              </property>
@@ -879,6 +576,11 @@
                <width>16777215</width>
                <height>25</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
              </property>
              <property name="text">
               <string>?</string>
@@ -900,6 +602,11 @@
                <height>25</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Zoom</string>
              </property>
@@ -912,6 +619,11 @@
                <width>16777215</width>
                <height>25</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
              </property>
              <property name="text">
               <string>?</string>
@@ -933,6 +645,11 @@
                <height>25</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Frames</string>
              </property>
@@ -945,6 +662,11 @@
                <width>16777215</width>
                <height>25</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
              </property>
              <property name="text">
               <string>?</string>
@@ -966,8 +688,13 @@
                <height>25</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
+             </property>
              <property name="text">
-              <string>Display FPS</string>
+              <string>DisplayFPS</string>
              </property>
             </widget>
            </item>
@@ -978,6 +705,11 @@
                <width>16777215</width>
                <height>25</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
              </property>
              <property name="text">
               <string>?</string>
@@ -1002,8 +734,13 @@
                <height>25</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
+             </property>
              <property name="text">
-              <string>Recrod FPS</string>
+              <string>RecrodFPS</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -1017,6 +754,11 @@
                <width>16777215</width>
                <height>25</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>7</pointsize>
+              </font>
              </property>
              <property name="text">
               <string>?</string>
@@ -2172,7 +1914,7 @@
              </property>
              <item>
               <property name="text">
-               <string>Presest</string>
+               <string>Preset</string>
               </property>
              </item>
              <item>
@@ -3564,10 +3306,290 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1375</width>
+     <width>1490</width>
      <height>25</height>
     </rect>
    </property>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_leftSide">
+   <property name="minimumSize">
+    <size>
+     <width>285</width>
+     <height>316</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::NoDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Devices</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_10">
+     <property name="leftMargin">
+      <number>6</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QTreeWidget" name="treeWidget_devices">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="indentation">
+        <number>15</number>
+       </property>
+       <property name="headerHidden">
+        <bool>true</bool>
+       </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="headerCascadingSectionResizes">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>GIGE</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/theme/icon/dir.png</normaloff>:/theme/icon/dir.png</iconset>
+        </property>
+        <property name="flags">
+         <set>ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>USB</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/theme/icon/dir.png</normaloff>:/theme/icon/dir.png</iconset>
+        </property>
+        <property name="flags">
+         <set>ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_deviceName">
+           <property name="text">
+            <string>Device Name：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_deviceName_2">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_series">
+           <property name="text">
+            <string>Type：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_series_2">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="label_sensor">
+           <property name="text">
+            <string>Sensor：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_sensor_2">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_ip">
+           <property name="text">
+            <string>IP：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_ip_2">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLabel" name="label_manufacturer">
+           <property name="text">
+            <string>Manufacturer：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_manufacturer_2">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_mask">
+           <property name="text">
+            <string>Net Mask：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_mask_2">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_physicalAddress">
+           <property name="text">
+            <string>MAC：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_physicalAddress_2">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_gateway">
+           <property name="text">
+            <string>Gateway：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_gateway_2">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="action_open">
    <property name="text">

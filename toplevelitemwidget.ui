@@ -71,6 +71,10 @@
         <property name="text">
          <string/>
         </property>
+        <property name="icon">
+         <iconset resource="resource.qrc">
+          <normaloff>:/theme/icon/refresh.png</normaloff>:/theme/icon/refresh.png</iconset>
+        </property>
        </widget>
       </item>
      </layout>
@@ -78,6 +82,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

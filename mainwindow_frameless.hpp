@@ -33,7 +33,7 @@ void MainWindow::setWidget(QWidget *widget)
         //绑定事件过滤器
         this->widget->installEventFilter(this);
         //设置悬停为真,必须设置这个,
-       //当父窗体里边还有子窗体全部遮挡了识别不到MouseMove,需要识别HoverMove
+        //当父窗体里边还有子窗体全部遮挡了识别不到MouseMove,需要识别HoverMove
         this->widget->setAttribute(Qt::WA_Hover, true);
     }
 }
@@ -66,7 +66,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             //右下角描点区域
             rectRightBottom = QRect(width - padding, height - padding, padding, padding);
         }
-       else if (event->type() == QEvent::HoverMove)
+        else if (event->type() == QEvent::HoverMove)
        {
             //设置对应鼠标形状,这个必须放在这里而不是下面,因为可以在鼠标没有按下的时候识别
             QHoverEvent *hoverEvent = (QHoverEvent *)event;
@@ -101,7 +101,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             //根据按下处的位置判断是否是移动控件还是拉伸控件
             if (moveEnable)
             {
-                if (pressed) {
+                if (pressed && this->menuWidget()->rect().contains(lastPos)) {
                     widget->move(widget->x() + offsetX, widget->y() + offsetY);
                 }
             }
@@ -180,7 +180,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
                 pressedLeftBottom = true;
             } else if (rectRightBottom.contains(lastPos)) {
                 pressedRightBottom = true;
-            } else {
+            } else if (this->menuWidget()->rect().contains(lastPos)) {
                 pressed = true;
             }
         }

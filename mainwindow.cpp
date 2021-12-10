@@ -27,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent)
     MainWindow_FrameLess(parent);
     this->setMenuWidget(new MainMenu(this));
 
+//    QLabel *label = new QLabel(tr("Devices"), ui->dockWidget_leftSide);
+//    ui->dockWidget_leftSide->setTitleBarWidget(label);
+    //ui->dockWidget_leftSide->titleBarWidget()->setStyleSheet("color: orange; font-size: 14pt; font-weight: bold;");
+
     auto gige = ui->treeWidget_devices->topLevelItem(0);
     auto usb = ui->treeWidget_devices->topLevelItem(1);
 
@@ -178,7 +182,9 @@ void MainWindow::on_pushButton_zoomFull_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
-    deviceItem->cameraView->currentScale = 0.99;
+
+    deviceItem->cameraView->setWindowFlags(Qt::Window);
+    deviceItem->cameraView->showFullScreen();
 }
 
 void MainWindow::on_pushButton_snapshot_clicked()

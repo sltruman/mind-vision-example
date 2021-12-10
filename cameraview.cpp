@@ -28,12 +28,31 @@ CameraView::~CameraView()
     delete ui;
 }
 
+void CameraView::closeEvent(QCloseEvent *event) {
+    event->ignore();
+}
+
+void CameraView::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Escape) {
+        setWindowFlags(Qt::SubWindow);
+        showNormal();
+    }
+}
+
 void CameraView::enterEvent(QEvent *event) {
 //    ui->pushButton_close->show();
 }
 
 void CameraView::leaveEvent(QEvent *event) {
 //    ui->pushButton_close->hide();
+}
+
+void CameraView::mouseMoveEvent(QMouseEvent * event) {
+
+}
+
+void CameraView::mousePressEvent(QMouseEvent * event) {
+
 }
 
 void CameraView::play() {
@@ -70,7 +89,6 @@ void CameraView::process() {
     }
 
     sock.write("size\n");
-    sock.waitForBytesWritten();
 
     while(sock.bytesAvailable() == 0) {
         QApplication::processEvents();
@@ -84,6 +102,7 @@ void CameraView::process() {
     auto b = whb[2].toUInt();
     auto length = w*h*b;
     rgbBuffer.resize(length);
+    sock.setReadBufferSize(length);
 
     sock.write("frame\n");
 
@@ -93,7 +112,7 @@ void CameraView::process() {
         if (QLocalSocket::ConnectedState != sock.state()) return;
     }
 
-    QImage img((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
+    static QImage img((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
 
     if(QImage::Format::Format_Indexed8 == img.format()){
         QVector<QRgb> grayColorTable;
