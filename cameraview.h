@@ -1,13 +1,17 @@
 ﻿#ifndef CAMERAVIEW_H
 #define CAMERAVIEW_H
 
+#include "camerascene.h"
+
+#include <tuple>
+#include <thread>
+
 #include <QMap>
 #include <QGraphicsView>
 #include <QProcess>
 #include <QLocalSocket>
 #include <QTimer>
 #include <QGraphicsPixmapItem>
-#include <tuple>
 #include <QMouseEvent>
 #include <QKeyEvent>
 
@@ -23,35 +27,35 @@ public:
     explicit CameraView(QWidget *parent = nullptr);
     ~CameraView();
 
+    QProcess* camera;
+
     void play();
     void pause();
     void stop();
     bool playing;
 
-    QProcess* camera;
     QString pipeName;
-    QGraphicsPixmapItem* background;
     float currentScale;
     int displayFPS;
     unsigned long long frames;
-    QMap<int,std::tuple<int,int,QPen>> lines;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void enterEvent(QEvent *event) override;
     void leaveEvent(QEvent *event) override;
-    void mouseMoveEvent(QMouseEvent * event) override;
-    void mousePressEvent(QMouseEvent * event) override;
+
+Q_SIGNALS:
+    void updated(const QImage &img);
 
 private slots:
-    void process();
+    void update(const QImage &img);
     void on_pushButton_close_clicked();
 
 private:
     Ui::CameraView *ui;
-    QLocalSocket sock;
-    QTimer t;
+    std::thread task;
+    qint64 tick;
     QByteArray rgbBuffer;
 };
 

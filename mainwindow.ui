@@ -740,7 +740,7 @@
               </font>
              </property>
              <property name="text">
-              <string>RecrodFPS</string>
+              <string>Coordinate</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -748,7 +748,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_recordFPS">
+            <widget class="QLabel" name="label_corrdinate">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
@@ -812,7 +812,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -1091,6 +1091,27 @@
               </widget>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_whiteBalanceWindow">
+             <property name="text">
+              <string>Show white balance window</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_setWhiteBalanceWindow">
+             <property name="text">
+              <string>Set White Balance Window</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_defaultWhiteBalanceWindow">
+             <property name="text">
+              <string>Default White Balance Window</string>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_onceWhiteBalance">
@@ -1690,28 +1711,36 @@
         <item>
          <widget class="QGroupBox" name="groupBox_25">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="title">
            <string>Color Point</string>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_39">
+          <layout class="QVBoxLayout" name="verticalLayout_16">
            <item>
-            <widget class="QCheckBox" name="checkBox_horizontalMirror_4">
+            <widget class="QCheckBox" name="checkBox_deadPixelsWindow">
              <property name="text">
-              <string>Enable</string>
+              <string>Show in preview</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_4">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_39">
+             <item>
+              <widget class="QCheckBox" name="checkBox_deadPixelsCorrect">
+               <property name="text">
+                <string>Enable</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_saveDeadPixels">
+               <property name="text">
+                <string>Save</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -1719,14 +1748,14 @@
         <item>
          <widget class="QGroupBox" name="groupBox_26">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="title">
            <string>Flat Field Correct</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_23">
            <item>
-            <widget class="QCheckBox" name="checkBox_horizontalMirror_5">
+            <widget class="QCheckBox" name="checkBox_flatFiledCorrect">
              <property name="text">
               <string>Enable</string>
              </property>
@@ -1735,14 +1764,14 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_42">
              <item>
-              <widget class="QPushButton" name="pushButton_6">
+              <widget class="QPushButton" name="pushButton_darkField">
                <property name="text">
                 <string>Dark</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_8">
+              <widget class="QPushButton" name="pushButton_lightField">
                <property name="text">
                 <string>Light</string>
                </property>
@@ -1753,14 +1782,14 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_43">
              <item>
-              <widget class="QPushButton" name="pushButton_5">
+              <widget class="QPushButton" name="pushButton_saveFlatFieldParams">
                <property name="text">
                 <string>Save</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_7">
+              <widget class="QPushButton" name="pushButton_loadFlatFieldParams">
                <property name="text">
                 <string>Load</string>
                </property>
@@ -1775,6 +1804,9 @@
          <spacer name="verticalSpacer_7">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>

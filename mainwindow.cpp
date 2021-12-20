@@ -72,7 +72,7 @@ void MainWindow::at_cameraStatusUpdate_timeout()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
     if(deviceItem) {
-        auto resolution = deviceItem->cameraView->background->pixmap().size();
+        auto resolution = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->background->pixmap().size();
         ui->label_resolution->setText(QString("%1x%2").arg(resolution.width()).arg(resolution.height()));
         ui->label_zoom->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
         ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
@@ -167,7 +167,7 @@ void MainWindow::on_pushButton_zoomIn_clicked()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
 
-    deviceItem->cameraView->currentScale += 0.1;
+    deviceItem->cameraView->currentScale += deviceItem->cameraView->currentScale * 0.2;
 }
 
 void MainWindow::on_pushButton_zoomOut_clicked()
@@ -175,7 +175,7 @@ void MainWindow::on_pushButton_zoomOut_clicked()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
 
-    deviceItem->cameraView->currentScale -= 0.1;
+    deviceItem->cameraView->currentScale -= deviceItem->cameraView->currentScale * 0.2;
 }
 
 void MainWindow::on_pushButton_zoomFull_clicked()
@@ -492,6 +492,7 @@ void MainWindow::on_pushButton_loadParamsFromFile_clicked()
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     auto filename = QFileDialog::getOpenFileName(this,tr("Select file"),"",tr("config Files(*.config )"));
+    if(filename.isEmpty()) return;
     deviceItem->paramsLoadFromFile(filename);
     emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
@@ -530,6 +531,9 @@ void MainWindow::on_actionTop_triggered()
 
 void MainWindow::on_tabWidget_params_currentChanged(int index)
 {
+    ui->checkBox_whiteBalanceWindow->setChecked(false);
+    ui->checkBox_deadPixelsWindow->setChecked(false);
+
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
@@ -567,6 +571,11 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             ui->checkBox_inverse->setChecked(whiteBalance[14].toUInt());
             ui->comboBox_algorithm->setCurrentIndex(whiteBalance[15].toInt());
             ui->comboBox_colorTemrature->setCurrentIndex(whiteBalance[16].toInt());
+            auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+            cs->whiteBalanceWindowPos.setX(whiteBalance[17].toInt());
+            cs->whiteBalanceWindowPos.setY(whiteBalance[18].toInt());
+            cs->whiteBalanceWindowPos.setWidth(whiteBalance[19].toInt());
+            cs->whiteBalanceWindowPos.setHeight(whiteBalance[20].toInt());
         } else if(index == 2) {
             auto lookupTableMode = deviceItem->lookupTableMode();
             ui->comboBox_lutMode->setCurrentIndex(lookupTableMode.toInt());
@@ -581,6 +590,15 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             if(isp[6].toUInt()) ui->comboBox_noise3D->setCurrentIndex(isp[7].toUInt() - 1);
             else ui->comboBox_noise3D->setCurrentIndex(0);
             ui->comboBox_rotate->setCurrentIndex(isp[8].toUInt());
+            ui->checkBox_flatFiledCorrect->setChecked(isp[9].toUInt());
+            ui->checkBox_deadPixelsCorrect->setChecked(isp[10].toUInt());
+            auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+            cs->deadPixelPos.clear();
+            if(isp[11] != "None") {
+                auto xArray = isp[11].split(',');
+                auto yArray = isp[12].split(',');
+                for(auto i=0;i < xArray.size();i++) cs->deadPixelPos.append(QPoint(xArray[i].toUInt(),yArray[i].toUInt()));
+            }
         } else if(index == 4) {
             auto video = deviceItem->video();
             ui->comboBox_frameRateSpeed->setCurrentIndex(video[0].toUInt());
@@ -1035,9 +1053,9 @@ void MainWindow::on_checkBox_line1_stateChanged(int arg1)
         auto lineX = ui->spinBox_x1->value();
         auto lineY = ui->spinBox_y1->value();
         auto pen = QPen(QColor(255,0,0));
-        deviceItem->cameraView->lines.insert(0,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(0,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(0);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(0);
     }
 }
 
@@ -1050,9 +1068,9 @@ void MainWindow::on_checkBox_line2_stateChanged(int arg1)
         auto lineX = ui->spinBox_x2->value();
         auto lineY = ui->spinBox_y2->value();
         auto pen = QPen(QColor(0,255,0));
-        deviceItem->cameraView->lines.insert(1,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(1,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(1);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(1);
     }
 }
 
@@ -1065,9 +1083,9 @@ void MainWindow::on_checkBox_line3_stateChanged(int arg1)
         auto lineX = ui->spinBox_x3->value();
         auto lineY = ui->spinBox_y3->value();
         auto pen = QPen(QColor(0,0,255));
-        deviceItem->cameraView->lines.insert(2,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(2,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(2);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(2);
     }
 }
 
@@ -1080,9 +1098,9 @@ void MainWindow::on_checkBox_line4_stateChanged(int arg1)
         auto lineX = ui->spinBox_x4->value();
         auto lineY = ui->spinBox_y4->value();
         auto pen = QPen(QColor(255,255,0));
-        deviceItem->cameraView->lines.insert(3,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(3,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(3);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(3);
     }
 }
 
@@ -1095,9 +1113,9 @@ void MainWindow::on_checkBox_line5_stateChanged(int arg1)
         auto lineX = ui->spinBox_x5->value();
         auto lineY = ui->spinBox_y5->value();
         auto pen = QPen(QColor(255,0,255));
-        deviceItem->cameraView->lines.insert(4,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(4,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(4);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(4);
     }
 }
 
@@ -1110,9 +1128,9 @@ void MainWindow::on_checkBox_line6_stateChanged(int arg1)
         auto lineX = ui->spinBox_x6->value();
         auto lineY = ui->spinBox_y6->value();
         auto pen = QPen(QColor(85,255,255));
-        deviceItem->cameraView->lines.insert(5,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(5,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(5);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(5);
     }
 }
 
@@ -1125,9 +1143,9 @@ void MainWindow::on_checkBox_line7_stateChanged(int arg1)
         auto lineX = ui->spinBox_x7->value();
         auto lineY = ui->spinBox_y7->value();
         auto pen = QPen(QColor(170, 85, 0));
-        deviceItem->cameraView->lines.insert(6,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(6,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(6);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(6);
     }
 }
 
@@ -1140,9 +1158,9 @@ void MainWindow::on_checkBox_line8_stateChanged(int arg1)
         auto lineX = ui->spinBox_x8->value();
         auto lineY = ui->spinBox_y8->value();
         auto pen = QPen(QColor(85, 0, 127));
-        deviceItem->cameraView->lines.insert(7,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(7,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(7);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(7);
     }
 }
 
@@ -1155,9 +1173,9 @@ void MainWindow::on_checkBox_line9_stateChanged(int arg1)
         auto lineX = ui->spinBox_x9->value();
         auto lineY = ui->spinBox_y9->value();
         auto pen = QPen(QColor(85, 85, 127));
-        deviceItem->cameraView->lines.insert(8,std::make_tuple(lineX,lineY,pen));
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.insert(8,std::make_tuple(lineX,lineY,pen));
     } else {
-        deviceItem->cameraView->lines.remove(8);
+        dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->lines.remove(8);
     }
 }
 
@@ -1167,4 +1185,112 @@ void MainWindow::on_pushButton_modifyNickname_clicked()
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     deviceItem->rename(ui->lineEdit_nickname->text());
+}
+
+void MainWindow::on_checkBox_whiteBalanceWindow_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->whiteBalanceWindow = arg1;
+}
+
+void MainWindow::on_pushButton_setWhiteBalanceWindow_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    auto rect = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->whiteBalanceWindowPos;
+    deviceItem->whiteBalanceWindow(rect.x(),rect.y(),rect.width(),rect.height());
+}
+
+void MainWindow::on_pushButton_defaultWhiteBalanceWindow_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+    cs->whiteBalanceWindowPos = cs->background->pixmap().rect();
+}
+
+void MainWindow::on_checkBox_deadPixelsWindow_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+    cs->deadPixelWindow = arg1;
+}
+
+void MainWindow::on_pushButton_saveDeadPixels_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+
+    QString x,y;
+    for(auto pos : cs->deadPixelPos) {
+        x += QString("%1,").arg(pos.x());
+        y += QString("%1,").arg(pos.y());
+    }
+
+    if(!x.isEmpty()) x.remove(x.length()-1,1);
+    deviceItem->deadPixels(x,y);
+
+    QMessageBox::information(nullptr, tr("Dead Pixels"), tr("Saved Dead Pixels!"), QMessageBox::Ok);
+}
+
+void MainWindow::on_checkBox_flatFiledCorrect_stateChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->flatFieldCorrent(arg1);
+}
+
+void MainWindow::on_pushButton_darkField_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    try {
+        deviceItem->flatFieldInit(0);
+        QMessageBox::information(nullptr, tr("Dark Field"), tr("Ok!"), QMessageBox::Ok);
+    } catch(...) {
+        QMessageBox::warning(nullptr, tr("Light Field"), tr("Light is not enough!"), QMessageBox::Ok);
+    }
+}
+
+void MainWindow::on_pushButton_lightField_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    try {
+        deviceItem->flatFieldInit(1);
+        QMessageBox::information(nullptr, tr("Light Field"), tr("Ok!"), QMessageBox::Ok);
+    } catch(...) {
+        QMessageBox::warning(nullptr, tr("Light Field"), tr("Light is not enough!"), QMessageBox::Ok);
+    }
+}
+
+void MainWindow::on_pushButton_saveFlatFieldParams_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    auto filename = QFileDialog::getSaveFileName(this,tr("File name"),"",tr("config Files(*.ffc )"));
+    if(filename.isEmpty()) return;
+    deviceItem->flatFieldParamsSave(filename.replace('/','\\'));
+}
+
+void MainWindow::on_pushButton_loadFlatFieldParams_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    auto filename = QFileDialog::getOpenFileName(this,tr("Select file"),"",tr("config Files(*.ffc )"));
+    if(filename.isEmpty()) return;
+    deviceItem->flatFieldParamsLoad(filename.replace('/','\\'));
 }

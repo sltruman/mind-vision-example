@@ -158,9 +158,24 @@ private Q_SLOTS:
     void on_checkBox_line8_stateChanged(int arg1);
     void on_checkBox_line9_stateChanged(int arg1);
 
-
-
     void on_pushButton_modifyNickname_clicked();
+    void on_checkBox_whiteBalanceWindow_stateChanged(int arg1);
+    void on_pushButton_setWhiteBalanceWindow_clicked();
+    void on_pushButton_defaultWhiteBalanceWindow_clicked();
+
+    void on_checkBox_deadPixelsWindow_stateChanged(int arg1);
+
+    void on_pushButton_saveDeadPixels_clicked();
+
+    void on_checkBox_flatFiledCorrect_stateChanged(int arg1);
+
+    void on_pushButton_darkField_clicked();
+
+    void on_pushButton_lightField_clicked();
+
+    void on_pushButton_loadFlatFieldParams_clicked();
+
+    void on_pushButton_saveFlatFieldParams_clicked();
 
 private:
     Ui::MainWindow *ui;

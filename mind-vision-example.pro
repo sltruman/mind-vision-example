@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     aboutdialog.cpp \
+    camerascene.cpp \
     cameraview.cpp \
     main.cpp \
     mainmenu.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 
 HEADERS += \
     aboutdialog.h \
+    camerascene.h \
     cameraview.h \
     mainmenu.h \
     mainwindow.h \

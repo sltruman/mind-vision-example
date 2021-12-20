@@ -5,7 +5,6 @@
 #include <QDateTime>
 #include <QGraphicsScene>
 
-
 #include <iostream>
 using std::endl;
 using std::cout;
@@ -16,15 +15,13 @@ CameraView::CameraView(QWidget *parent) :
     currentScale(0.99f),displayFPS(0),frames(0),playing(false)
 {
     ui->setupUi(this);
-    setScene(new QGraphicsScene(this));
-    background = scene()->addPixmap(QPixmap(0,0));
-    connect(&sock,SIGNAL(connected()),SLOT(process()),Qt::QueuedConnection);
     ui->pushButton_close->hide();
+    setScene(new CameraScene(this));
+    connect(this,SIGNAL(updated(const QImage&)),SLOT(update(const QImage&)));
 }
 
 CameraView::~CameraView()
 {
-    sock.disconnectFromServer();
     delete ui;
 }
 
@@ -47,91 +44,72 @@ void CameraView::leaveEvent(QEvent *event) {
 //    ui->pushButton_close->hide();
 }
 
-void CameraView::mouseMoveEvent(QMouseEvent * event) {
-
-}
-
-void CameraView::mousePressEvent(QMouseEvent * event) {
-
-}
 
 void CameraView::play() {
     cout << "play " << pipeName.toStdString() << endl;
-    sock.connectToServer(pipeName);
+
     camera->write("play\n");
     while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
     auto s = camera->readAll();
     playing = true;
+
+    task = std::thread([&](){
+        QLocalSocket sock;
+
+        sock.connectToServer(pipeName);
+        sock.waitForConnected();
+
+        while(QLocalSocket::ConnectedState == sock.state() && playing) {
+            tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
+
+            if(-1 == sock.write("size\n")) break;
+
+            while(sock.bytesAvailable() == 0) {
+                sock.waitForReadyRead(20);
+            }
+
+            auto whb = sock.readLine().split(' ');
+            auto w = whb[0].toUInt();
+            auto h = whb[1].toUInt();
+            auto b = whb[2].toUInt();
+            auto length = w*h*b;
+            rgbBuffer.resize(length);
+            sock.setReadBufferSize(length);
+
+            if(-1 == sock.write("frame\n")) break;
+
+            for(auto i=0;i < length;i += sock.read(rgbBuffer.data() + i,length - i)) {
+                sock.waitForReadyRead(20);
+            }
+
+            QImage img((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
+
+            if(QImage::Format::Format_Indexed8 == img.format()){
+                QVector<QRgb> grayColorTable;
+                for(int i = 0; i < 256; i++) grayColorTable.append(qRgb(i, i, i));
+                img.setColorTable(grayColorTable);
+            }
+
+            auto elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
+            displayFPS = 1.0f / elapsedTime * 1000;
+
+            tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
+            frames++;
+
+            emit updated(img);
+        }
+
+        sock.disconnectFromServer();
+    });
 }
 
-void CameraView::pause() {
-    cout << "pause " << sock.serverName().toStdString() << endl;
-    camera->write("pause\n");
-    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
-    auto s = camera->readAll();
-    playing = false;
-}
+void CameraView::update(const QImage &img) {
+    auto cs = dynamic_cast<CameraScene*>(scene());
+    cs->update(img);
 
-void CameraView::stop() {
-    cout << "stop " << sock.serverName().toStdString() << endl;
-    camera->write("stop\n");
-    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
-    auto s = camera->readAll();
-    sock.disconnectFromServer();
-    playing = false;
-}
+    auto w = img.width();
+    auto h = img.height();
 
-void CameraView::process() {
-    static auto tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
-
-    if (QLocalSocket::ConnectedState != sock.state()) {
-        return;
-    }
-
-    sock.write("size\n");
-
-    while(sock.bytesAvailable() == 0) {
-        QApplication::processEvents();
-        sock.waitForReadyRead(20);
-        if (QLocalSocket::ConnectedState != sock.state()) return;
-    }
-
-    auto whb = sock.readLine().split(' ');
-    auto w = whb[0].toUInt();
-    auto h = whb[1].toUInt();
-    auto b = whb[2].toUInt();
-    auto length = w*h*b;
-    rgbBuffer.resize(length);
-    sock.setReadBufferSize(length);
-
-    sock.write("frame\n");
-
-    for(auto i=0;i < length;i += sock.read(rgbBuffer.data() + i,length - i)) {
-        QApplication::processEvents();
-        sock.waitForReadyRead(20);
-        if (QLocalSocket::ConnectedState != sock.state()) return;
-    }
-
-    static QImage img((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
-
-    if(QImage::Format::Format_Indexed8 == img.format()){
-        QVector<QRgb> grayColorTable;
-        for(int i = 0; i < 256; i++) grayColorTable.append(qRgb(i, i, i));
-        img.setColorTable(grayColorTable);
-    }
-
-    scene()->clear();
-    background = scene()->addPixmap(QPixmap::fromImage(img));
-
-    for(auto line : lines) {
-        auto x = std::get<0>(line);
-        auto y = std::get<1>(line);
-        auto pen = std::get<2>(line);
-        scene()->addLine(x,0,x,h,pen);
-        scene()->addLine(0,y,w,y,pen);
-    }
-
-    setSceneRect(0,0,w,h);
     resetTransform();
 
     auto sw = width() / float(w);
@@ -139,18 +117,30 @@ void CameraView::process() {
     auto scaleValue = std::min(sw,sh) * currentScale;
 
     scale(scaleValue,scaleValue);
+}
 
-    auto elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
-    displayFPS = 1.0f / elapsedTime * 1000;
+void CameraView::pause() {
+    cout << "pause " << pipeName.toStdString() << endl;
+    camera->write("pause\n");
+    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
+    auto s = camera->readAll();
+    playing = false;
+}
 
-    tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
-    frames++;
+void CameraView::stop() {
+    emit ui->pushButton_close->clicked();
 
-    emit sock.connected();
+    playing = false;
+
+    cout << "stop " << pipeName.toStdString() << endl;
+    camera->write("stop\n");
+    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
+    auto s = camera->readAll();
+
+    task.join();
 }
 
 void CameraView::on_pushButton_close_clicked()
 {
     setParent(nullptr);
 }
-

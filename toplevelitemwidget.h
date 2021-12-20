@@ -52,6 +52,7 @@ public:
     QStringList whiteBalance();
     void whiteBalanceMode(int index);
     void onceWhiteBalance();
+    void whiteBalanceWindow(int x,int y,int w,int h);
     void rgb(int r,int g,int b);
     void saturation(int value);
     void monochrome(int enable);
@@ -75,6 +76,11 @@ public:
     void noise(int enable);
     void noise3d(int enable,int value);
     void rotate(int value);
+    void deadPixels(QString x,QString y);
+    void flatFieldCorrent(int enable);
+    void flatFieldInit(int light);
+    void flatFieldParamsSave(QString filepath);
+    void flatFieldParamsLoad(QString filepath);
 
     QStringList video();
     void frameRateSpeed(int index);
