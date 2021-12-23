@@ -2,11 +2,13 @@
 #define TOPLEVELITEMWIDGET_H
 
 #include "cameraview.h"
+#include "calibrationdialog.h"
 
 #include <QWidget>
 #include <QTreeWidgetItem>
 #include <QProcess>
 #include <QTimer>
+
 
 namespace Ui {
 class TopLevelItemWidget;
@@ -127,6 +129,7 @@ public:
     QString cameraName;
     QProcess camera;
     CameraView* cameraView;
+    CalibrationDialog calibrationDialog;
 };
 
 

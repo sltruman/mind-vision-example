@@ -113,6 +113,7 @@ bool DeviceItem::open() {
     auto res = s.split(' ');
     cameraView->camera = &camera;
     cameraView->pipeName = cameraName;
+    calibrationDialog.camera = &camera;
     if(res[0] == "True")
         cameraView->play();
     else

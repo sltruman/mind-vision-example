@@ -177,6 +177,8 @@ private Q_SLOTS:
 
     void on_pushButton_saveFlatFieldParams_clicked();
 
+    void on_pushButton_calibration_clicked();
+
 private:
     Ui::MainWindow *ui;
     QTreeWidgetItem* selectedCameraItem;

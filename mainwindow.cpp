@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0",this));
     ui->treeWidget_devices->expandAll();
 
-    ui->tabWidget_params->hide();
+    ui->dockWidget_rightSide->hide();
     ui->widget_control->hide();
     ui->widget_status->hide();
 
@@ -276,11 +276,11 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) {
-        ui->tabWidget_params->hide();
+        ui->dockWidget_rightSide->hide();
         ui->widget_control->hide();
         ui->widget_status->hide();
     } else {
-        ui->tabWidget_params->show();
+        ui->dockWidget_rightSide->show();
         ui->widget_control->show();
         ui->widget_status->show();
 
@@ -1293,4 +1293,12 @@ void MainWindow::on_pushButton_loadFlatFieldParams_clicked()
     auto filename = QFileDialog::getOpenFileName(this,tr("Select file"),"",tr("config Files(*.ffc )"));
     if(filename.isEmpty()) return;
     deviceItem->flatFieldParamsLoad(filename.replace('/','\\'));
+}
+
+void MainWindow::on_pushButton_calibration_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+
+    deviceItem->calibrationDialog.exec();
 }

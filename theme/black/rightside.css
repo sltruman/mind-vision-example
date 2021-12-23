@@ -1,3 +1,12 @@
+#dockWidget_rightSide {
+    color: white;
+    font:bold 15px "Microsoft YaHei UI";
+}
+
+#dockWidget_rightSide::title {
+    background-color: #23262F;
+    border-top:1px solid #444444;
+}
 
 #tabWidget_params QGroupBox:title {
     color:white;
@@ -31,9 +40,11 @@
     background-color: #201B22;
 }
 
+#tabWidget_params QPushButton,
 #tabWidget_params QGroupBox,
 #tabWidget_params QLabel,
 #tabWidget_params QCheckBox {
     color: #7F8082;
     font: 15px "Microsoft YaHei UI";
 }
+

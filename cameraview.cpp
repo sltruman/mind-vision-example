@@ -44,7 +44,6 @@ void CameraView::leaveEvent(QEvent *event) {
 //    ui->pushButton_close->hide();
 }
 
-
 void CameraView::play() {
     cout << "play " << pipeName.toStdString() << endl;
 

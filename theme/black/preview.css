@@ -48,17 +48,23 @@ MainWindow {
 #widget_control QPushButton {
     border:none;
     color: #7F8082;
+    font:bold 15px "Microsoft YaHei UI";
 }
 
 #widget_control QPushButton:hover {
     background-color: #303030;
 }
 
-#widget_status QLabel{
-    color: #7F8082;
+#widget_status {
+    background-color: #303030;
 }
 
-#widget_status QPushButton{
+#widget_status QLabel {
+    color: #7F8082;
+    font: 15px "Microsoft YaHei UI";
+}
+
+#widget_status QPushButton {
     border:none;
     color: #7F8082;
 }
