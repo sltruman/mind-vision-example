@@ -38,6 +38,11 @@ public:
     void ReadParamsFromCamera();
     void DrawBoard(int index);
     void DrawCurrentBoard();
+    void RemoveBoard(int index);
+    int width();
+    int height();
+    QString cameraMatraix();
+    QString distortCoeffs();
 
     std::vector<Board*> m_Boards;
     std::auto_ptr<Result> m_Result;
@@ -49,6 +54,14 @@ private slots:
     void on_pushButton_calibrate_clicked();
 
     void on_listWidget_calibrations_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+
+    void on_listWidget_calibrations_customContextMenuRequested(const QPoint &pos);
+
+    void on_actionRemove_triggered();
+
+    void on_actionClear_triggered();
+
+    void on_pushButton_applyCalibration_clicked();
 
 private:
     Ui::CalibrationDialog *ui;

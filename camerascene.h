@@ -16,6 +16,11 @@ public:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
+    QPoint coordinate;
+
+    bool resolutionWindow;
+    QRect resolutionWindowPos;
+
     bool whiteBalanceWindow;
     QRect whiteBalanceWindowPos;
 
@@ -25,7 +30,7 @@ public:
     QMap<int,std::tuple<int,int,QPen>> lines;
     QGraphicsPixmapItem* background;
 
-    void update(const QImage &img);
+    void update(int x,int y,const QImage &img);
 
     bool leftButtonPressed;
 };

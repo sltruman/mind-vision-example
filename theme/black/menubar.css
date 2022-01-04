@@ -23,6 +23,7 @@ MainMenu QMenu {
 MainMenu QMenu::item {
     color:white;
     padding: 12px;
+    width: 58px;
 }
 
 MainMenu QMenu::item:selected { /* when user selects item using mouse or keyboard */

@@ -35,12 +35,14 @@ MainWindow::MainWindow(QWidget *parent)
     auto usb = ui->treeWidget_devices->topLevelItem(1);
 
     ui->treeWidget_devices->setItemWidget(gige,0,new TopLevelItemWidget(gige,"GIGE,GiGeCamera",this));
-    ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0",this));
+    ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0,Usb2Camera1",this));
+
     ui->treeWidget_devices->expandAll();
 
     ui->dockWidget_rightSide->hide();
     ui->widget_control->hide();
     ui->widget_status->hide();
+    ui->tabWidget_preview->tabBar()->hide();
 
     connect(&cameraStatusUpdate,SIGNAL(timeout()),SLOT(at_cameraStatusUpdate_timeout()),Qt::QueuedConnection);
     cameraStatusUpdate.setInterval(1000);
@@ -77,7 +79,9 @@ void MainWindow::at_cameraStatusUpdate_timeout()
         ui->label_zoom->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
         ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
         ui->label_frames->setText(QString::number(deviceItem->cameraView->frames));
+        ui->label_coordinate->setText(deviceItem->cameraView->coordinate);
         ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing);
+
 
         ui->pushButton_snapshot->setText(deviceItem->snapshotState() ? tr("Stop") : tr("Snapshot"));
         ui->pushButton_snapshot->setCheckable(deviceItem->snapshotState());
@@ -167,7 +171,7 @@ void MainWindow::on_pushButton_zoomIn_clicked()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
 
-    deviceItem->cameraView->currentScale += deviceItem->cameraView->currentScale * 0.2;
+    deviceItem->cameraView->currentScale *= 1.2;
 }
 
 void MainWindow::on_pushButton_zoomOut_clicked()
@@ -175,7 +179,7 @@ void MainWindow::on_pushButton_zoomOut_clicked()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
 
-    deviceItem->cameraView->currentScale -= deviceItem->cameraView->currentScale * 0.2;
+    deviceItem->cameraView->currentScale *= 0.8;
 }
 
 void MainWindow::on_pushButton_zoomFull_clicked()
@@ -219,11 +223,6 @@ void MainWindow::on_pushButton_record_clicked()
     deviceItem->recordStart(mainMenu->recordDialog.dir(),mainMenu->recordDialog.format(),mainMenu->recordDialog.quality(),mainMenu->recordDialog.frames());
     emit at_cameraStatusUpdate_timeout();
 }
-
-//void MainWindow::on_pushButton_customStatus_clicked()
-//{
-
-//}
 
 void MainWindow::on_pushButton_playOrStop_clicked()
 {
@@ -301,23 +300,16 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
     ui->label_manufacturer_2->setText("Mind Vision");
 }
 
-void MainWindow::on_comboBox_exposureMode_currentIndexChanged(int index)
+void MainWindow::on_comboBox_exposureMode_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    ui->groupBox_automationExposure->setVisible(index);
-    ui->groupBox_manualExposure->setHidden(index);
-
     deviceItem->exposureMode(index);
 }
 
-void MainWindow::on_slider_brightness_valueChanged(int value)
+void MainWindow::on_comboBox_exposureMode_currentIndexChanged(int index)
 {
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->brightness(value);
+    ui->groupBox_automationExposure->setVisible(index);
+    ui->groupBox_manualExposure->setHidden(index);
 }
 
 void MainWindow::on_checkBox_flicker_stateChanged(int arg1)
@@ -326,22 +318,6 @@ void MainWindow::on_checkBox_flicker_stateChanged(int arg1)
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
      deviceItem->flicker(arg1);
-}
-
-void MainWindow::on_slider_gain_valueChanged(int value)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->gain(value);
-}
-
-void MainWindow::on_slider_exposureTime_valueChanged(int value)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->exposureTime(value);
 }
 
 void MainWindow::on_comboBox_frequency_currentIndexChanged(int index)
@@ -354,15 +330,15 @@ void MainWindow::on_comboBox_frequency_currentIndexChanged(int index)
 
 void MainWindow::on_comboBox_whiteBalanceMode_currentIndexChanged(int index)
 {
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
     ui->slider_r->setDisabled(index);
     ui->slider_g->setDisabled(index);
     ui->slider_b->setDisabled(index);
     ui->slider_saturation->setDisabled(index);
 
-    deviceItem->whiteBalanceMode(index);
+    ui->spinBox_r->setReadOnly(index);
+    ui->spinBox_g->setReadOnly(index);
+    ui->spinBox_b->setReadOnly(index);
+    ui->spinBox_saturation->setReadOnly(index);
 }
 
 void MainWindow::on_pushButton_onceWhiteBalance_clicked()
@@ -374,73 +350,6 @@ void MainWindow::on_pushButton_onceWhiteBalance_clicked()
 
     emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
-
-void MainWindow::on_slider_r_valueChanged(int value)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-
-    deviceItem->rgb(value,ui->slider_g->value(),ui->slider_b->value());
-}
-
-
-void MainWindow::on_slider_g_valueChanged(int value)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->rgb(ui->slider_r->value(),value,ui->slider_b->value());
-}
-
-
-void MainWindow::on_slider_b_valueChanged(int value)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->rgb(ui->slider_r->value(),ui->slider_g->value(),value);
-}
-
-
-void MainWindow::on_slider_saturation_valueChanged(int value)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->saturation(value);
-}
-
-
-void MainWindow::on_slider_gamma_valueChanged(int value)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->gamma(value);
-
-    auto lookupTables = deviceItem->lookupTablesForDynamic();
-
-    auto line = new QSplineSeries();
-    auto values = lookupTables[6].split(',');
-    for(int i=0;i < values.size();i++) {
-        line->append(i, values[i].toInt());
-    }
-
-    ui->chartView_lut->chart()->removeAllSeries();
-    ui->chartView_lut->chart()->addSeries(line);
-    ui->chartView_lut->chart()->createDefaultAxes();
-}
-
-
-void MainWindow::on_slider_contrastRatio_sliderMoved(int position)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->contrastRatio(position);
-}
-
 
 void MainWindow::on_comboBox_resolution_currentIndexChanged(int index)
 {
@@ -466,15 +375,19 @@ void MainWindow::on_checkBox_verticalMirror_stateChanged(int arg1)
     deviceItem->verticalMirror(arg1);
 }
 
-
-void MainWindow::on_slider_acutance_sliderMoved(int value)
+void MainWindow::on_spinBox_acutance_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->acutance(value);
+    auto v = ui->spinBox_acutance->value();
+    deviceItem->acutance(v);
 }
 
+void MainWindow::on_slider_acutance_sliderMoved(int position)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    ui->spinBox_acutance->setValue(position);
+    emit ui->spinBox_acutance->editingFinished();
+}
 
 void MainWindow::on_pushButton_resetParams_clicked()
 {
@@ -484,7 +397,6 @@ void MainWindow::on_pushButton_resetParams_clicked()
     deviceItem->paramsReset();
     emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
-
 
 void MainWindow::on_pushButton_loadParamsFromFile_clicked()
 {
@@ -544,29 +456,64 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             ui->slider_brightness->setMinimum(exposure[1].toUInt());
             ui->slider_brightness->setMaximum(exposure[2].toUInt());
             ui->slider_brightness->setValue(exposure[3].toUInt());
+
+            ui->spinBox_brightness->setMinimum(exposure[1].toUInt());
+            ui->spinBox_brightness->setMaximum(exposure[2].toUInt());
+            ui->spinBox_brightness->setValue(exposure[3].toUInt());
+
             ui->checkBox_flicker->setChecked(exposure[4].toUInt());
             ui->comboBox_frequency->setCurrentIndex(exposure[5].toUInt());
+
             ui->slider_gain->setMinimum(exposure[6].toUInt());
             ui->slider_gain->setMaximum(exposure[7].toUInt());
             ui->slider_gain->setValue(exposure[8].toUInt());
+
+            ui->spinBox_gain->setMinimum(exposure[6].toUInt());
+            ui->spinBox_gain->setMaximum(exposure[7].toUInt());
+            ui->spinBox_gain->setValue(exposure[8].toUInt());
+            ui->spinBox_gainMinimum->setValue(exposure[6].toUInt());
+            ui->spinBox_gainMaximum->setValue(exposure[7].toUInt());
+
             ui->slider_exposureTime->setMinimum(exposure[9].toUInt());
             ui->slider_exposureTime->setMaximum(exposure[10].toUInt());
             ui->slider_exposureTime->setValue(exposure[11].toUInt());
+
+            ui->spinBox_exposureTime->setMinimum(exposure[9].toUInt());
+            ui->spinBox_exposureTime->setMaximum(exposure[10].toUInt());
+            ui->spinBox_exposureTime->setValue(exposure[11].toUInt());
+            ui->spinBox_exposureTimeMinimum->setValue(exposure[9].toUInt());
+            ui->spinBox_exposureTimeMaximum->setValue(exposure[10].toUInt());
         } else if(index == 1) {
             auto whiteBalance = deviceItem->whiteBalance();
             ui->comboBox_whiteBalanceMode->setCurrentIndex(whiteBalance[0].toUInt());
             ui->slider_r->setMinimum(whiteBalance[1].toUInt());
             ui->slider_r->setMaximum(whiteBalance[2].toUInt());
             ui->slider_r->setValue(whiteBalance[3].toUInt());
+            ui->spinBox_r->setMinimum(whiteBalance[1].toUInt());
+            ui->spinBox_r->setMaximum(whiteBalance[2].toUInt());
+            ui->spinBox_r->setValue(whiteBalance[3].toUInt());
+
             ui->slider_g->setMinimum(whiteBalance[4].toUInt());
             ui->slider_g->setMaximum(whiteBalance[5].toUInt());
             ui->slider_g->setValue(whiteBalance[6].toUInt());
+            ui->spinBox_g->setMinimum(whiteBalance[4].toUInt());
+            ui->spinBox_g->setMaximum(whiteBalance[5].toUInt());
+            ui->spinBox_g->setValue(whiteBalance[6].toUInt());
+
             ui->slider_b->setMinimum(whiteBalance[7].toUInt());
             ui->slider_b->setMaximum(whiteBalance[8].toUInt());
             ui->slider_b->setValue(whiteBalance[9].toUInt());
+            ui->spinBox_b->setMinimum(whiteBalance[7].toUInt());
+            ui->spinBox_b->setMaximum(whiteBalance[8].toUInt());
+            ui->spinBox_b->setValue(whiteBalance[9].toUInt());
+
             ui->slider_saturation->setMinimum(whiteBalance[10].toUInt());
             ui->slider_saturation->setMaximum(whiteBalance[11].toUInt());
             ui->slider_saturation->setValue(whiteBalance[12].toUInt());
+            ui->spinBox_saturation->setMinimum(whiteBalance[10].toUInt());
+            ui->spinBox_saturation->setMaximum(whiteBalance[11].toUInt());
+            ui->spinBox_saturation->setValue(whiteBalance[12].toUInt());
+
             ui->checkBox_monochrome->setChecked(whiteBalance[13].toUInt());
             ui->checkBox_inverse->setChecked(whiteBalance[14].toUInt());
             ui->comboBox_algorithm->setCurrentIndex(whiteBalance[15].toInt());
@@ -583,9 +530,14 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             auto isp = deviceItem->isp();
             ui->checkBox_horizontalMirror->setChecked(isp[0].toUInt());
             ui->checkBox_verticalMirror->setChecked(isp[1].toUInt());
+
             ui->slider_acutance->setMinimum(isp[2].toUInt());
             ui->slider_acutance->setMaximum(isp[3].toUInt());
             ui->slider_acutance->setValue(isp[4].toUInt());
+            ui->spinBox_acutance->setMinimum(isp[2].toUInt());
+            ui->spinBox_acutance->setMaximum(isp[3].toUInt());
+            ui->spinBox_acutance->setValue(isp[4].toUInt());
+
             ui->checkBox_noise->setChecked(isp[5].toUInt());
             if(isp[6].toUInt()) ui->comboBox_noise3D->setCurrentIndex(isp[7].toUInt() - 1);
             else ui->comboBox_noise3D->setCurrentIndex(0);
@@ -599,6 +551,7 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
                 auto yArray = isp[12].split(',');
                 for(auto i=0;i < xArray.size();i++) cs->deadPixelPos.append(QPoint(xArray[i].toUInt(),yArray[i].toUInt()));
             }
+            ui->checkBox_anamorphose->setChecked(isp[11].toUInt());
         } else if(index == 4) {
             auto video = deviceItem->video();
             ui->comboBox_frameRateSpeed->setCurrentIndex(video[0].toUInt());
@@ -691,35 +644,6 @@ void MainWindow::on_comboBox_colorTemrature_activated(int index)
     deviceItem->colorTemrature(index);
 }
 
-void MainWindow::on_comboBox_lutMode_currentIndexChanged(int index)
-{
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    deviceItem->lookupTableMode(index);
-
-    ui->groupBox_lutDynamic->hide();
-    ui->groupBox_lutPreset->hide();
-    ui->groupBox_lutCustom->hide();
-
-    if(index == 0) {
-        auto lookupTables = deviceItem->lookupTablesForDynamic();
-        ui->slider_gamma->setMinimum(lookupTables[0].toUInt());
-        ui->slider_gamma->setMaximum(lookupTables[1].toUInt());
-        ui->slider_gamma->setValue(lookupTables[2].toUInt());
-        ui->slider_contrastRatio->setMinimum(lookupTables[3].toUInt());
-        ui->slider_contrastRatio->setMaximum(lookupTables[4].toUInt());
-        ui->slider_contrastRatio->setValue(lookupTables[5].toUInt());
-        ui->groupBox_lutDynamic->show();
-    } else if(index == 1) {
-        auto lookupTables = deviceItem->lookupTablesForPreset();
-        ui->comboBox_lutPreset->setCurrentIndex(lookupTables[0].toUInt());
-        ui->groupBox_lutPreset->show();
-    } else if(index == 2) {
-        ui->comboBox_lutColorChannel->setCurrentIndex(0);
-        ui->groupBox_lutCustom->show();
-    } else {}
-}
 
 void MainWindow::on_comboBox_lutPreset_currentIndexChanged(int index)
 {
@@ -802,7 +726,6 @@ void MainWindow::on_spinBox_frameRateLimit_editingFinished()
 void MainWindow::on_comboBox_resolutionMode_currentIndexChanged(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     ui->groupBox_resolutionPreset->setHidden(index);
     ui->groupBox_resolutionCustom->setVisible(index);
@@ -811,11 +734,79 @@ void MainWindow::on_comboBox_resolutionMode_currentIndexChanged(int index)
         auto resolutions = deviceItem->resolutions();
         ui->comboBox_resolution->clear();
         ui->comboBox_resolution->addItems(resolutions);
-        auto resolution = deviceItem->resolution();
+        auto resolution = deviceItem->resolutionIndex();
         ui->comboBox_resolution->setCurrentIndex(resolution.toInt());
+    } else {
+        deviceItem->resolution(0);
+        auto resolution = deviceItem->resolution();
+        ui->spinBox_resolutionX->setValue(resolution[0].toInt());
+        ui->spinBox_resolutionY->setValue(resolution[1].toInt());
+        ui->spinBox_resolutionW->setValue(resolution[2].toInt());
+        ui->spinBox_resolutionH->setValue(resolution[3].toInt());
     }
+
+    dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->resolutionWindow = index;
 }
 
+void MainWindow::on_spinBox_resolutionX_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+    cs->resolutionWindowPos.setX(arg1);
+    cs->resolutionWindowPos.setY(ui->spinBox_resolutionY->value());
+    cs->resolutionWindowPos.setWidth(ui->spinBox_resolutionW->value());
+    cs->resolutionWindowPos.setHeight(ui->spinBox_resolutionH->value());
+}
+
+void MainWindow::on_spinBox_resolutionY_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+    cs->resolutionWindowPos.setX(ui->spinBox_resolutionX->value());
+    cs->resolutionWindowPos.setY(arg1);
+    cs->resolutionWindowPos.setWidth(ui->spinBox_resolutionW->value());
+    cs->resolutionWindowPos.setHeight(ui->spinBox_resolutionH->value());
+}
+
+void MainWindow::on_spinBox_resolutionW_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+    cs->resolutionWindowPos.setX(ui->spinBox_resolutionX->value());
+    cs->resolutionWindowPos.setY(ui->spinBox_resolutionY->value());
+    cs->resolutionWindowPos.setWidth(arg1);
+    cs->resolutionWindowPos.setHeight(ui->spinBox_resolutionH->value());
+}
+
+void MainWindow::on_spinBox_resolutionH_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+    cs->resolutionWindowPos.setX(ui->spinBox_resolutionX->value());
+    cs->resolutionWindowPos.setY(ui->spinBox_resolutionY->value());
+    cs->resolutionWindowPos.setWidth(ui->spinBox_resolutionW->value());
+    cs->resolutionWindowPos.setHeight(arg1);
+}
+
+void MainWindow::on_pushButton_resetResolutionRect_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->resolution(0);
+
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+    cs->resolutionWindow = true;
+}
+
+void MainWindow::on_pushButton_resolution_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
+    cs->resolutionWindow = false;
+
+    auto rect = cs->resolutionWindowPos;
+    deviceItem->resolution(rect.x(),rect.y(),rect.width(),rect.height());
+}
 
 void MainWindow::on_comboBox_ioMode0_activated(int index)
 {
@@ -938,11 +929,11 @@ void MainWindow::on_comboBox_triggerMode_currentIndexChanged(int index)
 
     if(index > 0) {
         ui->groupBox_trigger->show();
+        ui->groupBox_strobe->show();
     }
 
     if(index > 1) {
         ui->groupBox_outsideTrigger->show();
-        ui->groupBox_strobe->show();
     }
 }
 
@@ -1185,6 +1176,7 @@ void MainWindow::on_pushButton_modifyNickname_clicked()
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
     deviceItem->rename(ui->lineEdit_nickname->text());
+    QMessageBox::information(this,tr("Nickname"),tr("Apply ok!"));
 }
 
 void MainWindow::on_checkBox_whiteBalanceWindow_stateChanged(int arg1)
@@ -1238,7 +1230,7 @@ void MainWindow::on_pushButton_saveDeadPixels_clicked()
     if(!x.isEmpty()) x.remove(x.length()-1,1);
     deviceItem->deadPixels(x,y);
 
-    QMessageBox::information(nullptr, tr("Dead Pixels"), tr("Saved Dead Pixels!"), QMessageBox::Ok);
+    QMessageBox::information(this, tr("Dead Pixels"), tr("Saved Dead Pixels!"), QMessageBox::Ok);
 }
 
 void MainWindow::on_checkBox_flatFiledCorrect_stateChanged(int arg1)
@@ -1256,7 +1248,7 @@ void MainWindow::on_pushButton_darkField_clicked()
 
     try {
         deviceItem->flatFieldInit(0);
-        QMessageBox::information(nullptr, tr("Dark Field"), tr("Ok!"), QMessageBox::Ok);
+        QMessageBox::information(this, tr("Dark Field"), tr("Ok!"), QMessageBox::Ok);
     } catch(...) {
         QMessageBox::warning(nullptr, tr("Light Field"), tr("Light is not enough!"), QMessageBox::Ok);
     }
@@ -1269,7 +1261,7 @@ void MainWindow::on_pushButton_lightField_clicked()
 
     try {
         deviceItem->flatFieldInit(1);
-        QMessageBox::information(nullptr, tr("Light Field"), tr("Ok!"), QMessageBox::Ok);
+        QMessageBox::information(this, tr("Light Field"), tr("Ok!"), QMessageBox::Ok);
     } catch(...) {
         QMessageBox::warning(nullptr, tr("Light Field"), tr("Light is not enough!"), QMessageBox::Ok);
     }
@@ -1298,7 +1290,227 @@ void MainWindow::on_pushButton_loadFlatFieldParams_clicked()
 void MainWindow::on_pushButton_calibration_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem->calibrationDialog.exec())
+        return;
 
-    deviceItem->calibrationDialog.exec();
+    deviceItem->undistortParams(deviceItem->calibrationDialog.width(),deviceItem->calibrationDialog.height(),deviceItem->calibrationDialog.cameraMatraix(),deviceItem->calibrationDialog.distortCoeffs());
+    QMessageBox::information(this,tr("Calibration"),tr("Apply ok!"));
+}
+
+void MainWindow::on_slider_brightness_sliderMoved(int position)
+{
+    ui->spinBox_brightness->setValue(position);
+    emit ui->spinBox_brightness->editingFinished();
+}
+
+void MainWindow::on_spinBox_brightness_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v = ui->spinBox_brightness->value();
+    ui->slider_brightness->setValue(v);
+    deviceItem->brightness(v);
+}
+
+void MainWindow::on_slider_gain_sliderMoved(int position)
+{
+    ui->spinBox_gain->setValue(position);
+    emit ui->spinBox_gain->editingFinished();
+}
+
+void MainWindow::on_spinBox_gain_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v = ui->spinBox_gain->value();
+    ui->slider_gain->setValue(v);
+    deviceItem->gain(v);
+}
+
+void MainWindow::on_slider_exposureTime_sliderMoved(int position)
+{
+    ui->spinBox_exposureTime->setValue(position);
+    emit ui->spinBox_exposureTime->editingFinished();
+}
+
+void MainWindow::on_spinBox_exposureTime_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v = ui->spinBox_exposureTime->value();
+    ui->slider_exposureTime->setValue(v);
+    deviceItem->exposureTime(v);
+}
+
+void MainWindow::on_spinBox_gainMinimum_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->gainRange(ui->spinBox_gainMinimum->value(),ui->spinBox_gainMaximum->value());
+}
+
+void MainWindow::on_spinBox_gainMaximum_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->gainRange(ui->spinBox_gainMinimum->value(),ui->spinBox_gainMaximum->value());
+}
+
+void MainWindow::on_spinBox_exposureTimeMaximum_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->exposureTimeRange(ui->spinBox_exposureTimeMinimum->value(),ui->spinBox_exposureTimeMaximum->value());
+}
+
+void MainWindow::on_spinBox_exposureTimeMinimum_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->exposureTimeRange(ui->spinBox_gainMinimum->value(),ui->spinBox_gainMaximum->value());
+}
+
+void MainWindow::on_slider_r_sliderMoved(int position)
+{
+    ui->spinBox_r->setValue(position);
+    emit ui->spinBox_r->editingFinished();
+}
+
+void MainWindow::on_spinBox_r_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v = ui->spinBox_r->value();
+    deviceItem->rgb(v,ui->slider_g->value(),ui->slider_b->value());
+}
+
+void MainWindow::on_slider_g_sliderMoved(int position)
+{
+    ui->spinBox_g->setValue(position);
+    emit ui->spinBox_g->editingFinished();
+}
+
+void MainWindow::on_spinBox_g_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v = ui->spinBox_g->value();
+    deviceItem->rgb(ui->slider_r->value(),v,ui->slider_b->value());
+}
+
+void MainWindow::on_slider_b_sliderMoved(int position)
+{
+    ui->spinBox_b->setValue(position);
+    emit ui->spinBox_b->editingFinished();
+}
+
+void MainWindow::on_spinBox_b_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v = ui->spinBox_b->value();
+    deviceItem->rgb(ui->slider_r->value(),ui->slider_g->value(),v);
+}
+
+void MainWindow::on_slider_saturation_sliderMoved(int position)
+{
+    ui->spinBox_saturation->setValue(position);
+    emit ui->spinBox_saturation->editingFinished();
+}
+
+void MainWindow::on_spinBox_saturation_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v = ui->spinBox_saturation->value();
+    deviceItem->saturation(v);
+}
+
+void MainWindow::on_comboBox_whiteBalanceMode_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->whiteBalanceMode(index);
+}
+
+void MainWindow::on_comboBox_lutMode_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->lookupTableMode(index);
+}
+
+void MainWindow::on_comboBox_lutMode_currentIndexChanged(int index)
+{
+    ui->groupBox_lutDynamic->hide();
+    ui->groupBox_lutPreset->hide();
+    ui->groupBox_lutCustom->hide();
+
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    if(index == 0) {
+        auto lookupTables = deviceItem->lookupTablesForDynamic();
+        ui->slider_gamma->setMinimum(lookupTables[0].toUInt());
+        ui->slider_gamma->setMaximum(lookupTables[1].toUInt());
+        ui->slider_gamma->setValue(lookupTables[2].toUInt());
+        ui->spinBox_gamma->setMinimum(lookupTables[0].toUInt());
+        ui->spinBox_gamma->setMaximum(lookupTables[1].toUInt());
+        ui->spinBox_gamma->setValue(lookupTables[2].toUInt());
+
+        ui->slider_contrastRatio->setMinimum(lookupTables[3].toUInt());
+        ui->slider_contrastRatio->setMaximum(lookupTables[4].toUInt());
+        ui->slider_contrastRatio->setValue(lookupTables[5].toUInt());
+        ui->spinBox_contrastRatio->setMinimum(lookupTables[3].toUInt());
+        ui->spinBox_contrastRatio->setMaximum(lookupTables[4].toUInt());
+        ui->spinBox_contrastRatio->setValue(lookupTables[5].toUInt());
+        ui->groupBox_lutDynamic->show();
+    } else if(index == 1) {
+        auto lookupTables = deviceItem->lookupTablesForPreset();
+        ui->comboBox_lutPreset->setCurrentIndex(lookupTables[0].toUInt());
+        ui->groupBox_lutPreset->show();
+    } else if(index == 2) {
+        ui->comboBox_lutColorChannel->setCurrentIndex(0);
+        ui->groupBox_lutCustom->show();
+    } else {}
+}
+
+void MainWindow::on_spinBox_gamma_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v = ui->spinBox_gamma->value();
+    deviceItem->gamma(v);
+}
+
+void MainWindow::on_slider_gamma_valueChanged(int position)
+{
+    ui->spinBox_gamma->setValue(position);
+    emit ui->spinBox_gamma->editingFinished();
+
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto lookupTables = deviceItem->lookupTablesForDynamic();
+
+    auto line = new QSplineSeries();
+    auto values = lookupTables[6].split(',');
+    for(int i=0;i < values.size();i++) {
+        line->append(i, values[i].toInt());
+    }
+
+    ui->chartView_lut->chart()->removeAllSeries();
+    ui->chartView_lut->chart()->addSeries(line);
+    ui->chartView_lut->chart()->createDefaultAxes();
+}
+
+void MainWindow::on_spinBox_contrastRatio_editingFinished()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto v= ui->spinBox_contrastRatio->value();
+    deviceItem->contrastRatio(v);
+}
+
+void MainWindow::on_slider_contrastRatio_sliderMoved(int position)
+{
+    ui->spinBox_contrastRatio->setValue(position);
+    emit ui->spinBox_contrastRatio->editingFinished();
+}
+
+void MainWindow::on_checkBox_anamorphose_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->undistort(checked);
+}
+
+void MainWindow::on_pushButton_layout_clicked()
+{
+    if(nullptr == dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem())) {
+        ui->tabWidget_preview->setCurrentIndex(0);
+    } else {
+        ui->tabWidget_preview->setCurrentIndex(2);
+    }
 }

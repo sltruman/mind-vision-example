@@ -3,6 +3,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMenu>
 
 void DrawMat(cv::Mat const& img, QGraphicsView* view)
 {
@@ -536,10 +537,12 @@ void CalibrationDialog::on_pushButton_calibrate_clicked()
         DrawCurrentBoard();
 
         QMessageBox::information(this,tr("Calibration"),tr("Calibration ok!"));
+        ui->pushButton_applyCalibration->setEnabled(true);
     }
     else
     {
         QMessageBox::warning(this,tr("Calibration"),tr("Calibration failed!"));
+        ui->pushButton_applyCalibration->setDisabled(true);
     }
 }
 
@@ -547,4 +550,73 @@ void CalibrationDialog::on_listWidget_calibrations_currentItemChanged(QListWidge
 {
     if(current == nullptr) return;
     DrawBoard(ui->listWidget_calibrations->currentIndex().row());
+}
+
+void CalibrationDialog::on_listWidget_calibrations_customContextMenuRequested(const QPoint &pos)
+{
+    auto qMenu = new QMenu(ui->listWidget_calibrations);
+    qMenu->addAction(ui->actionRemove);
+    qMenu->addAction(ui->actionClear);
+    qMenu->exec(QCursor::pos()); //在鼠标点击的位置显示鼠标右键菜单
+}
+
+
+void CalibrationDialog::RemoveBoard(int index)
+{
+    if (index >= 0 && index < ui->listWidget_calibrations->count())
+    {
+        delete ui->listWidget_calibrations->takeItem(index);
+        delete m_Boards[index];
+        m_Boards.erase(m_Boards.begin() + index);
+    }
+}
+
+
+void CalibrationDialog::on_actionRemove_triggered()
+{
+    int index = ui->listWidget_calibrations->currentRow();
+    if (index >= 0)
+    {
+        RemoveBoard(index);
+    }
+}
+
+void CalibrationDialog::on_actionClear_triggered()
+{
+    while (!m_Boards.empty())
+    {
+        RemoveBoard(m_Boards.size() - 1);
+    }
+}
+
+void CalibrationDialog::on_pushButton_applyCalibration_clicked()
+{
+    accept();
+}
+
+int CalibrationDialog::width() {
+    if(nullptr == m_Result.get())
+        return 0;
+    return m_Result->Width();
+}
+
+int CalibrationDialog::height() {
+    if(nullptr == m_Result.get())
+        return 0;
+
+    return m_Result->Height();
+}
+
+QString CalibrationDialog::cameraMatraix() {
+    if(nullptr == m_Result.get())
+        return "0,0,0,0";
+
+    return QString("%1,%2,%3,%4").arg(m_Result->fx()).arg(m_Result->fy()).arg(m_Result->cx()).arg(m_Result->cy());
+}
+
+QString CalibrationDialog::distortCoeffs() {
+    if(nullptr == m_Result.get())
+        return "0,0,0,0,0";
+
+    return QString("%1,%2,%3,%4,%5").arg(m_Result->k1()).arg(m_Result->k2()).arg(m_Result->p1()).arg(m_Result->p2()).arg(m_Result->k3());
 }

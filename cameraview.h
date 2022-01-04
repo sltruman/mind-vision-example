@@ -32,24 +32,27 @@ public:
     void play();
     void pause();
     void stop();
-    bool playing;
+    bool playing,interupt;
 
     QString pipeName;
     float currentScale;
     int displayFPS;
     unsigned long long frames;
+    QString coordinate;
+    bool leftButtonPressed;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void enterEvent(QEvent *event) override;
     void leaveEvent(QEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
 Q_SIGNALS:
-    void updated(const QImage &img);
+    void updated(int w,int h,int x,int y,const QImage &img);
 
 private slots:
-    void update(const QImage &img);
+    void update(int w,int h,int x,int y,const QImage &img);
     void on_pushButton_close_clicked();
 
 private:

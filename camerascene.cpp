@@ -9,6 +9,7 @@ using namespace std;
 CameraScene::CameraScene(QObject *parent) : QGraphicsScene(parent)
   , deadPixelWindow(false)
   , whiteBalanceWindow(false)
+  , resolutionWindow(false)
   , leftButtonPressed(false)
 {
     background = addPixmap(QPixmap(0,0));
@@ -17,7 +18,10 @@ CameraScene::CameraScene(QObject *parent) : QGraphicsScene(parent)
 void CameraScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     leftButtonPressed = true;
 
-    if(whiteBalanceWindow) {
+    if(resolutionWindow) {
+        resolutionWindowPos.setLeft(event->scenePos().x());
+        resolutionWindowPos.setTop(event->scenePos().y());
+    } else if(whiteBalanceWindow) {
         whiteBalanceWindowPos.setLeft(event->scenePos().x());
         whiteBalanceWindowPos.setTop(event->scenePos().y());
     } else if(deadPixelWindow) {
@@ -29,7 +33,12 @@ void CameraScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void CameraScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
-    if(whiteBalanceWindow && leftButtonPressed) {
+    coordinate = event->scenePos().toPoint();
+
+    if(resolutionWindow && leftButtonPressed) {
+        resolutionWindowPos.setRight(event->scenePos().x());
+        resolutionWindowPos.setBottom(event->scenePos().y());
+    } else if(whiteBalanceWindow && leftButtonPressed) {
         whiteBalanceWindowPos.setRight(event->scenePos().x());
         whiteBalanceWindowPos.setBottom(event->scenePos().y());
     }
@@ -37,9 +46,17 @@ void CameraScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 
 void CameraScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     leftButtonPressed = false;
+
+    if(!resolutionWindowPos.isValid()) {
+        resolutionWindowPos.setRect(0,0,sceneRect().width(),sceneRect().height());
+    }
+
+    if(!whiteBalanceWindowPos.isValid()) {
+        whiteBalanceWindowPos.setRect(0,0,sceneRect().width(),sceneRect().height());
+    }
 }
 
-void CameraScene::update(const QImage &rimg)
+void CameraScene::update(int x,int y,const QImage &rimg)
 {
     auto img = const_cast<QImage&>(rimg);
 
@@ -64,7 +81,11 @@ void CameraScene::update(const QImage &rimg)
         addLine(0,y,w,y,pen);
     }
 
-    if(whiteBalanceWindow && whiteBalanceWindowPos.isValid()) {
+    if(whiteBalanceWindow) {
         addRect(whiteBalanceWindowPos,QPen(QColor(Qt::red),4));
+    }
+
+    if(resolutionWindow) {
+        addRect(resolutionWindowPos,QPen(QColor(Qt::red),4));
     }
 }

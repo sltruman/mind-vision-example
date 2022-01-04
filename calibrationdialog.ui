@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Calibration</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="99,1">
    <item>
@@ -63,7 +63,11 @@
       </layout>
      </item>
      <item>
-      <widget class="QListWidget" name="listWidget_calibrations"/>
+      <widget class="QListWidget" name="listWidget_calibrations">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_51">
@@ -222,12 +226,15 @@
        <item>
         <widget class="QPushButton" name="pushButton_calibrate">
          <property name="text">
-          <string>calibrate</string>
+          <string>correct</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_applyCalibration">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>apply</string>
          </property>
@@ -238,6 +245,22 @@
     </layout>
    </item>
   </layout>
+  <action name="actionRemove">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -9,7 +9,6 @@
 #include <QProcess>
 #include <QTimer>
 
-
 namespace Ui {
 class TopLevelItemWidget;
 }
@@ -48,7 +47,9 @@ public:
     void brightness(int value);
     void flicker(int value);
     void gain(int value);
+    void gainRange(int minimum,int maximum);
     void exposureTime(int value);
+    void exposureTimeRange(int minimum,int maximum);
     void frequency(int value);
 
     QStringList whiteBalance();
@@ -83,15 +84,19 @@ public:
     void flatFieldInit(int light);
     void flatFieldParamsSave(QString filepath);
     void flatFieldParamsLoad(QString filepath);
+    void undistort(int enable);
+    void undistortParams(int w,int h,QString cameraMatrix,QString distortCoeffs);
 
     QStringList video();
     void frameRateSpeed(int index);
     void frameRateLimit(int value);
 
     QString resolutionMode();
+    QString resolutionIndex();
+    QStringList resolution();
     QStringList resolutions();
-    QString resolution();
     void resolution(int value);
+    void resolution(int x,int y,int w,int h);
 
     QStringList io();
     void ioMode(QString type,int index,int value);
@@ -124,7 +129,6 @@ public:
     void recordStart(QString dir,int format,int quality,int frames);
     bool recordState();
     void recordStop();
-
 
     QString cameraName;
     QProcess camera;

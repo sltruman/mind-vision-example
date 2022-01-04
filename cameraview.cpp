@@ -12,12 +12,13 @@ using std::cout;
 CameraView::CameraView(QWidget *parent) :
     QGraphicsView(parent),
     ui(new Ui::CameraView),
-    currentScale(0.99f),displayFPS(0),frames(0),playing(false)
+    currentScale(0.99f),displayFPS(0),frames(0),playing(false),
+    leftButtonPressed(false)
 {
     ui->setupUi(this);
     ui->pushButton_close->hide();
     setScene(new CameraScene(this));
-    connect(this,SIGNAL(updated(const QImage&)),SLOT(update(const QImage&)));
+    connect(this,SIGNAL(updated(int,int,int,int,const QImage&)),SLOT(update(int,int,int,int,const QImage&)));
 }
 
 CameraView::~CameraView()
@@ -44,6 +45,26 @@ void CameraView::leaveEvent(QEvent *event) {
 //    ui->pushButton_close->hide();
 }
 
+void CameraView::wheelEvent(QWheelEvent *event) {
+    if(event->angleDelta().y() > 0) currentScale *= 1.1;
+    else currentScale *= 0.9;
+}
+
+//void CameraView::mousePressEvent(QMouseEvent *event) {
+//    leftButtonPressed = true;
+//    posBegin = event->pos();
+//}
+
+//void CameraView::mouseMoveEvent(QMouseEvent *event) {
+//    if(leftButtonPressed) {
+//        posEnd = event->pos() - posBegin;
+//    }
+//}
+
+//void CameraView::mouseReleaseEvent(QMouseEvent *event) {
+//    leftButtonPressed = false;
+//}
+
 void CameraView::play() {
     cout << "play " << pipeName.toStdString() << endl;
 
@@ -52,25 +73,33 @@ void CameraView::play() {
     auto s = camera->readAll();
     playing = true;
 
+    if(task.joinable()) return;
+    interupt = false;
+
     task = std::thread([&](){
         QLocalSocket sock;
 
         sock.connectToServer(pipeName);
         sock.waitForConnected();
 
-        while(QLocalSocket::ConnectedState == sock.state() && playing) {
+        while(QLocalSocket::ConnectedState == sock.state() && !this->interupt) {
             tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
 
-            if(-1 == sock.write("size\n")) break;
+            if(-1 == sock.write("normal\n")) break;
 
             while(sock.bytesAvailable() == 0) {
                 sock.waitForReadyRead(20);
+                if(this->interupt) break;
             }
 
             auto whb = sock.readLine().split(' ');
-            auto w = whb[0].toUInt();
-            auto h = whb[1].toUInt();
-            auto b = whb[2].toUInt();
+            if(whb.size() < 3) break;
+
+            auto wm = whb[0].toUInt();
+            auto hm = whb[1].toUInt();
+            auto w = whb[2].toUInt();
+            auto h = whb[3].toUInt();
+            auto b = whb[4].toUInt();
             auto length = w*h*b;
             rgbBuffer.resize(length);
             sock.setReadBufferSize(length);
@@ -79,11 +108,12 @@ void CameraView::play() {
 
             for(auto i=0;i < length;i += sock.read(rgbBuffer.data() + i,length - i)) {
                 sock.waitForReadyRead(20);
+                if(this->interupt) break;
             }
 
             QImage img((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
 
-            if(QImage::Format::Format_Indexed8 == img.format()){
+            if(QImage::Format::Format_Indexed8 == img.format()) {
                 QVector<QRgb> grayColorTable;
                 for(int i = 0; i < 256; i++) grayColorTable.append(qRgb(i, i, i));
                 img.setColorTable(grayColorTable);
@@ -95,20 +125,17 @@ void CameraView::play() {
             tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
             frames++;
 
-            emit updated(img);
+            emit updated(wm,hm,0,0,img);
         }
 
         sock.disconnectFromServer();
     });
 }
 
-void CameraView::update(const QImage &img) {
+void CameraView::update(int w,int h,int x,int y,const QImage &img) {
     auto cs = dynamic_cast<CameraScene*>(scene());
-    cs->update(img);
 
-    auto w = img.width();
-    auto h = img.height();
-
+    cs->update(x,y,img);
     resetTransform();
 
     auto sw = width() / float(w);
@@ -116,6 +143,13 @@ void CameraView::update(const QImage &img) {
     auto scaleValue = std::min(sw,sh) * currentScale;
 
     scale(scaleValue,scaleValue);
+
+    if(cs->whiteBalanceWindow || cs->deadPixelWindow || cs->resolutionWindow)
+        setDragMode(QGraphicsView::NoDrag);
+    else
+        setDragMode(QGraphicsView::ScrollHandDrag);
+
+    coordinate = QString("%1,%2").arg(cs->coordinate.x()).arg(cs->coordinate.y());
 }
 
 void CameraView::pause() {
@@ -129,14 +163,17 @@ void CameraView::pause() {
 void CameraView::stop() {
     emit ui->pushButton_close->clicked();
 
+    interupt = true;
     playing = false;
 
     cout << "stop " << pipeName.toStdString() << endl;
     camera->write("stop\n");
     while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
-    auto s = camera->readAll();
 
+    auto s = camera->readAll();
     task.join();
+
+    scene()->addPixmap(QPixmap(0,0));
 }
 
 void CameraView::on_pushButton_close_clicked()
