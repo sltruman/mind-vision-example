@@ -29,6 +29,7 @@ public:
 
     QProcess* camera;
 
+    void zoom(float);
     void play();
     void pause();
     void stop();
@@ -40,7 +41,7 @@ public:
     unsigned long long frames;
     QString coordinate;
     bool leftButtonPressed;
-
+    QImage img;
 protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
@@ -49,10 +50,10 @@ protected:
     void wheelEvent(QWheelEvent *event) override;
 
 Q_SIGNALS:
-    void updated(int w,int h,int x,int y,const QImage &img);
+    void updated(const QImage &img);
 
 private slots:
-    void update(int w,int h,int x,int y,const QImage &img);
+    void update(const QImage &img);
     void on_pushButton_close_clicked();
 
 private:

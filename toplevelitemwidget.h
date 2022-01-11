@@ -19,7 +19,7 @@ class TopLevelItemWidget : public QWidget
 
 public:
     explicit TopLevelItemWidget(QTreeWidgetItem *topLevelItem,QString series,QWidget *parent);
-    ~TopLevelItemWidget();
+    virtual ~TopLevelItemWidget();
 
     QTreeWidgetItem* topLevelItem;
     QString series;
@@ -37,7 +37,7 @@ class DeviceItem : public QTreeWidgetItem
 {
 public:
     DeviceItem(QTreeWidgetItem *parent, QString name);
-    ~DeviceItem();
+    virtual ~DeviceItem();
 
     bool open();
     void close();
@@ -45,6 +45,7 @@ public:
     QStringList exposure();
     void exposureMode(int value);
     void brightness(int value);
+    void threshold(int value);
     void flicker(int value);
     void gain(int value);
     void gainRange(int minimum,int maximum);
@@ -80,6 +81,8 @@ public:
     void noise3d(int enable,int value);
     void rotate(int value);
     void deadPixels(QString x,QString y);
+    QStringList dead_pixels_analyze_for_bright(int threshold);
+    QStringList dead_pixels_analyze_for_dead(int threshold);
     void flatFieldCorrent(int enable);
     void flatFieldInit(int light);
     void flatFieldParamsSave(QString filepath);
@@ -129,6 +132,8 @@ public:
     void recordStart(QString dir,int format,int quality,int frames);
     bool recordState();
     void recordStop();
+
+    QStringList status(QString type);
 
     QString cameraName;
     QProcess camera;

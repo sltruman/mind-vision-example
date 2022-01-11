@@ -18,29 +18,38 @@ CameraScene::CameraScene(QObject *parent) : QGraphicsScene(parent)
 void CameraScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     leftButtonPressed = true;
 
+    auto x = event->scenePos().x();
+    auto y = event->scenePos().y();
+
     if(resolutionWindow) {
-        resolutionWindowPos.setLeft(event->scenePos().x());
-        resolutionWindowPos.setTop(event->scenePos().y());
+        resolutionWindowPos.setLeft(x < sceneRect().x() ? 0 : x);
+        resolutionWindowPos.setTop(y < sceneRect().y() ? 0 : y);
+        resolutionWindowPos.setRight(resolutionWindowPos.left());
+        resolutionWindowPos.setBottom(resolutionWindowPos.top());
     } else if(whiteBalanceWindow) {
-        whiteBalanceWindowPos.setLeft(event->scenePos().x());
-        whiteBalanceWindowPos.setTop(event->scenePos().y());
+        whiteBalanceWindowPos.setLeft(x < sceneRect().x() ? 0 : x);
+        whiteBalanceWindowPos.setTop(y < sceneRect().y() ? 0 : y);
+        whiteBalanceWindowPos.setRight(resolutionWindowPos.left());
+        whiteBalanceWindowPos.setBottom(resolutionWindowPos.top());
     } else if(deadPixelWindow) {
-        if(-1 == deadPixelPos.indexOf(QPoint(event->scenePos().x(),event->scenePos().y())))
-            deadPixelPos.append(QPoint(event->scenePos().x(),event->scenePos().y()));
+        if(-1 == manualPixels.indexOf(QPoint(event->scenePos().x(),event->scenePos().y())))
+            manualPixels.append(QPoint(event->scenePos().x(),event->scenePos().y()));
         else
-            deadPixelPos.removeOne(QPoint(event->scenePos().x(),event->scenePos().y()));
+            manualPixels.removeOne(QPoint(event->scenePos().x(),event->scenePos().y()));
     }
 }
 
 void CameraScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     coordinate = event->scenePos().toPoint();
+    auto x = event->scenePos().x();
+    auto y = event->scenePos().y();
 
     if(resolutionWindow && leftButtonPressed) {
-        resolutionWindowPos.setRight(event->scenePos().x());
-        resolutionWindowPos.setBottom(event->scenePos().y());
+        resolutionWindowPos.setRight(x > sceneRect().width() ? sceneRect().width() : x);
+        resolutionWindowPos.setBottom(y > sceneRect().height() ? sceneRect().height() : y);
     } else if(whiteBalanceWindow && leftButtonPressed) {
-        whiteBalanceWindowPos.setRight(event->scenePos().x());
-        whiteBalanceWindowPos.setBottom(event->scenePos().y());
+        whiteBalanceWindowPos.setRight(x > sceneRect().width() ? sceneRect().width() : x);
+        whiteBalanceWindowPos.setBottom(y > sceneRect().height() ? sceneRect().height() : y);
     }
 }
 
@@ -56,15 +65,17 @@ void CameraScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     }
 }
 
-void CameraScene::update(int x,int y,const QImage &rimg)
+void CameraScene::update(const QImage &rimg)
 {
     auto img = const_cast<QImage&>(rimg);
 
     clear();
 
     if(deadPixelWindow) {
-        for(auto pos : deadPixelPos)
-            img.setPixel(pos.x(),pos.y(), qRgb(255,0,0));
+        for(auto pos : manualPixels + existedPixels)
+            img.setPixel(pos.x(),pos.y(), qRgb(255,255,0));
+        for(auto pos : deadPixels + brightPixels)
+            img.setPixel(pos.x(),pos.y(), qRgb(0,255,0));
     }
 
     auto w = img.width();

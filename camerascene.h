@@ -25,12 +25,12 @@ public:
     QRect whiteBalanceWindowPos;
 
     bool deadPixelWindow;
-    QList<QPoint> deadPixelPos;
+    QList<QPoint> existedPixels,manualPixels,deadPixels,brightPixels;
 
     QMap<int,std::tuple<int,int,QPen>> lines;
     QGraphicsPixmapItem* background;
 
-    void update(int x,int y,const QImage &img);
+    void update(const QImage &img);
 
     bool leftButtonPressed;
 };

@@ -83,6 +83,8 @@ private Q_SLOTS:
 
     void on_comboBox_exposureMode_activated(int index);
     void on_comboBox_exposureMode_currentIndexChanged(int index);
+    void at_exposureStatusUpdate();
+
     void on_comboBox_whiteBalanceMode_currentIndexChanged(int index);
     void on_checkBox_flicker_stateChanged(int arg1);
     void on_comboBox_frequency_currentIndexChanged(int index);
@@ -197,14 +199,22 @@ private Q_SLOTS:
     void on_comboBox_lutMode_activated(int index);
     void on_spinBox_gamma_editingFinished();
     void on_spinBox_contrastRatio_editingFinished();
-    void on_slider_gamma_valueChanged(int position);
+    void on_slider_gamma_sliderMoved(int position);
     void on_slider_contrastRatio_sliderMoved(int position);
     void on_checkBox_anamorphose_clicked(bool checked);
     void on_pushButton_layout_clicked();   
+    void on_spinBox_threshold_editingFinished();
+    void on_pushButton_analyzeDeadPixels_clicked();
+    void on_pushButton_analyzeBrightPixels_clicked();
+
+    void on_pushButton_clearOldPixels_clicked();
+
+    void on_pushButton_clearNewPixels_clicked();
 
 private:
     Ui::MainWindow *ui;
     QTreeWidgetItem* selectedCameraItem;
     QTimer cameraStatusUpdate;
+    QTimer exposureStatusUpdate;
 };
 #endif // MAINWINDOW_H

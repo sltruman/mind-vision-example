@@ -48,7 +48,8 @@ void TopLevelItemWidget::on_toolButton_refresh_clicked()
             }
         }
 
-        delete item;
+        deviceItem->close();
+        delete deviceItem;
 
 FOUND_DEVICE:
         ;
@@ -152,6 +153,13 @@ void DeviceItem::brightness(int value) {
     auto s = camera.readAll();
 }
 
+void DeviceItem::threshold(int value) {
+    cout << "threshold " << value << endl;
+    camera.write(QString("threshold-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto s = camera.readAll();
+}
+
 void DeviceItem::flicker(int value) {
     camera.write(QString("flicker-set %1\n").arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
@@ -180,8 +188,8 @@ void DeviceItem::exposureTime(int value) {
 }
 
 void DeviceItem::exposureTimeRange(int minimum,int maximum) {
-    cout << "exposure-time-range-set %1 %2 " << minimum << ' ' << maximum << endl;
-    camera.write(QString("exposure-time-range-set %1\n").arg(minimum).arg(maximum).toLocal8Bit());
+    cout << "exposure-time-range-set " << minimum << ' ' << maximum << endl;
+    camera.write(QString("exposure-time-range-set %1 %2\n").arg(minimum).arg(maximum).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
@@ -367,17 +375,19 @@ QStringList DeviceItem::resolutions() {
     if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
     auto s = camera.readAll();
     cout << s.data();
-    auto res = QString(s).split('\n');
+    auto res = QString::fromLocal8Bit(s).split('\n');
     return res[2].split(',');
 }
 
 void DeviceItem::resolution(int index) {
+    cout << "resolution-set " << index << endl;
     camera.write(QString("resolution-set %1\n").arg(index).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::resolution(int x,int y,int w,int h) {
+    cout << "resolution-custom-set " << x << ',' << y << ',' << w << ',' << h << endl;
     camera.write(QString("resolution-custom-set %1 %2 %3 %4\n").arg(x).arg(y).arg(w).arg(h).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
@@ -436,6 +446,35 @@ void DeviceItem::deadPixels(QString x, QString y) {
 //    camera.write(QString("dead-pixels-set %1 %2\n").arg(x).arg(y).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
+}
+
+QStringList DeviceItem::dead_pixels_analyze_for_bright(int threshold) {
+    camera.write(QString("dead-pixels-analyze-for-bright %1\n").arg(threshold).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
+    auto ipc = camera.readAll();
+
+    QFile f(ipc.replace("\r\n",""));
+    f.open(QIODevice::ReadOnly | QIODevice::Text);
+    auto res = QString(f.readAll()).split('\n');
+    if(res.size()) res.removeLast();
+    f.close();
+    return res;
+}
+
+QStringList DeviceItem::dead_pixels_analyze_for_dead(int threshold) {
+    cout << "dead-pixels-analyze-for-dead " << threshold << endl;
+    camera.write(QString("dead-pixels-analyze-for-dead %1\n").arg(threshold).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
+    auto ipc = camera.readAll();
+
+    QFile f(ipc.replace("\r\n",""));
+    f.open(QIODevice::ReadOnly | QIODevice::Text);
+    auto res = QString(f.readAll()).split('\n');
+    if(res.size()) res.removeLast();
+    f.close();
+    return res;
 }
 
 void DeviceItem::flatFieldCorrent(int enable) {
@@ -686,7 +725,6 @@ void DeviceItem::recordStart(QString dir,int format,int quality,int frames) {
     camera.write(QString("record-start %1 %2 %3 %4\n").arg(dir).arg(format).arg(quality).arg(frames).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readAll();
-    cout << s.data();
     auto res = QString(s).split(' ');
 }
 
@@ -699,7 +737,6 @@ bool DeviceItem::recordState() {
     camera.write("record-state\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readAll();
-    cout << s.data();
     auto res = QString(s).split(' ');
     return res[1] == "1";
 }
@@ -708,6 +745,14 @@ void DeviceItem::recordStop() {
     camera.write("record-stop\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto s = camera.readAll();
-    cout << s.data();
     auto res = QString(s).split(' ');
+}
+
+QStringList DeviceItem::status(QString type) {
+    camera.write(QString("status %1\n").arg(type).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    if(camera.readLine().indexOf("True")) throw runtime_error("");
+    auto s = camera.readAll();
+    cout << s.data();
+    return QString(s).split(',');
 }

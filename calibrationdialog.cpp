@@ -26,8 +26,17 @@ void DrawMat(cv::Mat const& img, QGraphicsView* view)
 
     view->scene()->clear();
     view->scene()->addPixmap(QPixmap::fromImage(frame));
-}
 
+    auto w=imgTmp.cols;
+    auto h=imgTmp.rows;
+    view->resetTransform();
+
+    auto sw = view->width() / float(w);
+    auto sh = view->height() / float(h);
+    auto scaleValue = std::min(sw,sh);
+
+    view->scale(scaleValue,scaleValue);
+}
 
 class CalibrationDialog::Result
 {
