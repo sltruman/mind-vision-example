@@ -61,10 +61,13 @@ RESOURCES += \
 
 DISTFILES += \
     theme/black.css \
+    theme/black/calibration.css \
     theme/black/leftside.css \
     theme/black/menubar.css \
     theme/black/preview.css \
+    theme/black/record.css \
     theme/black/rightside.css \
+    theme/black/snapshot.css \
     theme/icon/1.png \
     theme/icon/12.png \
     theme/icon/2.png \

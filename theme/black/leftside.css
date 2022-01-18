@@ -1,16 +1,16 @@
 #dockWidget_leftSide {
     color: white;
-    font:bold 15px "Microsoft YaHei UI";
+    font:bold 14px "Microsoft YaHei UI";
 }
 
 #dockWidget_leftSide::title {
     background-color: #23262F;
     border-top:1px solid #444444;
+    border-right:1px solid #444444;
 }
 
 #treeWidget_devices QMenu {
     background-color: #23262F;
-    border: 1px solid gray;
     color: white;
 }
 
@@ -19,15 +19,12 @@
 }
 
 #treeWidget_devices {
-    border-image: url(:/theme/icon/left-side.png);
-}
-
-#treeWidget_devices {
-    background: transparent;
     color: white;
+    background-image: url(:/theme/icon/left-side.png);
     background-repeat: no-repeat;
     background-position:center;
-    font: 15px "Microsoft YaHei UI";
+    font: 14px "Microsoft YaHei UI";
+    border-right:1px solid #444444;
 }
 
 #treeWidget_devices::branch:has-siblings:!adjoins-item,
@@ -75,6 +72,10 @@
     color: white;
 }
 
+#widget_information {
+    border-right: 1px solid #444444;
+}
+
 #dockWidget_leftSide #layout_leftSideCameraInfo {
     background-color:#191919;
 }
@@ -88,7 +89,7 @@
 #label_series,
 #label_manufacturer {
     color: #7F8082;
-    font: bold 15px "Microsoft YaHei UI";
+    font: bold 14px "Microsoft YaHei UI";
 }
 
 #label_deviceName_2,
@@ -100,5 +101,5 @@
 #label_series_2,
 #label_manufacturer_2 {
     color: white;
-    font: 15px "Microsoft YaHei UI";
+    font: 14px "Microsoft YaHei UI";
 }

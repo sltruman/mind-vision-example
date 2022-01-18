@@ -88,14 +88,17 @@ private Q_SLOTS:
     void on_comboBox_whiteBalanceMode_currentIndexChanged(int index);
     void on_checkBox_flicker_stateChanged(int arg1);
     void on_comboBox_frequency_currentIndexChanged(int index);
-    void on_checkBox_horizontalMirror_stateChanged(int arg1);
-    void on_checkBox_verticalMirror_stateChanged(int arg1);
+    void on_checkBox_horizontalMirrorSoft_stateChanged(int arg1);
+    void on_checkBox_verticalMirrorSoft_stateChanged(int arg1);
+    void on_checkBox_horizontalMirrorHard_stateChanged(int arg1);
+    void on_checkBox_verticalMirrorHard_stateChanged(int arg1);
     void on_spinBox_acutance_editingFinished();
     void on_slider_acutance_sliderMoved(int value);
 
     void on_comboBox_resolution_currentIndexChanged(int index);
     void on_pushButton_resetParams_clicked();
     void on_pushButton_loadParamsFromFile_clicked();
+    void on_pushButton_saveParamsToFile_clicked();
     void on_pushButton_saveParams_clicked();
     void on_comboBox_params_activated(int index);
     void on_actionTop_triggered();
@@ -210,6 +213,19 @@ private Q_SLOTS:
     void on_pushButton_clearOldPixels_clicked();
 
     void on_pushButton_clearNewPixels_clicked();
+
+    void on_slider_outputRange_sliderMoved(int position);
+
+    void on_comboBox_outputFormats_activated(int index);
+
+    void on_pushButton_low8Bit_clicked();
+
+    void on_pushButton_high8Bit_clicked();
+
+
+
+
+    void on_comboBox_outputFormats_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;

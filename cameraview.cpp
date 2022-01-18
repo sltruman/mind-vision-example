@@ -121,7 +121,7 @@ void CameraView::play() {
                     if(this->interupt) break;
                 }
 
-                img = QImage((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
+                img = QImage((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8).copy();
 
                 if(QImage::Format::Format_Indexed8 == img.format()) {
                     QVector<QRgb> grayColorTable;
@@ -176,6 +176,10 @@ void CameraView::pause() {
 }
 
 void CameraView::stop() {
+    if(interupt) {
+        return;
+    }
+
     emit ui->pushButton_close->clicked();
 
     interupt = true;

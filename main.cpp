@@ -41,6 +41,21 @@ int main(int argc, char *argv[])
     css += cssRightSide.readAll();
     cssRightSide.close();
 
+    QFile cssSnapshot("theme/black/snapshot.css");
+    cssSnapshot.open(QFile::ReadOnly);
+    css += cssSnapshot.readAll();
+    cssSnapshot.close();
+
+    QFile cssRecord("theme/black/record.css");
+    cssRecord.open(QFile::ReadOnly);
+    css += cssRecord.readAll();
+    cssRecord.close();
+
+    QFile cssCalibration("theme/black/calibration.css");
+    cssCalibration.open(QFile::ReadOnly);
+    css += cssCalibration.readAll();
+    cssCalibration.close();
+
     qApp->setStyleSheet(css);
 
     MainWindow w;

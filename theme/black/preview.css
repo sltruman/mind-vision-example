@@ -15,12 +15,7 @@ MainWindow {
 }
 
 #tabWidget_preview QTabBar::tab {
-    background-color:#1C1D22;
-    border-color:#1C1D22;
-    color:white;
-    font: bold 15px "Microsoft YaHei UI";
-    width:80px;
-    height:29px;
+
 }
 
 #tabWidget_preview QTabBar::tab:selected, QTabBar::tab:hover {
@@ -32,23 +27,39 @@ MainWindow {
     background-image: url(:/theme/icon/index.png);
     background-position:center;
     background-repeat: no-repeat;
+    border-top:1px solid #444444;
+    border-left:1px solid #444444;
 }
 
 #tabWidget_preview QGraphicsView {
-    background-color: #38393B;
     background-image: url(:/theme/icon/camera-background.png);
     background-position:center;
     background-repeat: no-repeat;
+    border-top:1px solid #444444;
+    border-left:1px solid #444444;
+    border-right:1px solid #444444;
+    border-bottom:1px solid #444444;
 }
 
+
+#widget_control QFrame,
+#widget_status QFrame {
+    color: #444444;
+}
+
+
 #widget_control {
-    border-image: url(:/theme/icon/bottom-side.png);
+    background-image: url(:/theme/icon/bottom-side.png);
+    background-position:center;
+    background-repeat: no-repeat;
+    border-left:1px solid #444444;
+    border-right:1px solid #444444;
 }
 
 #widget_control QPushButton {
     border:none;
     color: #7F8082;
-    font:bold 15px "Microsoft YaHei UI";
+    font:bold 14px "Microsoft YaHei UI";
 }
 
 #widget_control QPushButton:hover {
@@ -57,11 +68,14 @@ MainWindow {
 
 #widget_status {
     background-color: #303030;
+    border-left:1px solid #444444;
+    border-right:1px solid #444444;
 }
 
 #widget_status QLabel {
     color: #7F8082;
-    font: 15px "Microsoft YaHei UI";
+    font: 14px "Microsoft YaHei UI";
+    oppia
 }
 
 #widget_status QPushButton {
@@ -71,4 +85,21 @@ MainWindow {
 
 #widget_status QPushButton:hover {
     background-color: #303030;
+}
+
+#widget_status #label_resolution,
+#widget_status #label_zoom,
+#widget_status #label_frames,
+#widget_status #label_displayFPS,
+#widget_status #label_coordinate,
+#widget_status #label_recordFPS,
+#widget_status #label_temperature,
+#widget_status #label_resolution,
+#widget_status #label_lost,
+#widget_status #label_resend,
+#widget_status #label_linkSpeed,
+#widget_status #label_recover,
+#widget_status #label_packSize {
+    color: white;
+    font: 14px "Microsoft YaHei UI";
 }

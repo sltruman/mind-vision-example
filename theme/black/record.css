@@ -1,0 +1,100 @@
+#RecordDialog {
+    background-image: url(:/theme/icon/left-side.png);
+}
+
+#RecordDialog QRadioButton {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#RecordDialog QLabel {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#RecordDialog QFrame {
+    color: #393B3C;
+}
+
+#RecordDialog QGroupBox {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#RecordDialog QCheckBox {
+    color: white;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#RecordDialog QPushButton{
+    border:1 solid gray;
+    background-color: gray;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    padding:1px 5px;
+    border-radius:2px;
+}
+
+#SnapshotDialog QCheckBox::indicator:unchecked {
+    background-color: #181921;
+    border: 1px solid gray;
+}
+
+#SnapshotDialog QCheckBox::indicator:checked {
+    border: 1px solid gray;
+    background-image: url(":/theme/images/checked.png");
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#RecordDialog QLineEdit{
+    border: 1px solid gray;
+    border-radius:2px;
+    background-color: #181921;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+}
+
+
+#RecordDialog QSpinBox,
+#RecordDialog QDoubleSpinBox {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
+
+#RecordDialog QSpinBox::up-button,
+#RecordDialog QDoubleSpinBox::up-button,
+#RecordDialog QSpinBox::down-button,
+#RecordDialog QDoubleSpinBox::down-button {
+    border:none;
+}
+
+#RecordDialog QComboBox {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    padding: 1px 18px 1px 3px;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
+
+#RecordDialog QComboBox QAbstractItemView {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    color: white;
+    border-radius:2px;
+    font:14px "Microsoft YaHei UI";
+}
+
+#RecordDialog QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: #292C2D;
+    border-left-style: solid;
+    border-radius:2px;
+}

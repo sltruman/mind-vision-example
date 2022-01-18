@@ -46,5 +46,7 @@
         <file>theme/icon/minimum.png</file>
         <file>theme/icon/normal.png</file>
         <file>theme/icon/camera.png</file>
+        <file>theme/images/checked.png</file>
+        <file>theme/images/tab.png</file>
     </qresource>
 </RCC>

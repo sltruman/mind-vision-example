@@ -166,28 +166,28 @@ void DeviceItem::flicker(int value) {
     auto res = QString(camera.readAll()).split(' ');
 }
 
-void DeviceItem::gain(int value) {
+void DeviceItem::gain(float value) {
     cout << "gain-set " << value << endl;
     camera.write(QString("gain-set %1\n").arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
 
-void DeviceItem::gainRange(int minimum,int maximum) {
+void DeviceItem::gainRange(float minimum,float maximum) {
     cout << "gain-range-set " << minimum << ' ' << maximum << endl;
     camera.write(QString("gain-range-set %1 %2\n").arg(minimum).arg(maximum).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
 
-void DeviceItem::exposureTime(int value) {
+void DeviceItem::exposureTime(float value) {
     cout << "exposure-time-set " << value << endl;
     camera.write(QString("exposure-time-set %1\n").arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
 
-void DeviceItem::exposureTimeRange(int minimum,int maximum) {
+void DeviceItem::exposureTimeRange(float minimum,float maximum) {
     cout << "exposure-time-range-set " << minimum << ' ' << maximum << endl;
     camera.write(QString("exposure-time-range-set %1 %2\n").arg(minimum).arg(maximum).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
@@ -403,14 +403,14 @@ QStringList DeviceItem::isp(){
     return QString(res).split(' ');
 }
 
-void DeviceItem::horizontalMirror(int value){
-    camera.write(QString("horizontal-mirror-set %1\n").arg(value).toLocal8Bit());
+void DeviceItem::horizontalMirror(int hard,int value){
+    camera.write(QString("horizontal-mirror-set %1 %2\n").arg(hard).arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
 
-void DeviceItem::verticalMirror(int value){
-    camera.write(QString("vertical-mirror-set %1\n").arg(value).toLocal8Bit());
+void DeviceItem::verticalMirror(int hard,int value){
+    camera.write(QString("vertical-mirror-set %1 %2\n").arg(hard).arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
@@ -515,16 +515,19 @@ void DeviceItem::undistortParams(int w,int h,QString cameraMatrix,QString distor
     if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
 }
 
-QStringList DeviceItem::video() {
+std::tuple<QStringList,QStringList> DeviceItem::video() {
     cout << "video " << endl;
     camera.write("video\n");
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
-    cout << s.data();
-    auto res = QString(s).split(' ');
-    if(res[0] != "True") throw runtime_error("");
-    res.removeFirst();
-    return res;
+    if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
+    auto res = camera.readLine();
+    cout << res.data();
+    auto s = QString(res).split(',');
+    res = camera.readLine();
+    cout << res.data();
+    auto output_formats = QString(res).split(',');
+    output_formats.removeLast();
+    return make_tuple(s,output_formats);
 }
 
 void DeviceItem::frameRateSpeed(int index) {
@@ -535,6 +538,19 @@ void DeviceItem::frameRateSpeed(int index) {
 
 void DeviceItem::frameRateLimit(int value) {
     camera.write(QString("frame-rate-limit-set %1\n").arg(value).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::rawOutputFormat(int index) {
+    camera.write(QString("video-output-format-set %1\n").arg(index).toLocal8Bit());
+    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    auto res = QString(camera.readAll()).split(' ');
+}
+
+void DeviceItem::rawOutputRange(int value) {
+    cout << "raw-output-range-set " << value << endl;
+    camera.write(QString("raw-output-range-set %1\n").arg(value).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');
 }
@@ -653,6 +669,7 @@ QStringList DeviceItem::firmware() {
 }
 
 void DeviceItem::rename(QString name) {
+
     camera.write(QString("rename %1\n").arg(name).toLocal8Bit());
     while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
     auto res = QString(camera.readAll()).split(' ');

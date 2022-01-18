@@ -1,0 +1,111 @@
+#CalibrationDialog {
+    background-image: url(:/theme/icon/left-side.png);
+}
+
+#CalibrationDialog QLabel {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#CalibrationDialog QFrame {
+    color: #393B3C;
+}
+
+#CalibrationDialog QGroupBox {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#CalibrationDialog QCheckBox {
+    color: white;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#CalibrationDialog QCheckBox::indicator:unchecked {
+    background-color: #181921;
+    border: 1px solid gray;
+}
+
+#CalibrationDialog QCheckBox::indicator:checked {
+    border: 1px solid gray;
+    background-image: url(":/theme/images/checked.png");
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#CalibrationDialog QPushButton{
+    border:1 solid gray;
+    background-color: gray;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    padding:1px 5px;
+    border-radius:2px;
+}
+
+#CalibrationDialog QCheckBox {
+    color: white;
+    font: 14px "Microsoft YaHei UI";
+}
+
+
+#CalibrationDialog QLineEdit{
+    border: 1px solid gray;
+    border-radius:2px;
+    background-color: #181921;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+}
+
+
+#CalibrationDialog QSpinBox,
+#CalibrationDialog QDoubleSpinBox {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
+
+#CalibrationDialog QSpinBox::up-button,
+#CalibrationDialog QDoubleSpinBox::up-button,
+#CalibrationDialog QSpinBox::down-button,
+#CalibrationDialog QDoubleSpinBox::down-button {
+    border:none;
+}
+
+#CalibrationDialog QComboBox {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    padding: 1px 18px 1px 3px;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
+
+#CalibrationDialog QComboBox QAbstractItemView {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    color: white;
+    border-radius:2px;
+    font:14px "Microsoft YaHei UI";
+}
+
+#CalibrationDialog QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: #292C2D;
+    border-left-style: solid;
+    border-radius:2px;
+}
+
+
+#CalibrationDialog QGraphicsView {
+    background-color: #181921;
+}
+
+
+#CalibrationDialog QListWidget {
+    background-color: #181921;
+}

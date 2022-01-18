@@ -47,10 +47,10 @@ public:
     void brightness(int value);
     void threshold(int value);
     void flicker(int value);
-    void gain(int value);
-    void gainRange(int minimum,int maximum);
-    void exposureTime(int value);
-    void exposureTimeRange(int minimum,int maximum);
+    void gain(float value);
+    void gainRange(float minimum,float maximum);
+    void exposureTime(float value);
+    void exposureTimeRange(float minimum,float maximum);
     void frequency(int value);
 
     QStringList whiteBalance();
@@ -74,8 +74,8 @@ public:
     void lookupTablePreset(int index);
 
     QStringList isp();
-    void horizontalMirror(int value);
-    void verticalMirror(int value);
+    void horizontalMirror(int hard,int value);
+    void verticalMirror(int hard,int value);
     void acutance(int value);
     void noise(int enable);
     void noise3d(int enable,int value);
@@ -90,9 +90,11 @@ public:
     void undistort(int enable);
     void undistortParams(int w,int h,QString cameraMatrix,QString distortCoeffs);
 
-    QStringList video();
+    std::tuple<QStringList,QStringList> video();
     void frameRateSpeed(int index);
     void frameRateLimit(int value);
+    void rawOutputFormat(int index);
+    void rawOutputRange(int value);
 
     QString resolutionMode();
     QString resolutionIndex();

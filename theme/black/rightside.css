@@ -1,11 +1,20 @@
 #dockWidget_rightSide {
     color: white;
-    font:bold 15px "Microsoft YaHei UI";
+    font: bold 14px "Microsoft YaHei UI";
 }
 
 #dockWidget_rightSide::title {
     background-color: #23262F;
     border-top:1px solid #444444;
+    border-left:1px solid #444444;
+}
+
+#tabWidget_params {
+
+}
+
+#tabWidget_params #chartView_lut {
+    background-color: transparent;
 }
 
 #tabWidget_params QGroupBox:title {
@@ -13,7 +22,10 @@
 }
 
 #tabWidget_params::pane {
-    border-image: url(:/theme/icon/right-side.png);
+    background-image: url(:/theme/icon/right-side.png);
+    background-position:center;
+    background-repeat: no-repeat;
+    border-left:1px solid #444444;
 }
 
 #tabWidget_params::tab-bar {
@@ -21,15 +33,19 @@
 }
 
 #tabWidget_params QTabBar::tab {
-    border-color:#1C1D22;
-    color:white;
-    font: bold 12px "Microsoft YaHei UI";
-    width:30px;
-    height:70px;
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+    width: 24px;
+    height: 71px;
+    border-left:1px solid #444444;
+    border-bottom: 1px solid #444444;
 }
 
 #tabWidget_params QTabBar::tab:selected, QTabBar::tab:hover {
-    background-color: #4D4D4D;
+    background-image: url(:/theme/images/tab.png);
+    background-position:center;
+    background-repeat: no-repeat;
+    color:white;
 }
 
 #tabWidget_params #widget_paramsTitleBar {
@@ -40,11 +56,129 @@
     background-color: #201B22;
 }
 
-#tabWidget_params QPushButton,
-#tabWidget_params QGroupBox,
-#tabWidget_params QLabel,
-#tabWidget_params QCheckBox {
-    color: #7F8082;
-    font: 15px "Microsoft YaHei UI";
+#tabWidget_params QFrame {
+    color: #393B3C;
 }
 
+#tabWidget_params QGroupBox {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#tabWidget_params QLabel {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#tabWidget_params #label_versionInfomation,
+#tabWidget_params #label_firmwareUpdate,
+#tabWidget_params #label_strobe,
+#tabWidget_params #label_outsideTriggerParams,
+#tabWidget_params #label_triggerParams,
+#tabWidget_params #label_triggerMode,
+#tabWidget_params #label_frameSpeed,
+#tabWidget_params #label_rawOutputRange,
+#tabWidget_params #label_outputFormat,
+#tabWidget_params #label_customResolution,
+#tabWidget_params #label_automationExposure,
+#tabWidget_params #label_manualExposure,
+#tabWidget_params #label_whiteBanlance,
+#tabWidget_params #label_lutDynamic,
+#tabWidget_params #label_colorRaise,
+#tabWidget_params #label_custom,
+#tabWidget_params #label_raw2Rgb,
+#tabWidget_params #label_acutance,
+#tabWidget_params #label_denoise,
+#tabWidget_params #label_deadPixels,
+#tabWidget_params #label_resolutionMode,
+#tabWidget_params #label_flatFieldCorrect{
+    font: 12px "Microsoft YaHei UI";
+}
+
+#tabWidget_params QCheckBox {
+    color: white;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#tabWidget_params QCheckBox::indicator:unchecked {
+    background-color: #181921;
+    border: 1px solid gray;
+}
+
+#tabWidget_params QCheckBox::indicator:checked {
+    border: 1px solid gray;
+    background-image: url(":/theme/images/checked.png");
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#tabWidget_params QComboBox {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    padding: 1px 18px 1px 3px;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
+
+#tabWidget_params QComboBox QAbstractItemView {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    color: white;
+    border-radius:2px;
+    font:14px "Microsoft YaHei UI";
+}
+
+#tabWidget_params QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: #292C2D;
+    border-left-style: solid;
+    border-radius:2px;
+}
+
+#tabWidget_params QSpinBox,
+#tabWidget_params QDoubleSpinBox {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
+
+#tabWidget_params QSpinBox::up-button,
+#tabWidget_params QDoubleSpinBox::up-button,
+#tabWidget_params QSpinBox::down-button,
+#tabWidget_params QDoubleSpinBox::down-button {
+    border:none;
+}
+
+#tabWidget_params QSlider::groove:horizontal {
+    background-color: #292C2D;
+    height: 3px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+}
+
+#tabWidget_params QSlider::handle:horizontal {
+    background-color: #2D7AD2;
+    width: 5px;
+    margin: -4px 0px;
+}
+
+#tabWidget_params QPushButton{
+    border:1 solid gray;
+    background-color: gray;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    padding:1px 5px;
+    border-radius:2px;
+}
+
+#tabWidget_params QLineEdit{
+    border: 1px solid gray;
+    background-color: #181921;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
