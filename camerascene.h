@@ -21,6 +21,9 @@ public:
     bool resolutionWindow;
     QRect resolutionWindowPos;
 
+    bool exposureWindow;
+    QRect exposureWindowPos;
+
     bool whiteBalanceWindow;
     QRect whiteBalanceWindowPos;
 

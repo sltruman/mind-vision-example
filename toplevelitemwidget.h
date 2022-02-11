@@ -3,10 +3,10 @@
 
 #include "cameraview.h"
 #include "calibrationdialog.h"
+#include "cameraprocess.h"
 
 #include <QWidget>
 #include <QTreeWidgetItem>
-#include <QProcess>
 #include <QTimer>
 
 namespace Ui {
@@ -18,42 +18,47 @@ class TopLevelItemWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit TopLevelItemWidget(QTreeWidgetItem *topLevelItem,QString series,QWidget *parent);
+    explicit TopLevelItemWidget(QTreeWidgetItem *topLevelItem,QString series,QTreeWidget *parent);
     virtual ~TopLevelItemWidget();
 
     QTreeWidgetItem* topLevelItem;
     QString series;
     QTimer t;
 
-private slots:
+public slots:
     void on_toolButton_refresh_clicked();
     void statusUpdate();
 
 private:
     Ui::TopLevelItemWidget *ui;
+    QTreeWidget* parent;
 };
 
 class DeviceItem : public QTreeWidgetItem
 {
 public:
-    DeviceItem(QTreeWidgetItem *parent, QString name);
+    DeviceItem(TopLevelItemWidget *w,QTreeWidgetItem *parent, QString name);
     virtual ~DeviceItem();
+
+
+public:
 
     bool open();
     void close();
 
-    QStringList exposure();
+    std::tuple<QStringList,QStringList> exposure();
     void exposureMode(int value);
     void brightness(int value);
     void threshold(int value);
     void flicker(int value);
-    void gain(float value);
-    void gainRange(float minimum,float maximum);
-    void exposureTime(float value);
-    void exposureTimeRange(float minimum,float maximum);
+    void gain(int value);
+    void gainRange(int minimum,int maximum);
+    void exposureTime(int value);
+    void exposureTimeRange(int minimum,int maximum);
     void frequency(int value);
+    void exposureWindow(int x,int y,int w,int h);
 
-    QStringList whiteBalance();
+    std::tuple<QStringList,QStringList> whiteBalance();
     void whiteBalanceMode(int index);
     void onceWhiteBalance();
     void whiteBalanceWindow(int x,int y,int w,int h);
@@ -90,7 +95,7 @@ public:
     void undistort(int enable);
     void undistortParams(int w,int h,QString cameraMatrix,QString distortCoeffs);
 
-    std::tuple<QStringList,QStringList> video();
+    std::tuple<QStringList,QStringList,QStringList> video();
     void frameRateSpeed(int index);
     void frameRateLimit(int value);
     void rawOutputFormat(int index);
@@ -107,7 +112,7 @@ public:
     void ioMode(QString type,int index,int value);
     void ioState(QString type,int index,int value);
 
-    QStringList controls();
+    std::tuple<QStringList,QStringList,QStringList> controls();
     void triggerMode(int);
     void onceSoftTrigger();
     void triggerFrames(int);
@@ -115,6 +120,7 @@ public:
     void triggerInterval(int);
     void outsideTriggerMode(int);
     void outsideTriggerDebounce(int);
+    void outsideShutter(int);
     void flashMode(int);
     void flashPolarity(int);
     void strobeDelay(int);
@@ -136,6 +142,7 @@ public:
     void recordStop();
 
     QStringList status(QString type);
+    QString brightness();
 
     QString cameraName;
     QProcess camera;

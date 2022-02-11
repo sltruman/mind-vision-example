@@ -80,12 +80,8 @@ private Q_SLOTS:
 //    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_treeWidget_devices_itemSelectionChanged();
     void on_pushButton_onceWhiteBalance_clicked();
-
-    void on_comboBox_exposureMode_activated(int index);
-    void on_comboBox_exposureMode_currentIndexChanged(int index);
     void at_exposureStatusUpdate();
 
-    void on_comboBox_whiteBalanceMode_currentIndexChanged(int index);
     void on_checkBox_flicker_stateChanged(int arg1);
     void on_comboBox_frequency_currentIndexChanged(int index);
     void on_checkBox_horizontalMirrorSoft_stateChanged(int arg1);
@@ -96,11 +92,8 @@ private Q_SLOTS:
     void on_slider_acutance_sliderMoved(int value);
 
     void on_comboBox_resolution_currentIndexChanged(int index);
-    void on_pushButton_resetParams_clicked();
     void on_pushButton_loadParamsFromFile_clicked();
     void on_pushButton_saveParamsToFile_clicked();
-    void on_pushButton_saveParams_clicked();
-    void on_comboBox_params_activated(int index);
     void on_actionTop_triggered();
     void on_tabWidget_params_currentChanged(int index);
     void on_checkBox_monochrome_clicked(bool checked);
@@ -115,14 +108,12 @@ private Q_SLOTS:
     void on_comboBox_rotate_activated(int index);
     void on_comboBox_frameRateSpeed_activated(int index);
     void on_spinBox_frameRateLimit_editingFinished();
-    void on_comboBox_resolutionMode_currentIndexChanged(int index);
     void on_spinBox_resolutionX_valueChanged(int arg1);
     void on_spinBox_resolutionY_valueChanged(int arg1);
     void on_spinBox_resolutionW_valueChanged(int arg1);
     void on_spinBox_resolutionH_valueChanged(int arg1);
     void on_pushButton_resetResolutionRect_clicked();
     void on_pushButton_resolution_clicked();
-
 
     void on_comboBox_ioMode0_activated(int index);
     void on_comboBox_ioState0_activated(int index);
@@ -181,15 +172,14 @@ private Q_SLOTS:
     void on_slider_brightness_sliderMoved(int position);
     void on_spinBox_brightness_editingFinished();
     void on_slider_gain_sliderMoved(int position);
-    void on_spinBox_gain_editingFinished();
+    void on_spinBox_gain_valueChanged(double);
     void on_slider_exposureTime_sliderMoved(int position);
-    void on_spinBox_exposureTime_editingFinished();
+    void on_spinBox_exposureTime_valueChanged(double);
     void on_spinBox_gainMinimum_editingFinished();
     void on_spinBox_gainMaximum_editingFinished();
     void on_spinBox_exposureTimeMaximum_editingFinished();
     void on_spinBox_exposureTimeMinimum_editingFinished();
 
-    void on_comboBox_whiteBalanceMode_activated(int index);
     void on_slider_r_sliderMoved(int position);
     void on_spinBox_r_editingFinished();
     void on_slider_g_sliderMoved(int position);
@@ -211,21 +201,28 @@ private Q_SLOTS:
     void on_pushButton_analyzeBrightPixels_clicked();
 
     void on_pushButton_clearOldPixels_clicked();
-
     void on_pushButton_clearNewPixels_clicked();
-
     void on_slider_outputRange_sliderMoved(int position);
-
     void on_comboBox_outputFormats_activated(int index);
-
     void on_pushButton_low8Bit_clicked();
-
     void on_pushButton_high8Bit_clicked();
-
-
-
-
     void on_comboBox_outputFormats_currentIndexChanged(int index);
+    void on_treeWidget_devices_itemDoubleClicked(QTreeWidgetItem *item, int column);
+    void on_checkBox_exposureWIndow_stateChanged(int arg1);
+    void on_pushButton_setExposureWindow_clicked();
+
+    void on_radioButton_manualExposure_clicked();
+    void on_radioButton_automationExposure_clicked();
+    void on_radioButton_presetResolution_clicked();
+    void on_radioButton_customResolution_clicked();
+
+    void on_checkBox_showBright_stateChanged(int arg1);
+    void on_radioButton_wbManual_clicked();
+    void on_radioButton_wbAutomation_clicked();
+
+    void on_radioButton_automationExposure_toggled(bool checked);
+    void on_radioButton_manualExposure_toggled(bool checked);
+    void on_radioButton_wbAutomation_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;

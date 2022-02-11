@@ -9,6 +9,7 @@ using namespace std;
 CameraScene::CameraScene(QObject *parent) : QGraphicsScene(parent)
   , deadPixelWindow(false)
   , whiteBalanceWindow(false)
+  , exposureWindow(false)
   , resolutionWindow(false)
   , leftButtonPressed(false)
 {
@@ -29,8 +30,13 @@ void CameraScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     } else if(whiteBalanceWindow) {
         whiteBalanceWindowPos.setLeft(x < sceneRect().x() ? 0 : x);
         whiteBalanceWindowPos.setTop(y < sceneRect().y() ? 0 : y);
-        whiteBalanceWindowPos.setRight(resolutionWindowPos.left());
-        whiteBalanceWindowPos.setBottom(resolutionWindowPos.top());
+        whiteBalanceWindowPos.setRight(whiteBalanceWindowPos.left());
+        whiteBalanceWindowPos.setBottom(whiteBalanceWindowPos.top());
+    } else if(exposureWindow) {
+        exposureWindowPos.setLeft(x < sceneRect().x() ? 0 : x);
+        exposureWindowPos.setTop(y < sceneRect().y() ? 0 : y);
+        exposureWindowPos.setRight(exposureWindowPos.left());
+        exposureWindowPos.setBottom(exposureWindowPos.top());
     } else if(deadPixelWindow) {
         if(-1 == manualPixels.indexOf(QPoint(event->scenePos().x(),event->scenePos().y())))
             manualPixels.append(QPoint(event->scenePos().x(),event->scenePos().y()));
@@ -50,6 +56,9 @@ void CameraScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     } else if(whiteBalanceWindow && leftButtonPressed) {
         whiteBalanceWindowPos.setRight(x > sceneRect().width() ? sceneRect().width() : x);
         whiteBalanceWindowPos.setBottom(y > sceneRect().height() ? sceneRect().height() : y);
+    }else if(exposureWindow && leftButtonPressed) {
+        exposureWindowPos.setRight(x > sceneRect().width() ? sceneRect().width() : x);
+        exposureWindowPos.setBottom(y > sceneRect().height() ? sceneRect().height() : y);
     }
 }
 
@@ -62,6 +71,10 @@ void CameraScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
     if(!whiteBalanceWindowPos.isValid()) {
         whiteBalanceWindowPos.setRect(0,0,sceneRect().width(),sceneRect().height());
+    }
+
+    if(!exposureWindowPos.isValid()) {
+        exposureWindowPos.setRect(0,0,sceneRect().width(),sceneRect().height());
     }
 }
 
@@ -90,6 +103,10 @@ void CameraScene::update(const QImage &rimg)
         auto pen = std::get<2>(line);
         addLine(x,0,x,h,pen);
         addLine(0,y,w,y,pen);
+    }
+
+    if(exposureWindow) {
+        addRect(exposureWindowPos,QPen(QColor(Qt::red),4));
     }
 
     if(whiteBalanceWindow) {

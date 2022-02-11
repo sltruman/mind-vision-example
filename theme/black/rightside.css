@@ -3,14 +3,24 @@
     font: bold 14px "Microsoft YaHei UI";
 }
 
-#dockWidget_rightSide::title {
+RightSideTitleBar QLabel {
+    color: white;
+    font: 14px "Microsoft YaHei UI";
+}
+
+RightSideTitleBar>QWidget {
     background-color: #23262F;
     border-top:1px solid #444444;
     border-left:1px solid #444444;
 }
 
-#tabWidget_params {
+#dockWidget_rightSide QToolButton {
+    background:transparent;
+}
 
+#dockWidget_rightSide QToolButton:hover {
+    background-color: #303030;
+    border:none;
 }
 
 #tabWidget_params #chartView_lut {
@@ -91,7 +101,8 @@
 #tabWidget_params #label_denoise,
 #tabWidget_params #label_deadPixels,
 #tabWidget_params #label_resolutionMode,
-#tabWidget_params #label_flatFieldCorrect{
+#tabWidget_params #label_flatFieldCorrect,
+#tabWidget_params #label_config{
     font: 12px "Microsoft YaHei UI";
 }
 
@@ -112,7 +123,7 @@
     background-repeat: no-repeat;
 }
 
-#tabWidget_params QComboBox {
+#dockWidget_rightSide QComboBox {
     border: 1px solid #292C2D;
     background-color: #181921;
     padding: 1px 18px 1px 3px;
@@ -121,7 +132,7 @@
     border-radius:2px;
 }
 
-#tabWidget_params QComboBox QAbstractItemView {
+#dockWidget_rightSide QComboBox QAbstractItemView {
     border: 1px solid #292C2D;
     background-color: #181921;
     color: white;
@@ -129,7 +140,7 @@
     font:14px "Microsoft YaHei UI";
 }
 
-#tabWidget_params QComboBox::drop-down {
+#dockWidget_rightSide QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 15px;
@@ -163,16 +174,20 @@
 #tabWidget_params QSlider::handle:horizontal {
     background-color: #2D7AD2;
     width: 5px;
-    margin: -4px 0px;
+    margin: -6px 0px;
 }
 
 #tabWidget_params QPushButton{
     border:1 solid gray;
-    background-color: gray;
+    background-color: #303030;
     color: white;
     font:14px "Microsoft YaHei UI";
     padding:1px 5px;
     border-radius:2px;
+}
+
+#tabWidget_params QPushButton:hover {
+    background-color: gray;
 }
 
 #tabWidget_params QLineEdit{
@@ -181,4 +196,9 @@
     color: white;
     font:14px "Microsoft YaHei UI";
     border-radius:2px;
+}
+
+#tabWidget_params QRadioButton {
+    color: white;
+    font:14px "Microsoft YaHei UI";
 }

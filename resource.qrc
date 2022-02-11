@@ -48,5 +48,7 @@
         <file>theme/icon/camera.png</file>
         <file>theme/images/checked.png</file>
         <file>theme/images/tab.png</file>
+        <file>theme/images/load.png</file>
+        <file>theme/images/save.png</file>
     </qresource>
 </RCC>

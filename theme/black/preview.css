@@ -99,7 +99,10 @@ MainWindow {
 #widget_status #label_resend,
 #widget_status #label_linkSpeed,
 #widget_status #label_recover,
-#widget_status #label_packSize {
+#widget_status #label_packSize,
+#widget_status #label_rgb,
+#widget_status #label_brightness,
+#widget_status #label_sensorFps{
     color: white;
     font: 14px "Microsoft YaHei UI";
 }

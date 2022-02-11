@@ -14,6 +14,7 @@
 #include <QGraphicsPixmapItem>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QTreeWidgetItem>
 
 namespace Ui {
 class CameraView;
@@ -24,7 +25,7 @@ class CameraView : public QGraphicsView
     Q_OBJECT
 
 public:
-    explicit CameraView(QWidget *parent = nullptr);
+    explicit CameraView(QTreeWidgetItem* owner, QWidget *parent = nullptr);
     ~CameraView();
 
     QProcess* camera;
@@ -38,18 +39,29 @@ public:
     QString pipeName;
     float currentScale;
     int displayFPS;
-    unsigned long long frames;
     QString coordinate;
+
+    QColor rgb;
+    int brightness;
+
+    bool avgBrightness;
+
     bool leftButtonPressed;
     QImage img;
+
+
 protected:
     void closeEvent(QCloseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void enterEvent(QEvent *event) override;
     void leaveEvent(QEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 Q_SIGNALS:
+    void doubleClick();
+    void focused();
     void updated(const QImage &img);
 
 private slots:
@@ -61,6 +73,7 @@ private:
     std::thread task;
     qint64 tick;
     QByteArray rgbBuffer;
+    QTreeWidgetItem* owner;
 };
 
 #endif // CAMERAVIEW_H

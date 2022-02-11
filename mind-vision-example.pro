@@ -19,24 +19,28 @@ LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454
 SOURCES += \
     aboutdialog.cpp \
     calibrationdialog.cpp \
+    cameraprocess.cpp \
     camerascene.cpp \
     cameraview.cpp \
     main.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
     recorddialog.cpp \
+    rightsidetitlebar.cpp \
     snapshotdialog.cpp \
     toplevelitemwidget.cpp
 
 HEADERS += \
     aboutdialog.h \
     calibrationdialog.h \
+    cameraprocess.h \
     camerascene.h \
     cameraview.h \
     mainmenu.h \
     mainwindow.h \
     mainwindow_frameless.hpp \
     recorddialog.h \
+    rightsidetitlebar.h \
     snapshotdialog.h \
     toplevelitemwidget.h
 
@@ -47,6 +51,7 @@ FORMS += \
     mainmenu.ui \
     mainwindow.ui \
     recorddialog.ui \
+    rightsidetitlebar.ui \
     snapshotdialog.ui \
     toplevelitemwidget.ui
 
