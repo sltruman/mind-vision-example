@@ -4782,129 +4782,171 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_65">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_83">
-           <item>
-            <widget class="QLabel" name="label_13">
-             <property name="text">
-              <string>In1:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_ioMode0">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
+          <widget class="QWidget" name="group_in0" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_83">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_13">
               <property name="text">
-               <string>Trigger</string>
+               <string>In1:</string>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Input</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_ioMode0">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_ioState0">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>Low</string>
+              <item>
+               <property name="text">
+                <string>Trigger</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Input</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_ioState0">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>High</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
+              <item>
+               <property name="text">
+                <string>Low</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>High</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_84">
-           <item>
-            <widget class="QLabel" name="label_20">
-             <property name="text">
-              <string>In2:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_ioMode1">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
+          <widget class="QWidget" name="group_in1" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_84">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_20">
               <property name="text">
-               <string>Input</string>
+               <string>In2:</string>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_ioState1">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>Low</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_ioMode1">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>High</string>
+              <item>
+               <property name="text">
+                <string>Input</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_ioState1">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
+              <item>
+               <property name="text">
+                <string>Low</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>High</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_85">
-           <item>
-            <widget class="QLabel" name="label_22">
-             <property name="text">
-              <string>In3:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_ioMode2">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
+          <widget class="QWidget" name="group_in2" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_85">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_22">
               <property name="text">
-               <string>Input</string>
+               <string>In3:</string>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_ioState2">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>Low</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_ioMode2">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>High</string>
+              <item>
+               <property name="text">
+                <string>Input</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_ioState2">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
+              <item>
+               <property name="text">
+                <string>Low</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>High</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
           <spacer name="verticalSpacer">
@@ -4923,209 +4965,279 @@
           </spacer>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_86">
-           <item>
-            <widget class="QLabel" name="label_29">
-             <property name="text">
-              <string>Out1:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoMode0">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
+          <widget class="QWidget" name="group_out0" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_86">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_29">
               <property name="text">
-               <string>Strobe</string>
+               <string>Out1:</string>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Output</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoMode0">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoState0">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>Low</string>
+              <item>
+               <property name="text">
+                <string>Strobe</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Output</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoState0">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>High</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
+              <item>
+               <property name="text">
+                <string>Low</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>High</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_87">
-           <item>
-            <widget class="QLabel" name="label_30">
-             <property name="text">
-              <string>Out2:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoMode1">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
+          <widget class="QWidget" name="group_out1" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_87">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_30">
               <property name="text">
-               <string>Output</string>
+               <string>Out2:</string>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoState1">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>Low</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoMode1">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>High</string>
+              <item>
+               <property name="text">
+                <string>Output</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoState1">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
+              <item>
+               <property name="text">
+                <string>Low</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>High</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_88">
-           <item>
-            <widget class="QLabel" name="label_31">
-             <property name="text">
-              <string>Out3:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoMode2">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
+          <widget class="QWidget" name="group_out2" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_88">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_31">
               <property name="text">
-               <string>Output</string>
+               <string>Out3:</string>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoState2">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>Low</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoMode2">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>High</string>
+              <item>
+               <property name="text">
+                <string>Output</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoState2">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
+              <item>
+               <property name="text">
+                <string>Low</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>High</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_89">
-           <item>
-            <widget class="QLabel" name="label_58">
-             <property name="text">
-              <string>Out4:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoMode3">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
+          <widget class="QWidget" name="group_out3" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_89">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_58">
               <property name="text">
-               <string>Output</string>
+               <string>Out4:</string>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoState3">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>Low</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoMode3">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>High</string>
+              <item>
+               <property name="text">
+                <string>Output</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoState3">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
+              <item>
+               <property name="text">
+                <string>Low</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>High</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_90">
-           <item>
-            <widget class="QLabel" name="label_59">
-             <property name="text">
-              <string>Out5:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoMode4">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
+          <widget class="QWidget" name="group_out4" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_90">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_59">
               <property name="text">
-               <string>Output</string>
+               <string>Out5:</string>
               </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_outputIoState4">
-             <property name="currentIndex">
-              <number>-1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>Low</string>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoMode4">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>High</string>
+              <item>
+               <property name="text">
+                <string>Output</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputIoState4">
+              <property name="currentIndex">
+               <number>-1</number>
               </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
+              <item>
+               <property name="text">
+                <string>Low</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>High</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
           <spacer name="verticalSpacer_16">

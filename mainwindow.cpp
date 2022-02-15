@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 #include "toplevelitemwidget.h"
 #include "rightsidetitlebar.h"
+#include "loadingdialog.h"
 
 #include <QProcess>
 #include <QSpacerItem>
@@ -49,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->widget_status->hide();
     ui->tabWidget_preview->tabBar()->hide();
 
-    connect(&cameraStatusUpdate,SIGNAL(timeout()),SLOT(at_cameraStatusUpdate_timeout()),Qt::QueuedConnection);
+    connect(&cameraStatusUpdate,SIGNAL(timeout()),SLOT(at_cameraStatusUpdate_timeout()));
     cameraStatusUpdate.setInterval(1000);
     cameraStatusUpdate.start();
 }
@@ -79,41 +80,6 @@ void MainWindow::at_cameraStatusUpdate_timeout()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
     if(deviceItem && deviceItem->camera.state() == QProcess::Running) {
-        if(ui->radioButton_manualExposure->isChecked() || ui->tabWidget_params->currentIndex() != 0) {
-            if(exposureStatusUpdate.isActive()) {
-                exposureStatusUpdate.stop();
-                exposureStatusUpdate.disconnect(&exposureStatusUpdate,SIGNAL(timeout()),this,SLOT(at_exposureStatusUpdate()));
-            }
-        } else {
-            if(!exposureStatusUpdate.isActive()) {
-                exposureStatusUpdate.connect(&exposureStatusUpdate,SIGNAL(timeout()),this,SLOT(at_exposureStatusUpdate()),Qt::QueuedConnection);
-                exposureStatusUpdate.setInterval(5000);
-                exposureStatusUpdate.start();
-            }
-        }
-
-        auto portType = deviceItem->data(0,Qt::UserRole).toStringList()[6];
-        auto status = deviceItem->status(portType);
-
-        ui->label_frames->setText(status[0]);
-        ui->label_recordFPS->setText(status[1]);
-
-        if(-1 != portType.indexOf("NET")) {
-            ui->label_temperature->setText(status[3]);
-            ui->label_lost->setText(status[4]);
-            ui->label_resend->setText(status[5]);
-            ui->label_packSize->setText(status[6]);
-        } else if(-1 != portType.indexOf("USB3")) {
-            ui->label_sensorFps->setText(status[2]);
-            ui->label_temperature->setText(status[3]);
-            ui->label_lost->setText(status[4]);
-            ui->label_resend->setText(status[5]);
-            ui->label_recover->setText(status[6]);
-            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
-        } else {
-            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
-        }
-
         if(deviceItem->cameraView->avgBrightness) {
             auto brightness = deviceItem->brightness();
             ui->label_brightness->setText(brightness);
@@ -139,52 +105,48 @@ void MainWindow::at_cameraStatusUpdate_timeout()
 
         ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing);
 
-        ui->pushButton_snapshot->setText(deviceItem->snapshotState() ? tr("Stop") : tr("Snapshot"));
-        ui->pushButton_snapshot->setCheckable(deviceItem->snapshotState());
-        ui->pushButton_record->setText(deviceItem->recordState() ? tr("Stop") : tr("Record"));
-        ui->pushButton_record->setCheckable(deviceItem->recordState());
-    }
+        auto s = deviceItem->snapshotState();
+        ui->pushButton_snapshot->setText(s ? tr("Stop") : tr("Snapshot"));
+        ui->pushButton_snapshot->setCheckable(s);
 
-    switch(ui->tabWidget_preview->currentIndex()) {
-    case 0:
-        break;
-    case 1:
-        if(deviceItem && -1 == ui->tab_main_contents->indexOf(deviceItem->cameraView)) {
-            if(ui->tab_main_contents->count())
-                ui->tab_main_contents->itemAt(0)->widget()->setParent(nullptr);
-            ui->tab_main_contents->addWidget(deviceItem->cameraView);
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+        s = deviceItem->recordState();
+        ui->pushButton_record->setText(s ? tr("Stop") : tr("Record"));
+        ui->pushButton_record->setCheckable(s);
+
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+        auto portType = deviceItem->data(0,Qt::UserRole).toStringList()[6];
+        auto status = deviceItem->status(portType);
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+        ui->label_frames->setText(status[0]);
+        ui->label_recordFPS->setText(status[1]);
+
+        if(-1 != portType.indexOf("NET")) {
+            ui->label_temperature->setText(status[3]);
+            ui->label_lost->setText(status[4]);
+            ui->label_resend->setText(status[5]);
+            ui->label_packSize->setText(status[6]);
+        } else if(-1 != portType.indexOf("USB3")) {
+            ui->label_sensorFps->setText(status[2]);
+            ui->label_temperature->setText(status[3]);
+            ui->label_lost->setText(status[4]);
+            ui->label_resend->setText(status[5]);
+            ui->label_recover->setText(status[6]);
+            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
+        } else {
+            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
         }
-        break;
-    case 2:
-        for(auto topItemIndex=0;topItemIndex<ui->treeWidget_devices->topLevelItemCount();topItemIndex++) {
-            auto topLevelItem = ui->treeWidget_devices->topLevelItem(topItemIndex);
 
-            for(auto subItemIndex=0;subItemIndex< topLevelItem->childCount();subItemIndex++) {
-                auto deviceItem = dynamic_cast<DeviceItem*>(topLevelItem->child(subItemIndex));
-
-                if(QProcess::NotRunning == deviceItem->camera.state()) continue;
-
-                auto i=0,j=ui->tab_all_contents->columnCount();
-                if(ui->tab_all_contents->count() < j*j) {
-                    for(i=0;i< ui->tab_all_contents->columnCount();i++) {
-                        ui->tab_all_contents->setRowStretch(i,1);
-                        for (j=0;j < ui->tab_all_contents->columnCount();j++) {
-                            ui->tab_all_contents->setColumnStretch(j,1);
-                            auto item = ui->tab_all_contents->itemAtPosition(i,j);
-                            if(!item) goto NEW_ITEM;
-                            if(item->widget() == deviceItem->cameraView) goto OLD_ITEM;
-                        }
-                    }
-                }
-NEW_ITEM:
-                ui->tab_all_contents->addWidget(deviceItem->cameraView,i,j);
-OLD_ITEM:
-                ;
-            }
+        if(ui->radioButton_automationExposure->isChecked() && ui->tabWidget_params->currentIndex() == 0) {
+            auto exposure = get<0>(deviceItem->exposure(false));
+            ui->spinBox_gain->setValue(exposure[9].toInt() / 100.);
+            ui->slider_gain->setValue(exposure[9].toInt());
+            ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
+            ui->slider_exposureTime->setValue(exposure[12].toDouble());
         }
-        break;
-    default:
-        break;
     }
 }
 
@@ -355,7 +317,6 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
     }
 
     if(!deviceItem) return;
-
     auto info = deviceItem->data(0,Qt::UserRole).toStringList();
     ui->label_series_2->setText(info[0].left(4));
     ui->label_deviceName_2->setText(info[1]);
@@ -413,17 +374,22 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
         ui->widget_recover->show();
         ui->widget_sfps->show();
         ui->widget_temperature->show();
-    } else {
-    }
+    } else {    }
 
     ui->checkBox_showBright->setChecked(deviceItem->cameraView->avgBrightness);
+
+    if(ui->tabWidget_preview->currentIndex() == 1 && -1 == ui->tab_main_contents->indexOf(deviceItem->cameraView)) {
+        if(ui->tab_main_contents->count())
+            ui->tab_main_contents->itemAt(0)->widget()->setParent(nullptr);
+        ui->tab_main_contents->addWidget(deviceItem->cameraView);
+    }
 }
 
 void MainWindow::at_exposureStatusUpdate() {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
 
-    auto exposure = get<0>(deviceItem->exposure());
+    auto exposure = get<0>(deviceItem->exposure(false));
     ui->spinBox_gain->setValue(exposure[9].toInt() / 100.);
     ui->slider_gain->setValue(exposure[9].toInt());
     ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
@@ -542,7 +508,6 @@ void MainWindow::on_actionTop_triggered()
     topTreeItem->insertChild(0,deviceItem);
 }
 
-
 void MainWindow::on_tabWidget_params_currentChanged(int index)
 {
     ui->checkBox_whiteBalanceWindow->setChecked(false);
@@ -584,11 +549,11 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             ui->spinBox_gain->setValue(values[9].toInt() / 100.);
 
             ui->spinBox_gainMinimum->setMinimum(values[7].toInt() / 100.);
-            ui->spinBox_gainMinimum->setMaximum(values[8].toInt() / 100.);
+            ui->spinBox_gainMinimum->setMaximum(values[16].toInt() / 100.);
             ui->spinBox_gainMaximum->setMinimum(values[7].toInt() / 100.);
 //            ui->spinBox_gainMaximum->setMaximum(values[8].toInt() / 100.);
             ui->spinBox_gainMinimum->setValue(values[7].toInt() / 100.);
-            ui->spinBox_gainMaximum->setValue(values[8].toInt() / 100.);
+            ui->spinBox_gainMaximum->setValue(values[16].toInt() / 100.);
 
             ui->slider_exposureTime->setMinimum(values[10].toInt());
             ui->slider_exposureTime->setMaximum(values[11].toInt());
@@ -599,11 +564,11 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
 //            emit ui->spinBox_exposureTime->editingFinished();
 
             ui->spinBox_exposureTimeMinimum->setMinimum(values[13].toInt() / 1000.);
-            ui->spinBox_exposureTimeMinimum->setMaximum(values[14].toInt() / 1000.);
+            ui->spinBox_exposureTimeMinimum->setMaximum(values[18].toInt() / 1000.);
             ui->spinBox_exposureTimeMaximum->setMinimum(values[13].toInt() / 1000.);
 //            ui->spinBox_exposureTimeMaximum->setMaximum(values[14].toInt() / 1000.);
             ui->spinBox_exposureTimeMinimum->setValue(values[13].toInt() / 1000.);
-            ui->spinBox_exposureTimeMaximum->setValue(values[14].toInt() / 1000.);
+            ui->spinBox_exposureTimeMaximum->setValue(values[18].toInt() / 1000.);
 
             auto window = get<1>(exposure);
             auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
@@ -725,6 +690,16 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
         } else if(index == 6) {
             auto i=0,j=0;
             auto io = deviceItem->io();
+
+            ui->group_in0->hide();
+            ui->group_in1->hide();
+            ui->group_in2->hide();
+            ui->group_out0->hide();
+            ui->group_out1->hide();
+            ui->group_out2->hide();
+            ui->group_out3->hide();
+            ui->group_out4->hide();
+
             for(auto line : io) {
                 auto columns = line.split(',');
                 auto type = columns[0];
@@ -732,7 +707,11 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
                 auto state = columns[2].toUInt();
 
                 if(type == "Input"){
+                    auto group_in = ui->tabWidget_params->findChild<QWidget*>(QString("group_in%1").arg(j));
+                    group_in->show();
+
                     auto comboBox_ioMode = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_ioMode%1").arg(i));
+
                     if(i)
                         comboBox_ioMode->setCurrentIndex(mode == 2 ? 0 : -1);
                     else
@@ -742,13 +721,18 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
                     comboBox_ioState->setCurrentIndex(state);
                     i++;
                 } else {
+                    auto group_out = ui->tabWidget_params->findChild<QWidget*>(QString("group_out%1").arg(j));
+                    group_out->show();
+
                     auto comboBox_outputIoMode = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_outputIoMode%1").arg(j));
                     if(j)
                         comboBox_outputIoMode->setCurrentIndex(mode == 3 ? 0 : -1);
                     else
                         comboBox_outputIoMode->setCurrentIndex(mode == 1 ? 0 : 1);
+
                     auto comboBox_outputIoState = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_outputIoState%1").arg(j));
                     comboBox_outputIoState->setCurrentIndex(state);
+
                     j++;
                 }
             }
@@ -1063,6 +1047,7 @@ void MainWindow::on_comboBox_outputIoState3_activated(int index)
     if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
     deviceItem->ioState("Output",3,index);
 }
+
 void MainWindow::on_comboBox_outputIoMode4_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
@@ -1922,4 +1907,51 @@ void MainWindow::on_radioButton_wbAutomation_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     deviceItem->whiteBalanceMode(1);
+}
+
+void MainWindow::on_tabWidget_preview_currentChanged(int index)
+{
+    auto f = [=]() {
+        for(auto topItemIndex=0;topItemIndex<ui->treeWidget_devices->topLevelItemCount();topItemIndex++) {
+            auto topLevelItem = ui->treeWidget_devices->topLevelItem(topItemIndex);
+
+            for(auto subItemIndex=0;subItemIndex< topLevelItem->childCount();subItemIndex++) {
+                auto deviceItem = dynamic_cast<DeviceItem*>(topLevelItem->child(subItemIndex));
+
+                if(QProcess::NotRunning == deviceItem->camera.state()) continue;
+
+                auto i=0,j=ui->tab_all_contents->columnCount();
+                if(ui->tab_all_contents->count() < j*j) {
+                    for(i=0;i< ui->tab_all_contents->columnCount();i++) {
+                        ui->tab_all_contents->setRowStretch(i,1);
+                        for (j=0;j < ui->tab_all_contents->columnCount();j++) {
+                            ui->tab_all_contents->setColumnStretch(j,1);
+                            auto item = ui->tab_all_contents->itemAtPosition(i,j);
+                            if(!item) goto NEW_ITEM;
+                            if(item->widget() == deviceItem->cameraView) goto OLD_ITEM;
+                        }
+                    }
+                }
+NEW_ITEM:
+                ui->tab_all_contents->addWidget(deviceItem->cameraView,i,j);
+OLD_ITEM:
+                ;
+            }
+        }
+    };
+
+    viewStatusUpdate.stop();
+
+    if(index == 1) {
+        auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+        if(deviceItem && -1 == ui->tab_main_contents->indexOf(deviceItem->cameraView)) {
+            if(ui->tab_main_contents->count())
+                ui->tab_main_contents->itemAt(0)->widget()->setParent(nullptr);
+            ui->tab_main_contents->addWidget(deviceItem->cameraView);
+        }
+    } else if(index == 2) {
+        connect(&viewStatusUpdate,&QTimer::timeout,f);
+        viewStatusUpdate.setInterval(2000);
+        viewStatusUpdate.start();
+    }
 }

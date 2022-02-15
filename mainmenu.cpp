@@ -67,22 +67,22 @@ void MainMenu::on_pushButton_language_clicked(bool checked)
 
 void MainMenu::on_action_ipConfiguration_triggered()
 {
-    QProcess::execute("C:/Users/SLTru/Desktop/mind-vision-1.0.2/Tools/网口相机IP配置工具");
+    QProcess::execute(QApplication::applicationDirPath() + "/Tools/网口相机IP配置工具",{});
 }
 
 void MainMenu::on_action_demo_triggered()
 {
-    QDesktopServices::openUrl(QUrl("file:///C:/Program Files (x86)/MindVision/Demo", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("file:///" + QApplication::applicationDirPath() +"/Demo", QUrl::TolerantMode));
 }
 
 void MainMenu::on_action_sdk_triggered()
 {
-    QDesktopServices::openUrl(QUrl("file:///C:/Program Files (x86)/MindVision/Document", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("file:///" + QApplication::applicationDirPath() + "/Document", QUrl::TolerantMode));
 }
 
 void MainMenu::on_action_log_triggered()
 {
-    QDesktopServices::openUrl(QUrl("file:///C:/Program Files (x86)/MindVision/Camera/log", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("file:///" + QApplication::applicationDirPath() + "/Camera/log", QUrl::TolerantMode));
 }
 
 void MainMenu::on_action_about_triggered()

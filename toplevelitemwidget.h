@@ -42,11 +42,10 @@ public:
 
 
 public:
-
     bool open();
     void close();
 
-    std::tuple<QStringList,QStringList> exposure();
+    std::tuple<QStringList,QStringList> exposure(int full = true);
     void exposureMode(int value);
     void brightness(int value);
     void threshold(int value);

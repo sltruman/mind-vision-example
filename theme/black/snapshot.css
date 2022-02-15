@@ -2,13 +2,13 @@
     background-image: url(:/theme/icon/left-side.png);
 }
 
+#SnapshotDialog QFrame {
+    color: #393B3C;
+}
+
 #SnapshotDialog QLabel {
     color: #7F8082;
     font: 14px "Microsoft YaHei UI";
-}
-
-#SnapshotDialog QFrame {
-    color: #393B3C;
 }
 
 #SnapshotDialog QGroupBox {

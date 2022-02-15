@@ -22,6 +22,7 @@ SOURCES += \
     cameraprocess.cpp \
     camerascene.cpp \
     cameraview.cpp \
+    loadingdialog.cpp \
     main.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     cameraprocess.h \
     camerascene.h \
     cameraview.h \
+    loadingdialog.h \
     mainmenu.h \
     mainwindow.h \
     mainwindow_frameless.hpp \
@@ -48,6 +50,7 @@ FORMS += \
     aboutdialog.ui \
     calibrationdialog.ui \
     cameraview.ui \
+    loadingdialog.ui \
     mainmenu.ui \
     mainwindow.ui \
     recorddialog.ui \
@@ -121,5 +124,5 @@ DISTFILES += \
 
 TRANSLATIONS += language/app_zh.ts
 
-
 RC_ICONS = theme/icon/app.ico
+QMAKE_LFLAGS += /MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"

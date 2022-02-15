@@ -9,6 +9,12 @@ class CameraProcess : public QProcess
 
 public:
     CameraProcess();
+//    qint64 write(const char *data);
+//    QByteArray readLine();
+//    QByteArray readAll();
+
+    int n;
+    QByteArrayList responses;
 };
 
 #endif // CAMERAPROCESS_H

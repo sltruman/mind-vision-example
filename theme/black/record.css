@@ -7,13 +7,14 @@
     font: 14px "Microsoft YaHei UI";
 }
 
-#RecordDialog QLabel {
-    color: #7F8082;
-    font: 14px "Microsoft YaHei UI";
-}
 
 #RecordDialog QFrame {
     color: #393B3C;
+}
+
+#RecordDialog QLabel {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
 }
 
 #RecordDialog QGroupBox {

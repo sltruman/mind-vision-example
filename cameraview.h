@@ -5,6 +5,7 @@
 
 #include <tuple>
 #include <thread>
+#include <mutex>
 
 #include <QMap>
 #include <QGraphicsView>
@@ -71,6 +72,7 @@ private slots:
 private:
     Ui::CameraView *ui;
     std::thread task;
+    int framesCaptured;
     qint64 tick;
     QByteArray rgbBuffer;
     QTreeWidgetItem* owner;

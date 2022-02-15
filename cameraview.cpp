@@ -15,7 +15,8 @@ CameraView::CameraView(QTreeWidgetItem* owner,QWidget *parent) :
     currentScale(0.99f),displayFPS(0),playing(false),
     leftButtonPressed(false),
     owner(owner),
-    avgBrightness(false)
+    avgBrightness(false),
+    framesCaptured(0)
 {
     ui->setupUi(this);
     ui->pushButton_close->hide();
@@ -54,10 +55,12 @@ void CameraView::wheelEvent(QWheelEvent *event) {
 }
 
 void CameraView::focusInEvent(QFocusEvent *event) {
+    cout << "focused " << pipeName.toStdString() << endl;
     emit focused();
 }
 
 void CameraView::mouseDoubleClickEvent(QMouseEvent *event) {
+    cout << "doubleClick"  << pipeName.toStdString() << endl;
     emit doubleClick();
 }
 
@@ -86,8 +89,6 @@ void CameraView::play() {
     cout << "play " << pipeName.toStdString() << endl;
 
     camera->write("play\n");
-    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
-    auto s = camera->readAll();
     playing = true;
 
     if(task.joinable()) return;
@@ -104,8 +105,8 @@ void CameraView::play() {
 
             if(-1 == sock.write("normal\n")) break;
 
-            while(sock.bytesAvailable() == 0) {
-                sock.waitForReadyRead(10);
+            while(sock.bytesAvailable() == 0 || framesCaptured > 1) {
+                sock.waitForReadyRead(100);
                 if(this->interupt) break;
             }
 
@@ -126,7 +127,7 @@ void CameraView::play() {
                 if(-1 == sock.write("frame\n")) break;
 
                 for(auto i=0;i < length;i += sock.read(rgbBuffer.data() + i,length - i)) {
-                    sock.waitForReadyRead(10);
+                    sock.waitForReadyRead(100);
                     if(this->interupt) break;
                 }
 
@@ -146,6 +147,7 @@ void CameraView::play() {
                 displayFPS = 0;
             }
 
+            framesCaptured++;
             emit updated(img);
         }
 
@@ -154,6 +156,8 @@ void CameraView::play() {
 }
 
 void CameraView::update(const QImage &img) {
+    framesCaptured = --framesCaptured < 0 ? 0 : framesCaptured;
+
     auto cs = dynamic_cast<CameraScene*>(scene());
 
     auto w=img.width();
@@ -183,8 +187,6 @@ void CameraView::update(const QImage &img) {
 void CameraView::pause() {
     cout << "pause " << pipeName.toStdString() << endl;
     camera->write("pause\n");
-    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
-    auto s = camera->readAll();
     playing = false;
 }
 
@@ -200,9 +202,6 @@ void CameraView::stop() {
 
     cout << "stop " << pipeName.toStdString() << endl;
     camera->write("stop\n");
-    while(camera->bytesAvailable() == 0) camera->waitForReadyRead(10);
-
-    auto s = camera->readAll();
     task.join();
 
     scene()->addPixmap(QPixmap(0,0));

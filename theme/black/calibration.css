@@ -33,6 +33,11 @@
     background-repeat: no-repeat;
 }
 
+#CalibrationDialog QLabel {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
 #CalibrationDialog QPushButton{
     border:1 solid gray;
     background-color: gray;
@@ -108,4 +113,5 @@
 
 #CalibrationDialog QListWidget {
     background-color: #181921;
+    color: white;
 }

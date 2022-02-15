@@ -1,6 +1,8 @@
 ﻿#include "toplevelitemwidget.h"
 #include "ui_toplevelitemwidget.h"
 
+#include <QSharedMemory>
+
 #include <iostream>
 using namespace std;
 
@@ -26,7 +28,7 @@ TopLevelItemWidget::~TopLevelItemWidget()
 
 void TopLevelItemWidget::on_toolButton_refresh_clicked()
 {
-    CameraProcess cmd;
+    QProcess cmd;
     cmd.start("mind-vision",QStringList("list"));
     cmd.waitForFinished();
     auto s = cmd.readAllStandardOutput().split('\n'); s.removeLast();
@@ -113,8 +115,9 @@ bool DeviceItem::open() {
     camera.setProgram("mind-vision");
     camera.setArguments(args);
     camera.start();
-    while(camera.bytesAvailable() == 0) {
-        camera.waitForReadyRead(1000);
+
+    while(camera.bytesAvailable() == 0)  {
+        camera.waitForReadyRead(10);
     }
 
     auto s = camera.readAll();
@@ -139,13 +142,15 @@ void DeviceItem::close() {
     cout << "close " << cameraName.toStdString() << endl;
 }
 
-std::tuple<QStringList,QStringList> DeviceItem::exposure() {
+std::tuple<QStringList,QStringList> DeviceItem::exposure(int full) {
     cout << "exposure " << endl;
-    camera.write("exposure\n");
+    camera.write(QString("exposure %1\n").arg(full).toLocal8Bit());
     while(camera.bytesAvailable() == 0) {
         camera.waitForReadyRead(10);
+        if(!full) {
+//            QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        }
     }
-
     if(-1 == camera.readLine().indexOf("True")) throw runtime_error("");
     auto s = camera.readLine();
     cout << s.data();
@@ -158,68 +163,48 @@ std::tuple<QStringList,QStringList> DeviceItem::exposure() {
 
 void DeviceItem::exposureMode(int value) {
     camera.write(QString("exposure-mode-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::brightness(int value) {
     cout << "brightness " << value << endl;
     camera.write(QString("brightness-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
 }
 
 void DeviceItem::threshold(int value) {
     cout << "threshold " << value << endl;
     camera.write(QString("threshold-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
 }
 
 void DeviceItem::flicker(int value) {
     camera.write(QString("flicker-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::gain(int value) {
     cout << "gain-set " << value << endl;
     camera.write(QString("gain-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::gainRange(int minimum,int maximum) {
     cout << "gain-range-set " << minimum << ' ' << maximum << endl;
     camera.write(QString("gain-range-set %1 %2\n").arg(minimum).arg(maximum).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::exposureTime(int value) {
     cout << "exposure-time-set " << value << endl;
     camera.write(QString("exposure-time-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::exposureTimeRange(int minimum,int maximum) {
     cout << "exposure-time-range-set " << minimum << ' ' << maximum << endl;
     camera.write(QString("exposure-time-range-set %1 %2\n").arg(minimum).arg(maximum).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::frequency(int value) {
     camera.write(QString("frequency-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::exposureWindow(int x,int y,int w,int h) {
     camera.write(QString("exposure-window-set %1 %2 %3 %4\n").arg(x).arg(y).arg(w).arg(h).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 std::tuple<QStringList,QStringList> DeviceItem::whiteBalance() {
@@ -239,58 +224,40 @@ std::tuple<QStringList,QStringList> DeviceItem::whiteBalance() {
 
 void DeviceItem::whiteBalanceMode(int index){
     camera.write(QString("white-balance-mode-set %1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::onceWhiteBalance(){
     camera.write("once-white-balance\n");
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::whiteBalanceWindow(int x,int y,int w,int h) {
     camera.write(QString("white-balance-window-set %1 %2 %3 %4\n").arg(x).arg(y).arg(w).arg(h).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::rgb(int r,int g,int b){
     camera.write(QString("rgb-set %1 %2 %3\n").arg(r).arg(g).arg(b).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::saturation(int value) {
     camera.write(QString("saturation-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::monochrome(int enable) {
     camera.write(QString("monochrome-set %1\n").arg(enable).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::inverse(int enable) {
     camera.write(QString("inverse-set %1\n").arg(enable).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::algorithm(int index) {
     cout << "algorithm " << index << endl;
     camera.write(QString("algorithm-set %1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::colorTemrature(int index) {
     cout << "colorTemrature " << index << endl;
     camera.write(QString("color-temrature-set %1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 QString DeviceItem::lookupTableMode() {
@@ -307,9 +274,6 @@ QString DeviceItem::lookupTableMode() {
 void DeviceItem::lookupTableMode(int index) {
     cout << "lookupTableMode " << endl;
     camera.write(QString("lookup-table-mode-set %1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = camera.readAll().split(' ');
-    if(res[0] != "True") throw runtime_error("");
 }
 
 QStringList DeviceItem::lookupTablesForDynamic() {
@@ -326,14 +290,10 @@ QStringList DeviceItem::lookupTablesForDynamic() {
 
 void DeviceItem::gamma(int value){
     camera.write(QString("gamma-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::contrastRatio(int value) {
     camera.write(QString("contrast-ratio-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 QStringList DeviceItem::lookupTablesForPreset() {
@@ -362,8 +322,6 @@ QStringList DeviceItem::lookupTablesForCustom(int index) {
 
 void DeviceItem::lookupTablePreset(int index) {
     camera.write(QString("lookup-table-preset-set %1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 QString DeviceItem::resolutionMode() {
@@ -410,15 +368,11 @@ QStringList DeviceItem::resolutions() {
 void DeviceItem::resolution(int index) {
     cout << "resolution-set " << index << endl;
     camera.write(QString("resolution-set %1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::resolution(int x,int y,int w,int h) {
     cout << "resolution-custom-set " << x << ',' << y << ',' << w << ',' << h << endl;
     camera.write(QString("resolution-custom-set %1 %2 %3 %4\n").arg(x).arg(y).arg(w).arg(h).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 QStringList DeviceItem::isp(){
@@ -433,47 +387,32 @@ QStringList DeviceItem::isp(){
 
 void DeviceItem::horizontalMirror(int hard,int value){
     camera.write(QString("horizontal-mirror-set %1 %2\n").arg(hard).arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::verticalMirror(int hard,int value){
     camera.write(QString("vertical-mirror-set %1 %2\n").arg(hard).arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::acutance(int value){
     camera.write(QString("acutance-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::noise(int enable) {
     camera.write(QString("noise-set %1\n").arg(enable).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::noise3d(int enable,int value) {
     camera.write(QString("noise3d-set %1 %2\n").arg(enable).arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::rotate(int value) {
     camera.write(QString("rotate-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::deadPixels(QString x, QString y) {
     camera.write("dead-pixels-set\n");
     camera.write(QString("%1\n").arg(x.isEmpty() ? "None" : x).toLocal8Bit());
     camera.write(QString("%1\n").arg(y.isEmpty() ? "None" : y).toLocal8Bit());
-//    camera.write(QString("dead-pixels-set %1 %2\n").arg(x).arg(y).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 QStringList DeviceItem::dead_pixels_analyze_for_bright(int threshold) {
@@ -507,40 +446,28 @@ QStringList DeviceItem::dead_pixels_analyze_for_dead(int threshold) {
 
 void DeviceItem::flatFieldCorrent(int enable) {
     camera.write(QString("flat-field-corrent-set %1\n").arg(enable).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::flatFieldInit(int light) {
     camera.write(QString("flat-field-init %1\n").arg(light).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
 }
 
 void DeviceItem::flatFieldParamsSave(QString filepath) {
     camera.write(QString("flat-field-params-save %1\n").arg(filepath).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
 }
 
 void DeviceItem::flatFieldParamsLoad(QString filepath) {
     camera.write(QString("flat-field-params-load %1\n").arg(filepath).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
 }
 
 void DeviceItem::undistort(int enable) {
     cout << "undistort " << enable << endl;
     camera.write(QString("undistort-set %1\n").arg(enable).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
 }
 
 void DeviceItem::undistortParams(int w,int h,QString cameraMatrix,QString distortCoeffs) {
     cout << "undistort " << w << ' ' << h << ' ' << cameraMatrix.toStdString() << ' ' << distortCoeffs.toStdString() << endl;
     camera.write(QString("undistort-params-set %1 %2 %3 %4\n").arg(w).arg(h).arg(cameraMatrix).arg(distortCoeffs).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error(camera.readLine());
 }
 
 std::tuple<QStringList,QStringList,QStringList> DeviceItem::video() {
@@ -564,27 +491,19 @@ std::tuple<QStringList,QStringList,QStringList> DeviceItem::video() {
 
 void DeviceItem::frameRateSpeed(int index) {
     camera.write(QString("frame-rate-speed-set %1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::frameRateLimit(int value) {
     camera.write(QString("frame-rate-limit-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::rawOutputFormat(int index) {
     camera.write(QString("video-output-format-set %1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::rawOutputRange(int value) {
     cout << "raw-output-range-set " << value << endl;
     camera.write(QString("raw-output-range-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 QStringList DeviceItem::io() {
@@ -603,15 +522,11 @@ QStringList DeviceItem::io() {
 void DeviceItem::ioMode(QString type,int index,int value) {
     cout << "io-mode-set " <<  type.toLocal8Bit().data() << ' ' << index << ' ' << value << endl;
     camera.write(QString("io-mode-set %1 %2 %3\n").arg(type).arg(index).arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
 }
 
 void DeviceItem::ioState(QString type,int index,int value) {
     cout << "io-state-set " <<  type.toLocal8Bit().data() << ' ' << index << ' ' << value << endl;
     camera.write(QString("io-state-set %1 %2 %3\n").arg(type).arg(index).arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
 }
 
 std::tuple<QStringList,QStringList,QStringList> DeviceItem::controls() {
@@ -640,74 +555,50 @@ std::tuple<QStringList,QStringList,QStringList> DeviceItem::controls() {
 void DeviceItem::triggerMode(int value) {
     cout << "trigger-mode " << value << endl;
     camera.write(QString("trigger-mode-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
 }
 
 void DeviceItem::onceSoftTrigger() {
     camera.write("once-soft-trigger\n");
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::triggerFrames(int value) {
     camera.write(QString("trigger-frames-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
 }
 
 void DeviceItem::triggerDelay(int value) {
     camera.write(QString("trigger-delay-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
 }
 
 void DeviceItem::triggerInterval(int value) {
     camera.write(QString("trigger-interval-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
 }
 
 void DeviceItem::outsideTriggerMode(int value) {
     camera.write(QString("outside-trigger-mode-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
 }
 
 void DeviceItem::outsideTriggerDebounce(int value) {
     camera.write(QString("outside-trigger-debounce-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
 }
 
 void DeviceItem::outsideShutter(int index) {
     camera.write(QString("outside-shutter-set%1\n").arg(index).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    if(0 != camera.readLine().indexOf("True")) throw runtime_error("");
 }
 
 void DeviceItem::flashMode(int value) {
     camera.write(QString("flash-mode-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::flashPolarity(int value) {
     camera.write(QString("flash-polarity-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::strobeDelay(int value) {
     camera.write(QString("flash-delay-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::strobePulse(int value) {
     camera.write(QString("flash-pulse-set %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 QStringList DeviceItem::firmware() {
@@ -725,89 +616,68 @@ void DeviceItem::rename(QString name) {
     } else {
         camera.write(QString("rename %1\n").arg(name).toLocal8Bit());
     }
-
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::paramsReset() {
     camera.write("params-reset\n");
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::paramsSave(int value) {
     camera.write(QString("params-save %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::paramsLoad(int value) {
     camera.write(QString("params-load %1\n").arg(value).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::paramsSaveToFile(QString filename) {
     camera.write(QString("params-save-to-file %1\n").arg(filename).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::paramsLoadFromFile(QString filename) {
     camera.write(QString("params-load-from-file %1\n").arg(filename).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto res = QString(camera.readAll()).split(' ');
 }
 
 void DeviceItem::snapshotStart(QString dir,int resolution,int format,int period) {
     cout << "snapshot-start " << dir.toStdString() << resolution << format << period << endl;
     camera.write(QString("snapshot-start %1 %2 %3 %4\n").arg(dir).arg(resolution).arg(format).arg(period).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
-    cout << s.data();
-    auto res = QString(s).split(' ');
 }
 
 bool DeviceItem::snapshotState() {
     if(camera.state() == QProcess::NotRunning) {
-        cout << "False 0" << endl;
         return false;
     }
 
     camera.write("snapshot-state\n");
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    while(camera.bytesAvailable() == 0) {
+        camera.waitForReadyRead(1);
+//        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
     auto s = camera.readAll();
-    cout << s.data();
     auto res = QString(s).split(' ');
     return res[1] == "1";
 }
 
 void DeviceItem::snapshotStop() {
     camera.write("snapshot-stop\n");
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
-    cout << s.data();
-    auto res = QString(s).split(' ');
 }
 
 
 void DeviceItem::recordStart(QString dir,int format,int quality,int frames) {
     cout << "record-start " << dir.toStdString()<< ' ' <<  format << ' ' << quality << ' ' << frames << endl;
     camera.write(QString("record-start %1 %2 %3 %4\n").arg(dir).arg(format).arg(quality).arg(frames).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
-    auto res = QString(s).split(' ');
 }
 
 bool DeviceItem::recordState() {
     if(camera.state() == QProcess::NotRunning) {
-        cout << "False 0" << endl;
         return false;
     }
 
     camera.write("record-state\n");
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    while(camera.bytesAvailable() == 0) {
+        camera.waitForReadyRead(1);
+//        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
     auto s = camera.readAll();
     auto res = QString(s).split(' ');
     return res[1] == "1";
@@ -815,15 +685,15 @@ bool DeviceItem::recordState() {
 
 void DeviceItem::recordStop() {
     camera.write("record-stop\n");
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
-    auto s = camera.readAll();
-    auto res = QString(s).split(' ');
 }
 
 QStringList DeviceItem::status(QString type) {
     cout << "status " << type.toLocal8Bit().data() << endl;
     camera.write(QString("status %1\n").arg(type).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    while(camera.bytesAvailable() == 0) {
+        camera.waitForReadyRead(1);
+    }
+
     if(camera.readLine().indexOf("True")) throw runtime_error("");
     auto s = camera.readAll();
     cout << s.data();
@@ -833,7 +703,9 @@ QStringList DeviceItem::status(QString type) {
 QString DeviceItem::brightness() {
     cout << "brightness " << endl;
     camera.write("brightness \n");
-    while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+    while(camera.bytesAvailable() == 0)
+        camera.waitForReadyRead(10);
+
     if(camera.readLine().indexOf("True")) throw runtime_error("");
     auto s = camera.readLine();
     cout << s.data();

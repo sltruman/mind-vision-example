@@ -224,10 +224,14 @@ private Q_SLOTS:
     void on_radioButton_manualExposure_toggled(bool checked);
     void on_radioButton_wbAutomation_toggled(bool checked);
 
+    void on_tabWidget_preview_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     QTreeWidgetItem* selectedCameraItem;
+    QTimer viewStatusUpdate;
     QTimer cameraStatusUpdate;
+    QTimer cameraStatus2Update;
     QTimer exposureStatusUpdate;
 };
 #endif // MAINWINDOW_H
