@@ -21,8 +21,8 @@ CameraView::CameraView(QTreeWidgetItem* owner,QWidget *parent) :
     ui->setupUi(this);
     ui->pushButton_close->hide();
     setScene(new CameraScene(this));
-    connect(this,SIGNAL(updated(const QImage&)),SLOT(update(const QImage&)));
     setAcceptDrops(false);
+    connect(this,SIGNAL(updated(const QImage&)),SLOT(update(const QImage&)));
 }
 
 CameraView::~CameraView()
@@ -85,79 +85,70 @@ void CameraView::zoom(float v) {
     update(img);
 }
 
+void CameraView::paintEvent(QPaintEvent *event) {
+    QGraphicsView::paintEvent(event);
+}
+
 void CameraView::play() {
     cout << "play " << pipeName.toStdString() << endl;
 
     camera->write("play\n");
     playing = true;
-
     if(task.joinable()) return;
+
     interupt = false;
 
-    task = std::thread([&](){
-        QLocalSocket sock;
+    sm.setKey(pipeName + ".0.sm");
+    sm.attach();
 
-        sock.connectToServer(pipeName);
-        sock.waitForConnected();
+    tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
 
-        while(QLocalSocket::ConnectedState == sock.state() && !this->interupt) {
-            tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
+    task = std::thread([=]() {
+      while(!this->interupt) {
+          auto frame_head_length = sizeof(FrameHead);
 
-            if(-1 == sock.write("normal\n")) break;
+          if(framesCaptured > 1) {
+              std::this_thread::sleep_for(std::chrono::milliseconds(100));
+              continue;
+          }
 
-            while(sock.bytesAvailable() == 0 || framesCaptured > 1) {
-                sock.waitForReadyRead(100);
-                if(this->interupt) break;
-            }
+          if(!sm.lock()) {
+              std::this_thread::sleep_for(std::chrono::milliseconds(100));
+              continue;
+          }
 
-            auto whb = sock.readLine().split(' ');
-            if(whb.size() < 3) break;
+          auto frameHeadBuffer = reinterpret_cast<unsigned char*>(sm.data());
+          auto frame_head = (FrameHead*)frameHeadBuffer;
 
-            auto wm = whb[0].toUInt();
-            auto hm = whb[1].toUInt();
-            auto w = whb[2].toUInt();
-            auto h = whb[3].toUInt();
-            auto b = whb[4].toUInt();
-            auto length = w*h*b;
+          if(current_frame_head.num != frame_head->num) {
+              current_frame_head = *frame_head;
 
-            if(length) {
-                rgbBuffer.resize(length);
-                sock.setReadBufferSize(length);
+              auto rgbBuffer = frameHeadBuffer + frame_head_length;
 
-                if(-1 == sock.write("frame\n")) break;
+              img = QImage(rgbBuffer,frame_head->width,frame_head->height,frame_head->bits == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8).copy();
 
-                for(auto i=0;i < length;i += sock.read(rgbBuffer.data() + i,length - i)) {
-                    sock.waitForReadyRead(100);
-                    if(this->interupt) break;
-                }
+              auto elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
+              displayFPS = 1.0f / elapsedTime * 1000;
+              tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
+          }
 
-                img = QImage((unsigned char*)rgbBuffer.data(),w,h,b == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8).copy();
+          sm.unlock();
 
-                if(QImage::Format::Format_Indexed8 == img.format()) {
-                    QVector<QRgb> grayColorTable;
-                    for(int i = 0; i < 256; i++) grayColorTable.append(qRgb(i, i, i));
-                    img.setColorTable(grayColorTable);
-                    img = img.convertToFormat(QImage::Format::Format_RGB16);
-                }
+          if(QImage::Format::Format_Indexed8 == img.format()) {
+              QVector<QRgb> grayColorTable;
+              for(int i = 0; i < 256; i++) grayColorTable.append(qRgb(i, i, i));
+              img.setColorTable(grayColorTable);
+              img = img.convertToFormat(QImage::Format::Format_RGB16);
+          }
 
-                auto elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
-                displayFPS = 1.0f / elapsedTime * 1000;
-                tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
-            } else {
-                displayFPS = 0;
-            }
-
-            framesCaptured++;
-            emit updated(img);
-        }
-
-        sock.disconnectFromServer();
+          framesCaptured++;
+          emit updated(img);
+      }
     });
 }
 
 void CameraView::update(const QImage &img) {
     framesCaptured = --framesCaptured < 0 ? 0 : framesCaptured;
-
     auto cs = dynamic_cast<CameraScene*>(scene());
 
     auto w=img.width();
@@ -200,10 +191,9 @@ void CameraView::stop() {
     interupt = true;
     playing = false;
 
-    cout << "stop " << pipeName.toStdString() << endl;
-    camera->write("stop\n");
     task.join();
 
+    cout << "stop " << pipeName.toStdString() << endl;
     scene()->addPixmap(QPixmap(0,0));
 }
 

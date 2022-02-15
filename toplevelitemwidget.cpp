@@ -2,6 +2,7 @@
 #include "ui_toplevelitemwidget.h"
 
 #include <QSharedMemory>
+#include <QTextStream>
 
 #include <iostream>
 using namespace std;
@@ -137,26 +138,36 @@ bool DeviceItem::open() {
 
 void DeviceItem::close() {
     cameraView->stop();
+    if(recordState()) recordStop();
+    if(snapshotState()) snapshotStop();
+
     camera.write("exit\n");
     camera.waitForFinished();
     cout << "close " << cameraName.toStdString() << endl;
 }
 
+
 std::tuple<QStringList,QStringList> DeviceItem::exposure(int full) {
     cout << "exposure " << endl;
     camera.write(QString("exposure %1\n").arg(full).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) {
-        camera.waitForReadyRead(10);
-        if(!full) {
-//            QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        }
+
+    if(full) {
+        while(camera.bytesAvailable() == 0) camera.waitForReadyRead(10);
+        if(-1 == camera.readLine().indexOf("True")) throw runtime_error("");
+        auto s = camera.readLine();
+        cout << s.data();
+        auto values = QString(s).split(',');
+        s = camera.readLine();
+        cout << s.data();
+        auto window = QString(s).split(',');
+        return make_tuple(values,window);
     }
-    if(-1 == camera.readLine().indexOf("True")) throw runtime_error("");
-    auto s = camera.readLine();
-    cout << s.data();
+
+    QTextStream ts(cameraView->current_frame_head.exposure_status);
+    if(-1 == ts.readLine().indexOf("True")) throw runtime_error("");
+    auto s = ts.readLine();
     auto values = QString(s).split(',');
-    s = camera.readLine();
-    cout << s.data();
+    s = ts.readLine();
     auto window = QString(s).split(',');
     return make_tuple(values,window);
 }
@@ -644,24 +655,12 @@ void DeviceItem::snapshotStart(QString dir,int resolution,int format,int period)
 }
 
 bool DeviceItem::snapshotState() {
-    if(camera.state() == QProcess::NotRunning) {
-        return false;
-    }
-
-    camera.write("snapshot-state\n");
-    while(camera.bytesAvailable() == 0) {
-        camera.waitForReadyRead(1);
-//        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-    }
-    auto s = camera.readAll();
-    auto res = QString(s).split(' ');
-    return res[1] == "1";
+    return cameraView->current_frame_head.snapshot_status;
 }
 
 void DeviceItem::snapshotStop() {
     camera.write("snapshot-stop\n");
 }
-
 
 void DeviceItem::recordStart(QString dir,int format,int quality,int frames) {
     cout << "record-start " << dir.toStdString()<< ' ' <<  format << ' ' << quality << ' ' << frames << endl;
@@ -669,18 +668,7 @@ void DeviceItem::recordStart(QString dir,int format,int quality,int frames) {
 }
 
 bool DeviceItem::recordState() {
-    if(camera.state() == QProcess::NotRunning) {
-        return false;
-    }
-
-    camera.write("record-state\n");
-    while(camera.bytesAvailable() == 0) {
-        camera.waitForReadyRead(1);
-//        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-    }
-    auto s = camera.readAll();
-    auto res = QString(s).split(' ');
-    return res[1] == "1";
+    return cameraView->current_frame_head.record_status;
 }
 
 void DeviceItem::recordStop() {
@@ -690,14 +678,10 @@ void DeviceItem::recordStop() {
 QStringList DeviceItem::status(QString type) {
     cout << "status " << type.toLocal8Bit().data() << endl;
     camera.write(QString("status %1\n").arg(type).toLocal8Bit());
-    while(camera.bytesAvailable() == 0) {
-        camera.waitForReadyRead(1);
-    }
 
-    if(camera.readLine().indexOf("True")) throw runtime_error("");
-    auto s = camera.readAll();
-    cout << s.data();
-    return QString(s).split(',');
+    QTextStream ts(cameraView->current_frame_head.camera_status);
+    if(-1 == ts.readLine().indexOf("True")) throw runtime_error("");
+    return QString(ts.readLine()).split(',');
 }
 
 QString DeviceItem::brightness() {

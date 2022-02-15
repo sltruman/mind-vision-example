@@ -109,43 +109,45 @@ void MainWindow::at_cameraStatusUpdate_timeout()
         ui->pushButton_snapshot->setText(s ? tr("Stop") : tr("Snapshot"));
         ui->pushButton_snapshot->setCheckable(s);
 
-        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-
         s = deviceItem->recordState();
         ui->pushButton_record->setText(s ? tr("Stop") : tr("Record"));
         ui->pushButton_record->setCheckable(s);
 
-        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-
         auto portType = deviceItem->data(0,Qt::UserRole).toStringList()[6];
-        auto status = deviceItem->status(portType);
-        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 
-        ui->label_frames->setText(status[0]);
-        ui->label_recordFPS->setText(status[1]);
+        try {
+            auto status = deviceItem->status(portType);
 
-        if(-1 != portType.indexOf("NET")) {
-            ui->label_temperature->setText(status[3]);
-            ui->label_lost->setText(status[4]);
-            ui->label_resend->setText(status[5]);
-            ui->label_packSize->setText(status[6]);
-        } else if(-1 != portType.indexOf("USB3")) {
-            ui->label_sensorFps->setText(status[2]);
-            ui->label_temperature->setText(status[3]);
-            ui->label_lost->setText(status[4]);
-            ui->label_resend->setText(status[5]);
-            ui->label_recover->setText(status[6]);
-            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
-        } else {
-            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
-        }
+            ui->label_frames->setText(status[0]);
+            ui->label_recordFPS->setText(status[1]);
+
+            if(-1 != portType.indexOf("NET")) {
+                ui->label_temperature->setText(status[3]);
+                ui->label_lost->setText(status[4]);
+                ui->label_resend->setText(status[5]);
+                ui->label_packSize->setText(status[6]);
+            } else if(-1 != portType.indexOf("USB3")) {
+                ui->label_sensorFps->setText(status[2]);
+                ui->label_temperature->setText(status[3]);
+                ui->label_lost->setText(status[4]);
+                ui->label_resend->setText(status[5]);
+                ui->label_recover->setText(status[6]);
+                ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
+            } else {
+                ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
+            }
+        } catch(...) {}
 
         if(ui->radioButton_automationExposure->isChecked() && ui->tabWidget_params->currentIndex() == 0) {
-            auto exposure = get<0>(deviceItem->exposure(false));
-            ui->spinBox_gain->setValue(exposure[9].toInt() / 100.);
-            ui->slider_gain->setValue(exposure[9].toInt());
-            ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
-            ui->slider_exposureTime->setValue(exposure[12].toDouble());
+            try {
+                auto exposure = get<0>(deviceItem->exposure(false));
+                ui->spinBox_gain->setValue(exposure[9].toInt() / 100.);
+                ui->slider_gain->setValue(exposure[9].toInt());
+                ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
+                ui->slider_exposureTime->setValue(exposure[12].toDouble());
+            }catch(...) {
+
+            }
         }
     }
 }

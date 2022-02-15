@@ -10,12 +10,12 @@
 #include <QMap>
 #include <QGraphicsView>
 #include <QProcess>
-#include <QLocalSocket>
 #include <QTimer>
 #include <QGraphicsPixmapItem>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QTreeWidgetItem>
+#include <QSharedMemory>
 
 namespace Ui {
 class CameraView;
@@ -28,6 +28,7 @@ class CameraView : public QGraphicsView
 public:
     explicit CameraView(QTreeWidgetItem* owner, QWidget *parent = nullptr);
     ~CameraView();
+    void paintEvent(QPaintEvent *event) override;
 
     QProcess* camera;
 
@@ -39,7 +40,7 @@ public:
 
     QString pipeName;
     float currentScale;
-    int displayFPS;
+    unsigned int displayFPS;
     QString coordinate;
 
     QColor rgb;
@@ -50,6 +51,16 @@ public:
     bool leftButtonPressed;
     QImage img;
 
+    struct FrameHead{
+        int num = 0;
+        int width = 0;
+        int height = 0;
+        int bits = 0;
+        char camera_status[256];
+        char exposure_status[256];
+        int record_status = 0;
+        int snapshot_status = 0;
+    } current_frame_head;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -74,7 +85,8 @@ private:
     std::thread task;
     int framesCaptured;
     qint64 tick;
-    QByteArray rgbBuffer;
+
+    QSharedMemory sm;
     QTreeWidgetItem* owner;
 };
 
