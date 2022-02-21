@@ -192,8 +192,8 @@ void CameraView::stop() {
     playing = false;
 
     task.join();
+    sm.detach();
 
-    cout << "stop " << pipeName.toStdString() << endl;
     scene()->addPixmap(QPixmap(0,0));
 }
 

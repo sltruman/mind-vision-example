@@ -182,12 +182,15 @@ void MainWindow::on_action_open_triggered()
             ui->tabWidget_preview->setCurrentIndex(1);
         },Qt::UniqueConnection);
 
+        cout << "open " << endl;
         if(!deviceItem->open()) {
             QMessageBox::critical(nullptr, tr("Device"), tr("Failed Connecting the camera!"), QMessageBox::Ok);
             return;
         }
     } else {
+        cout << "close " << endl;
         deviceItem->close();
+        cout << "closed " << endl;
         deviceItem->cameraView->setParent(nullptr);
     }
 
@@ -385,17 +388,6 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
             ui->tab_main_contents->itemAt(0)->widget()->setParent(nullptr);
         ui->tab_main_contents->addWidget(deviceItem->cameraView);
     }
-}
-
-void MainWindow::at_exposureStatusUpdate() {
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-
-    auto exposure = get<0>(deviceItem->exposure(false));
-    ui->spinBox_gain->setValue(exposure[9].toInt() / 100.);
-    ui->slider_gain->setValue(exposure[9].toInt());
-    ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
-    ui->slider_exposureTime->setValue(exposure[12].toDouble());
 }
 
 void MainWindow::on_checkBox_flicker_stateChanged(int arg1)
@@ -708,8 +700,8 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
                 auto mode = columns[1].toUInt();
                 auto state = columns[2].toUInt();
 
-                if(type == "Input"){
-                    auto group_in = ui->tabWidget_params->findChild<QWidget*>(QString("group_in%1").arg(j));
+                if(type == "Input") {
+                    auto group_in = ui->tabWidget_params->findChild<QWidget*>(QString("group_in%1").arg(i));
                     group_in->show();
 
                     auto comboBox_ioMode = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_ioMode%1").arg(i));
@@ -725,6 +717,7 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
                 } else {
                     auto group_out = ui->tabWidget_params->findChild<QWidget*>(QString("group_out%1").arg(j));
                     group_out->show();
+
 
                     auto comboBox_outputIoMode = ui->tabWidget_params->findChild<QComboBox*>(QString("comboBox_outputIoMode%1").arg(j));
                     if(j)

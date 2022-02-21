@@ -80,7 +80,6 @@ private Q_SLOTS:
 //    void on_treeWidget_devices_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_treeWidget_devices_itemSelectionChanged();
     void on_pushButton_onceWhiteBalance_clicked();
-    void at_exposureStatusUpdate();
 
     void on_checkBox_flicker_stateChanged(int arg1);
     void on_comboBox_frequency_currentIndexChanged(int index);
