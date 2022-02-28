@@ -3,7 +3,6 @@
 
 #include <opencv2/imgproc/types_c.h>
 #include <opencv2/opencv.hpp>
-using namespace cv;
 
 #include <vector>
 #include <memory>
@@ -31,7 +30,7 @@ public:
     int GetMarkHeight();
     bool FindBoardMark(int index);
     bool SetCurSelBoard(int index);
-    void AddBoard(Mat const& img);
+    void AddBoard(cv::Mat const& img);
     bool runCalibration(int& imageCount, Pattern calibrationPattern = CHESSBOARD, bool fisheye = false);
     bool UpdateCalibResult(bool toUI);
     void EnableManualInput(bool bEnable);
@@ -45,7 +44,7 @@ public:
     QString distortCoeffs();
 
     std::vector<Board*> m_Boards;
-    std::auto_ptr<Result> m_Result;
+    std::shared_ptr<Result> m_Result;
     QProcess* camera;
 
 private slots:

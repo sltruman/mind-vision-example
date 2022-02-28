@@ -1,0 +1,138 @@
+#OfflineFpnDialog {
+    background-image: url(:/theme/icon/left-side.png);
+}
+
+#OfflineFpnDialog QLabel {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#OfflineFpnDialog QFrame {
+    color: #393B3C;
+}
+
+#OfflineFpnDialog QGroupBox {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#OfflineFpnDialog QCheckBox {
+    color: white;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#OfflineFpnDialog QCheckBox::indicator:unchecked {
+    background-color: #181921;
+    border: 1px solid gray;
+}
+
+#OfflineFpnDialog QCheckBox::indicator:checked {
+    border: 1px solid gray;
+    background-image: url(":/theme/images/checked.png");
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
+#OfflineFpnDialog QLabel {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+}
+
+#OfflineFpnDialog QPushButton{
+    border:1 solid gray;
+    background-color: gray;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    padding:1px 5px;
+    border-radius:2px;
+}
+
+#OfflineFpnDialog QCheckBox {
+    color: white;
+    font: 14px "Microsoft YaHei UI";
+}
+
+
+#OfflineFpnDialog QLineEdit{
+    border: 1px solid gray;
+    border-radius:2px;
+    background-color: #181921;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+}
+
+
+#OfflineFpnDialog QSpinBox,
+#OfflineFpnDialog QDoubleSpinBox {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
+
+#OfflineFpnDialog QSpinBox::up-button,
+#OfflineFpnDialog QDoubleSpinBox::up-button,
+#OfflineFpnDialog QSpinBox::down-button,
+#OfflineFpnDialog QDoubleSpinBox::down-button {
+    border:none;
+}
+
+#OfflineFpnDialog QComboBox {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    padding: 1px 18px 1px 3px;
+    color: white;
+    font:14px "Microsoft YaHei UI";
+    border-radius:2px;
+}
+
+#OfflineFpnDialog QComboBox QAbstractItemView {
+    border: 1px solid #292C2D;
+    background-color: #181921;
+    color: white;
+    border-radius:2px;
+    font:14px "Microsoft YaHei UI";
+}
+
+#OfflineFpnDialog QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: #292C2D;
+    border-left-style: solid;
+    border-radius:2px;
+}
+
+#OfflineFpnDialog QListWidget {
+    background-color: #181921;
+    color: white;
+}
+
+#OfflineFpnDialog #tabWidget {
+
+}
+
+#OfflineFpnDialog #tabWidget QGraphicsView {
+    background-color: #181921;
+}
+
+#OfflineFpnDialog #tabWidget::pane {
+
+}
+
+#OfflineFpnDialog #tabWidget QTabBar::tab {
+    color: #7F8082;
+    font: 14px "Microsoft YaHei UI";
+    width: 71px;
+    height: 24px;
+    border:1px solid #444444;
+}
+
+#OfflineFpnDialog #tabWidget QTabBar::tab:selected, #OfflineFpnDialog #tabWidget QTabBar::tab:hover {
+    background-image: url(:/theme/images/tab2.png);
+    background-position:center;
+    background-repeat: no-repeat;
+    color:white;
+}

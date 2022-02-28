@@ -4,6 +4,8 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 
+#include <stdexcept>
+
 SnapshotDialog::SnapshotDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SnapshotDialog)

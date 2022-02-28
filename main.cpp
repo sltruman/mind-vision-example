@@ -56,6 +56,11 @@ int main(int argc, char *argv[])
     css += cssCalibration.readAll();
     cssCalibration.close();
 
+    QFile cssOfflineFpn("theme/black/offlinefpn.css");
+    cssOfflineFpn.open(QFile::ReadOnly);
+    css += cssOfflineFpn.readAll();
+    cssOfflineFpn.close();
+
     qApp->setStyleSheet(css);
 
     MainWindow w;

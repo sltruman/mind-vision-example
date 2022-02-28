@@ -125,6 +125,7 @@ void CameraView::play() {
 
               auto rgbBuffer = frameHeadBuffer + frame_head_length;
 
+              std::lock_guard<std::mutex> locked(m_img);
               img = QImage(rgbBuffer,frame_head->width,frame_head->height,frame_head->bits == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8).copy();
 
               auto elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
@@ -200,4 +201,10 @@ void CameraView::stop() {
 void CameraView::on_pushButton_close_clicked()
 {
     setParent(nullptr);
+}
+
+QImage CameraView::snapshot() {
+    std::lock_guard<std::mutex> locked(m_img);
+    auto temp = img.copy();
+    return temp;
 }

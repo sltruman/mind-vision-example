@@ -695,3 +695,23 @@ QString DeviceItem::brightness() {
     cout << s.data();
     return QString(s).split(',')[0];
 }
+
+void DeviceItem::fpn(int enable) {
+    cout << "fpn " << endl;
+    camera.write(QString("fpn %1\n").arg(enable).toLocal8Bit());
+}
+
+void DeviceItem::fpnClear() {
+    cout << "fpn-clear " << endl;
+    camera.write("fpn\n");
+}
+
+void DeviceItem::fpnLoad(QString filepath) {
+    cout << "fpn-load " << endl;
+    camera.write(QString("fpn-load %1\n").arg(filepath).toLocal8Bit());
+}
+
+void DeviceItem::fpnSave(QString filepath) {
+    cout << "fpn-save " << filepath.toLocal8Bit().data() << endl;
+    camera.write(QString("fpn-save %1\n").arg(filepath).toLocal8Bit());
+}

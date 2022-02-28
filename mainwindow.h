@@ -225,6 +225,14 @@ private Q_SLOTS:
 
     void on_tabWidget_preview_currentChanged(int index);
 
+    void on_pushButton_fpnEdit_clicked();
+
+    void on_pushButton_fpnClear_clicked();
+
+    void on_checkBox_fpn_clicked(bool checked);
+
+    void on_pushButton_fpnSave_clicked();
+
 private:
     Ui::MainWindow *ui;
     QTreeWidgetItem* selectedCameraItem;

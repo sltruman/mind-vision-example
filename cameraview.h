@@ -50,8 +50,10 @@ public:
 
     bool leftButtonPressed;
     QImage img;
+    std::mutex m_img;
+    QImage snapshot();
 
-    struct FrameHead{
+    struct FrameHead {
         int num = 0;
         int width = 0;
         int height = 0;

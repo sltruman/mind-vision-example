@@ -143,6 +143,11 @@ public:
     QStringList status(QString type);
     QString brightness();
 
+    void fpn(int enable);
+    void fpnClear();
+    void fpnLoad(QString filepath);
+    void fpnSave(QString filepath);
+
     QString cameraName;
     QProcess camera;
     CameraView* cameraView;

@@ -9,7 +9,6 @@
 #include <QMouseEvent>
 #include <QSettings>
 #include <iostream>
-using namespace std;
 
 namespace Ui {
 class MainMenu;

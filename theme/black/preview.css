@@ -10,18 +10,6 @@ MainWindow {
     border-image: url(:/theme/icon/right-side.png);
 }
 
-#tabWidget_preview::tab-bar {
-    top:0px;
-}
-
-#tabWidget_preview QTabBar::tab {
-
-}
-
-#tabWidget_preview QTabBar::tab:selected, QTabBar::tab:hover {
-    background-color: #4D4D4D;
-}
-
 #tabWidget_preview #tab_welcome {
     background-color: #38393B;
     background-image: url(:/theme/icon/index.png);

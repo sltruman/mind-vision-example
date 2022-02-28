@@ -50,5 +50,6 @@
         <file>theme/images/tab.png</file>
         <file>theme/images/load.png</file>
         <file>theme/images/save.png</file>
+        <file>theme/images/tab2.png</file>
     </qresource>
 </RCC>

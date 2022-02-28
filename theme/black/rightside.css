@@ -51,7 +51,7 @@ RightSideTitleBar>QWidget {
     border-bottom: 1px solid #444444;
 }
 
-#tabWidget_params QTabBar::tab:selected, QTabBar::tab:hover {
+#tabWidget_params QTabBar::tab:selected, #tabWidget_params QTabBar::tab:hover {
     background-image: url(:/theme/images/tab.png);
     background-position:center;
     background-repeat: no-repeat;

@@ -43,7 +43,7 @@ class CalibrationDialog::Result
 public:
 
     Result(int width, int height,
-        cv::Mat M = Mat::eye(3, 3, CV_64F), cv::Mat K = Mat::zeros(8, 1, CV_64F),
+        cv::Mat M = cv::Mat::eye(3, 3, CV_64F), cv::Mat K = cv::Mat::zeros(8, 1, CV_64F),
         double totalAvgErr = 0)
     {
         m_width = width;
@@ -161,7 +161,7 @@ public:
 
         if (MarkWasFound())
         {
-            drawChessboardCorners(image, m_patternSize, Mat(m_markPoints), true);
+            drawChessboardCorners(image, m_patternSize, cv::Mat(m_markPoints), true);
         }
 
         if (pCalib != NULL)
@@ -185,9 +185,9 @@ public:
             return true;
 
         std::vector<cv::Point2f> corners;
-        int flags = CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_NORMALIZE_IMAGE;
+        int flags = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE;
         if (bFastCheck)
-            flags |= CALIB_CB_FAST_CHECK;
+            flags |= cv::CALIB_CB_FAST_CHECK;
         if (!FindChessboardCorners(m_image, patternSize, corners, flags) )
             return false;
 
@@ -218,20 +218,20 @@ public:
 
 private:
 
-    static bool FindChessboardCorners(cv::InputArray image, Size patternSize, std::vector<cv::Point2f>& corners, int flags)
+    static bool FindChessboardCorners(cv::InputArray image, cv::Size patternSize, std::vector<cv::Point2f>& corners, int flags)
     {
         float const scale_width = 640.0f;
         float const scale_height = 480.0f;
 
-        Size winSize(11, 11);
-        Size size = image.size();
+        cv::Size winSize(11, 11);
+        cv::Size size = image.size();
         float sw = size.width / scale_width;
         float sh = size.height / scale_height;
         float s = MAX(sw, sh);
         if (s > 1.0f)
         {
             cv::Mat scaled;
-            cv::resize(image, scaled, Size(size.width / s, size.height / s));
+            cv::resize(image, scaled, cv::Size(size.width / s, size.height / s));
             if (!cv::findChessboardCorners(scaled, patternSize, corners, flags) )
             {
                 return false;
@@ -253,7 +253,7 @@ private:
             }
         }
 
-        cornerSubPix(image, corners, winSize,Size(-1,-1), TermCriteria( TermCriteria::EPS+TermCriteria::COUNT, 30, 0.1 ));
+        cornerSubPix(image, corners, winSize,cv::Size(-1,-1), cv::TermCriteria( cv::TermCriteria::EPS+cv::TermCriteria::COUNT, 30, 0.1 ));
         return true;
     }
 
@@ -292,7 +292,7 @@ int CalibrationDialog::GetMarkHeight()
 bool CalibrationDialog::FindBoardMark(int index)
 {
     Board* board = m_Boards[index];
-    bool r = board->FindMarkPoints(Size(GetMarkWidth(), GetMarkHeight()), true);
+    bool r = board->FindMarkPoints(cv::Size(GetMarkWidth(), GetMarkHeight()), true);
     ui->listWidget_calibrations->item(index)->setText(board->MarkWasFound() ? "OK!" : "Mark point extraction failed!");
     return r;
 }
@@ -308,7 +308,7 @@ bool CalibrationDialog::SetCurSelBoard(int index)
 }
 
 
-void CalibrationDialog::AddBoard(Mat const& img)
+void CalibrationDialog::AddBoard(cv::Mat const& img)
 {
     Board* board = new Board(img);
 
@@ -322,13 +322,13 @@ void CalibrationDialog::AddBoard(Mat const& img)
 }
 
 
-static double computeReprojectionErrors( const std::vector<std::vector<Point3f> >& objectPoints,
-    const std::vector<std::vector<Point2f> >& imagePoints,
-    const std::vector<Mat>& rvecs, const std::vector<Mat>& tvecs,
-    const Mat& cameraMatrix , const Mat& distCoeffs,
+static double computeReprojectionErrors( const std::vector<std::vector<cv::Point3f> >& objectPoints,
+    const std::vector<std::vector<cv::Point2f> >& imagePoints,
+    const std::vector<cv::Mat>& rvecs, const std::vector<cv::Mat>& tvecs,
+    const cv::Mat& cameraMatrix , const cv::Mat& distCoeffs,
     std::vector<float>& perViewErrors, bool fisheye)
 {
-    std::vector<Point2f> imagePoints2;
+    std::vector<cv::Point2f> imagePoints2;
     size_t totalPoints = 0;
     double totalErr = 0, err;
     perViewErrors.resize(objectPoints.size());
@@ -337,14 +337,14 @@ static double computeReprojectionErrors( const std::vector<std::vector<Point3f> 
     {
         if (fisheye)
         {
-            fisheye::projectPoints(objectPoints[i], imagePoints2, rvecs[i], tvecs[i], cameraMatrix,
+            cv::fisheye::projectPoints(objectPoints[i], imagePoints2, rvecs[i], tvecs[i], cameraMatrix,
                 distCoeffs);
         }
         else
         {
             projectPoints(objectPoints[i], rvecs[i], tvecs[i], cameraMatrix, distCoeffs, imagePoints2);
         }
-        err = norm(imagePoints[i], imagePoints2, NORM_L2);
+        err = norm(imagePoints[i], imagePoints2, cv::NORM_L2);
 
         size_t n = objectPoints[i].size();
         perViewErrors[i] = (float) std::sqrt(err*err/n);
@@ -355,7 +355,7 @@ static double computeReprojectionErrors( const std::vector<std::vector<Point3f> 
     return std::sqrt(totalErr/totalPoints);
 }
 
-static void calcBoardCornerPositions(cv::Size boardSize, float squareSize, std::vector<Point3f>& corners,
+static void calcBoardCornerPositions(cv::Size boardSize, float squareSize, std::vector<cv::Point3f>& corners,
     CalibrationDialog::Pattern patternType = CalibrationDialog::CHESSBOARD)
 {
     corners.clear();
@@ -366,13 +366,13 @@ static void calcBoardCornerPositions(cv::Size boardSize, float squareSize, std::
     case CalibrationDialog::CIRCLES_GRID:
         for( int i = 0; i < boardSize.height; ++i )
             for( int j = 0; j < boardSize.width; ++j )
-                corners.push_back(Point3f(j*squareSize, i*squareSize, 0));
+                corners.push_back(cv::Point3f(j*squareSize, i*squareSize, 0));
         break;
 
     case CalibrationDialog::ASYMMETRIC_CIRCLES_GRID:
         for( int i = 0; i < boardSize.height; i++ )
             for( int j = 0; j < boardSize.width; j++ )
-                corners.push_back(Point3f((2*j + i % 2)*squareSize, i*squareSize, 0));
+                corners.push_back(cv::Point3f((2*j + i % 2)*squareSize, i*squareSize, 0));
         break;
     default:
         break;
@@ -382,7 +382,7 @@ static void calcBoardCornerPositions(cv::Size boardSize, float squareSize, std::
 bool CalibrationDialog::runCalibration(int& imageCount, Pattern calibrationPattern, bool fisheye)
 {
     cv::Size boardSize = cv::Size(GetMarkWidth(), GetMarkHeight());
-    std::vector<std::vector<Point2f> > imagePoints;
+    std::vector<std::vector<cv::Point2f> > imagePoints;
     for (auto it = m_Boards.begin(); it != m_Boards.end(); ++it)
     {
         Board* board = *it;
@@ -394,39 +394,39 @@ bool CalibrationDialog::runCalibration(int& imageCount, Pattern calibrationPatte
     if (imagePoints.empty())
         return false;
 
-    std::vector<std::vector<Point3f>> objectPoints(1);
+    std::vector<std::vector<cv::Point3f>> objectPoints(1);
     calcBoardCornerPositions(boardSize, 50, objectPoints[0], calibrationPattern);
     objectPoints.resize(imagePoints.size(),objectPoints[0]);
 
-    cv::Mat cameraMatrix = Mat::eye(3, 3, CV_64F);
+    cv::Mat cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
     cv::Mat distCoeffs;
     if (fisheye) {
-        distCoeffs = Mat::zeros(4, 1, CV_64F);
+        distCoeffs = cv::Mat::zeros(4, 1, CV_64F);
     } else {
-        distCoeffs = Mat::zeros(8, 1, CV_64F);
+        distCoeffs = cv::Mat::zeros(8, 1, CV_64F);
     }
 
     //Find intrinsic and extrinsic camera parameters
     double rms;
-    Size imageSize = m_Boards[0]->GetImageSize();
+    cv::Size imageSize = m_Boards[0]->GetImageSize();
 
-    int flag = CALIB_FIX_PRINCIPAL_POINT
-        | CALIB_ZERO_TANGENT_DIST
-        | CALIB_FIX_ASPECT_RATIO
-        | CALIB_FIX_K4
-        | CALIB_FIX_K5;
+    int flag = cv::CALIB_FIX_PRINCIPAL_POINT
+        | cv::CALIB_ZERO_TANGENT_DIST
+        | cv::CALIB_FIX_ASPECT_RATIO
+        | cv::CALIB_FIX_K4
+        | cv::CALIB_FIX_K5;
 
     if (fisheye)
     {
-        flag = fisheye::CALIB_FIX_SKEW | fisheye::CALIB_RECOMPUTE_EXTRINSIC;
-        flag |= fisheye::CALIB_FIX_K4;
-        flag |= fisheye::CALIB_FIX_PRINCIPAL_POINT;
+        flag = cv::fisheye::CALIB_FIX_SKEW | cv::fisheye::CALIB_RECOMPUTE_EXTRINSIC;
+        flag |= cv::fisheye::CALIB_FIX_K4;
+        flag |= cv::fisheye::CALIB_FIX_PRINCIPAL_POINT;
     }
 
-    std::vector<Mat> rvecs, tvecs;
+    std::vector<cv::Mat> rvecs, tvecs;
     if (fisheye) {
-        Mat _rvecs, _tvecs;
-        rms = fisheye::calibrate(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs,
+        cv::Mat _rvecs, _tvecs;
+        rms = cv::fisheye::calibrate(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs,
             _rvecs, _tvecs, flag);
     } else {
         rms = calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs,

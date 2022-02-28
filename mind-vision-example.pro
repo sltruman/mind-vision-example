@@ -26,6 +26,7 @@ SOURCES += \
     main.cpp \
     mainmenu.cpp \
     mainwindow.cpp \
+    offlinefpndialog.cpp \
     recorddialog.cpp \
     rightsidetitlebar.cpp \
     snapshotdialog.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     mainmenu.h \
     mainwindow.h \
     mainwindow_frameless.hpp \
+    offlinefpndialog.h \
     recorddialog.h \
     rightsidetitlebar.h \
     snapshotdialog.h \
@@ -53,6 +55,7 @@ FORMS += \
     loadingdialog.ui \
     mainmenu.ui \
     mainwindow.ui \
+    offlinefpndialog.ui \
     recorddialog.ui \
     rightsidetitlebar.ui \
     snapshotdialog.ui \
@@ -72,6 +75,7 @@ DISTFILES += \
     theme/black/calibration.css \
     theme/black/leftside.css \
     theme/black/menubar.css \
+    theme/black/offlinefpn.css \
     theme/black/preview.css \
     theme/black/record.css \
     theme/black/rightside.css \

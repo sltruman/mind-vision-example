@@ -59,7 +59,7 @@ void MainMenu::on_pushButton_close_clicked()
 
 void MainMenu::on_pushButton_language_clicked(bool checked)
 {
-    cout << "language " << (checked ? "zh" : "en") << endl;
+    std::cout << "language " << (checked ? "zh" : "en") << std::endl;
     settings.setValue("language",(checked ? "zh" : "en"));
     QMessageBox::information(this, tr("Luanguage"), tr("Luanguage has been switched and to restart the application!"), QMessageBox::Ok);
     qApp->exit();

@@ -3,6 +3,7 @@
 
 #include <QStandardPaths>
 #include <QFileDialog>
+#include <stdexcept>
 
 RecordDialog::RecordDialog(QWidget *parent) :
     QDialog(parent),

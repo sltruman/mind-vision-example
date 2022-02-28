@@ -5,6 +5,7 @@
 #include "toplevelitemwidget.h"
 #include "rightsidetitlebar.h"
 #include "loadingdialog.h"
+#include "offlinefpndialog.h"
 
 #include <QProcess>
 #include <QSpacerItem>
@@ -619,6 +620,7 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             cs->whiteBalanceWindowPos.setY(values[18].toInt());
             cs->whiteBalanceWindowPos.setWidth(values[19].toInt());
             cs->whiteBalanceWindowPos.setHeight(values[20].toInt());
+            ui->checkBox_fpn->setChecked(values[21].toInt());
         } else if(index == 2) {
             auto lookupTableMode = deviceItem->lookupTableMode();
             ui->comboBox_lutMode->setCurrentIndex(lookupTableMode.toInt());
@@ -1950,3 +1952,34 @@ OLD_ITEM:
         viewStatusUpdate.start();
     }
 }
+
+void MainWindow::on_pushButton_fpnEdit_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    OfflineFpnDialog fpn(nullptr,deviceItem->cameraView->snapshot());
+    if(QDialog::Accepted == fpn.exec()) {
+        deviceItem->fpnLoad(fpn.fpnfilepath);
+    }
+}
+
+void MainWindow::on_pushButton_fpnClear_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->fpnClear();
+}
+
+void MainWindow::on_checkBox_fpn_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->fpn(checked);
+}
+
+void MainWindow::on_pushButton_fpnSave_clicked()
+{
+    auto filename = QFileDialog::getSaveFileName(this,tr("File name"),"",tr("config Files(*.fpn )"));
+    if(filename.isEmpty()) return;
+
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->fpnSave(filename);
+}
+
