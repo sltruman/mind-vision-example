@@ -146,7 +146,7 @@ void MainWindow::at_cameraStatusUpdate_timeout()
                 ui->slider_gain->setValue(exposure[9].toInt());
                 ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
                 ui->slider_exposureTime->setValue(exposure[12].toDouble());
-            }catch(...) {
+            } catch(...) {
 
             }
         }

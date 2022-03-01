@@ -22,7 +22,7 @@ CameraView::CameraView(QTreeWidgetItem* owner,QWidget *parent) :
     ui->pushButton_close->hide();
     setScene(new CameraScene(this));
     setAcceptDrops(false);
-    connect(this,SIGNAL(updated(const QImage&)),SLOT(update(const QImage&)));
+    connect(this,SIGNAL(updated(const QPixmap&)),SLOT(update(const QPixmap&)));
 }
 
 CameraView::~CameraView()
@@ -82,7 +82,7 @@ void CameraView::zoom(float v) {
     if(v < 1 && currentScale < 0.1f) return;
     if(v > 1 && currentScale > 500 ) return;
     currentScale *= v;
-    update(img);
+    update(QPixmap::fromImage(img));
 }
 
 void CameraView::paintEvent(QPaintEvent *event) {
@@ -126,7 +126,7 @@ void CameraView::play() {
               auto rgbBuffer = frameHeadBuffer + frame_head_length;
 
               std::lock_guard<std::mutex> locked(m_img);
-              img = QImage(rgbBuffer,frame_head->width,frame_head->height,frame_head->bits == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8).copy();
+              img = QImage(rgbBuffer,frame_head->width,frame_head->height,frame_head->bits == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
 
               auto elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
               displayFPS = 1.0f / elapsedTime * 1000;
@@ -143,21 +143,35 @@ void CameraView::play() {
           }
 
           framesCaptured++;
-          emit updated(img);
+
+          auto cs = dynamic_cast<CameraScene*>(scene());
+          if(cs->deadPixelWindow) {
+              for(auto pos : cs->manualPixels + cs->existedPixels)
+                  img.setPixel(pos.x(),pos.y(), qRgb(255,255,0));
+              for(auto pos : cs->deadPixels + cs->brightPixels)
+                  img.setPixel(pos.x(),pos.y(), qRgb(0,255,0));
+          }
+
+          coordinate = QString("%1,%2").arg(cs->coordinate.x()).arg(cs->coordinate.y());
+          if(img.valid(cs->coordinate.x(),cs->coordinate.y())) {
+              rgb = img.pixel(cs->coordinate.x(),cs->coordinate.y());
+              brightness = 0.299*rgb.red() + 0.587*rgb.green() + 0.114*rgb.blue();
+          }
+
+          emit updated(QPixmap::fromImage(img));
       }
     });
 }
 
-void CameraView::update(const QImage &img) {
+void CameraView::update(const QPixmap &img) {
     framesCaptured = --framesCaptured < 0 ? 0 : framesCaptured;
+
     auto cs = dynamic_cast<CameraScene*>(scene());
+    cs->update(img);
+    resetTransform();
 
     auto w=img.width();
     auto h=img.height();
-    cs->update(img);
-
-    resetTransform();
-
     auto sw = width() / float(w);
     auto sh = height() / float(h);
     auto scaleValue = std::min(sw,sh) * currentScale;
@@ -168,12 +182,6 @@ void CameraView::update(const QImage &img) {
         setDragMode(QGraphicsView::NoDrag);
     else
         setDragMode(QGraphicsView::ScrollHandDrag);
-
-    coordinate = QString("%1,%2").arg(cs->coordinate.x()).arg(cs->coordinate.y());
-    if(img.valid(cs->coordinate.x(),cs->coordinate.y())) {
-        rgb = img.pixel(cs->coordinate.x(),cs->coordinate.y());
-        brightness = 0.299*rgb.red() + 0.587*rgb.green() + 0.114*rgb.blue();
-    }
 }
 
 void CameraView::pause() {

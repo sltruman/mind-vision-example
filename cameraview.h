@@ -77,10 +77,10 @@ protected:
 Q_SIGNALS:
     void doubleClick();
     void focused();
-    void updated(const QImage &img);
+    void updated(const QPixmap &img);
 
 private slots:
-    void update(const QImage &img);
+    void update(const QPixmap &img);
     void on_pushButton_close_clicked();
 
 private:

@@ -33,7 +33,7 @@ public:
     QMap<int,std::tuple<int,int,QPen>> lines;
     QGraphicsPixmapItem* background;
 
-    void update(const QImage &img);
+    void update(const QPixmap &img);
 
     bool leftButtonPressed;
 };

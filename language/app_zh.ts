@@ -2,6 +2,57 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name>OfflineFpnDialog</name>
+    <message>
+        <source>Offline FPN</source>
+        <translation type="unfinished">离线白平衡</translation>
+    </message>
+    <message>
+        <source>Nothing to apply!</source>
+        <translation type="unfinished">没有值能够被应用!</translation>
+    </message>
+    <message>
+        <source>Image width must be 4076px!</source>
+        <translation type="unfinished">图片宽度必须是4076像素!</translation>
+    </message>
+    <message>
+        <source>Origin</source>
+        <translation type="unfinished">原始</translation>
+    </message>
+    <message>
+        <source>FPN</source>
+        <translation type="unfinished">低通滤波</translation>
+    </message>
+    <message>
+        <source>WB</source>
+        <translation type="unfinished">白平衡</translation>
+    </message>
+    <message>
+        <source>Load Image</source>
+        <translation type="unfinished">载入图片</translation>
+    </message>
+    <message>
+        <source>Calculate</source>
+        <translation type="unfinished">计算</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation type="unfinished">应用</translation>
+    </message>
+    <message>
+        <source>Pattern 1</source>
+        <translation type="unfinished">模式1</translation>
+    </message>
+    <message>
+        <source>Pattern 2</source>
+        <translation type="unfinished">模式2</translation>
+    </message>
+    <message>
+        <source>Pattern 3</source>
+        <translation type="unfinished">模式3</translation>
+    </message>
+</context>
+<context>
     <name>AboutDialog</name>
     <message>
         <location filename="../aboutdialog.ui" line="14"/>
@@ -118,14 +169,16 @@
         <translation type="unfinished">应用</translation>
     </message>
     <message>
+        <source>Apply</source>
+        <translation type="unfinished">应用</translation>
+    </message>
+    <message>
         <location filename="../calibrationdialog.ui" line="250"/>
         <location filename="../calibrationdialog.ui" line="253"/>
         <source>Remove</source>
         <translation type="unfinished">删除</translation>
     </message>
     <message>
-        <location filename="../calibrationdialog.ui" line="258"/>
-        <location filename="../calibrationdialog.ui" line="261"/>
         <source>Clear</source>
         <translation type="unfinished">清除</translation>
     </message>
@@ -940,7 +993,7 @@ under params can&apos;t be controlled.</source>
     </message>
     <message>
         <source>Edit</source>
-        <translation type="obsolete">编辑</translation>
+        <translation type="unfinished">编辑</translation>
     </message>
     <message>
         <source>Color Point</source>
@@ -985,6 +1038,10 @@ under params can&apos;t be controlled.</source>
         <location filename="../mainwindow.ui" line="3793"/>
         <source>Light</source>
         <translation type="unfinished">明场初始化</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">清除</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="3811"/>

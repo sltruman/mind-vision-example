@@ -78,24 +78,15 @@ void CameraScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     }
 }
 
-void CameraScene::update(const QImage &rimg)
+void CameraScene::update(const QPixmap &img)
 {
-    auto img = const_cast<QImage&>(rimg);
-
     clear();
-
-    if(deadPixelWindow) {
-        for(auto pos : manualPixels + existedPixels)
-            img.setPixel(pos.x(),pos.y(), qRgb(255,255,0));
-        for(auto pos : deadPixels + brightPixels)
-            img.setPixel(pos.x(),pos.y(), qRgb(0,255,0));
-    }
 
     auto w = img.width();
     auto h = img.height();
 
     setSceneRect(0,0,w,h);
-    background = addPixmap(QPixmap::fromImage(img));
+    background = addPixmap(img);
 
     for(auto line : lines) {
         auto x = std::get<0>(line);
