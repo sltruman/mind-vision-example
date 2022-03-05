@@ -7,6 +7,10 @@
 #include "loadingdialog.h"
 #include "offlinefpndialog.h"
 
+#include "qtpropertymanager.h"
+#include "qtvariantproperty.h"
+#include "qttreepropertybrowser.h"
+
 #include <QProcess>
 #include <QSpacerItem>
 #include <QToolButton>

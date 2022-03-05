@@ -38,6 +38,16 @@ RightSideTitleBar>QWidget {
     border-left:1px solid #444444;
 }
 
+#tabWidget_params #scrollArea {
+    border:none;
+}
+
+#tabWidget_params #scrollArea #scrollAreaWidgetContents {
+    background-image: url(:/theme/icon/right-side.png);
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
 #tabWidget_params::tab-bar {
 /*    top:0px;*/
 }

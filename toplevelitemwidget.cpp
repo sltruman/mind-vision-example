@@ -1,6 +1,7 @@
 ﻿#include "toplevelitemwidget.h"
 #include "ui_toplevelitemwidget.h"
 
+#include <QSettings>
 #include <QSharedMemory>
 #include <QTextStream>
 
@@ -92,8 +93,6 @@ void TopLevelItemWidget::statusUpdate() {
     }
 }
 
-
-
 DeviceItem::DeviceItem(TopLevelItemWidget *w,QTreeWidgetItem *parent, QString name)
     : QTreeWidgetItem(parent, QStringList(name))
 {
@@ -117,7 +116,7 @@ bool DeviceItem::open() {
     camera.setArguments(args);
     camera.start();
 
-    while(camera.bytesAvailable() == 0)  {
+    while(camera.bytesAvailable() == 0) {
         camera.waitForReadyRead(10);
     }
 

@@ -8,12 +8,15 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += C:\opencv\build\include
+INCLUDEPATH += C:\opencv\build\include \
+               C:\Users\SLTru\Desktop\qtpropertybrowser\src
 
 CONFIG(debug,debug|release) {
-LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454d
+LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454d \
+        -LC:\Users\SLTru\Desktop\qtpropertybrowser\lib -lQtSolutions_PropertyBrowser-headd
 } else {
-LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454
+LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454 \
+        -LC:\Users\SLTru\Desktop\qtpropertybrowser\lib -lQtSolutions_PropertyBrowser-head
 }
 
 SOURCES += \
