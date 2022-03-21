@@ -153,7 +153,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
                 }
             }
         }
-        else if (event->type() == QEvent::MouseButtonPress)
+        else if (event->type() == QEvent::MouseButtonPress && !widget->isMaximized())
         {
             //记住当前控件坐标和宽高以及鼠标按下的坐标
             QMouseEvent *mouseEvent = (QMouseEvent *)event;

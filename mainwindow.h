@@ -1,6 +1,6 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+#include <GF120.h>
 #include "cameraview.h"
 #include <QMainWindow>
 #include <QMouseEvent>
@@ -218,20 +218,60 @@ private Q_SLOTS:
     void on_checkBox_showBright_stateChanged(int arg1);
     void on_radioButton_wbManual_clicked();
     void on_radioButton_wbAutomation_clicked();
-
     void on_radioButton_automationExposure_toggled(bool checked);
     void on_radioButton_manualExposure_toggled(bool checked);
     void on_radioButton_wbAutomation_toggled(bool checked);
-
     void on_tabWidget_preview_currentChanged(int index);
-
     void on_pushButton_fpnEdit_clicked();
-
     void on_pushButton_fpnClear_clicked();
-
     void on_checkBox_fpn_clicked(bool checked);
-
     void on_pushButton_fpnSave_clicked();
+
+    void gui_init(InfraredParamsStatus);
+    void on_comboBox_infrared_thermometry_activated(int index);
+    void on_comboBox_infrared_color_activated(int index);
+    void on_comboBox_display_mode_currentIndexChanged(int index);
+    void on_checkBox_infrared_shutter_clicked(bool checked);
+    void on_checkBox_infrared_cool_clicked(bool checked);
+    void on_spinBox_infrared_emissivity_valueChanged(int arg1);
+    void on_spinBox_infrared_sharpen_valueChanged(int arg1);
+    void on_spinBox_infrared_exposure_valueChanged(int arg1);
+    void on_spinBox_dde_valueChanged(int arg1);
+    void on_checkBox_infrared_manual_clicked(bool checked);
+    void on_pushButton_infrared_temperature_check_clicked();
+    void on_checkBox_infrared_stop_temperature_check_clicked(bool checked);
+    void on_checkBox_infrared_shutter_temperature_raise_sample_clicked(bool checked);
+    void on_checkBox_infrared_factory_check_detect_clicked(bool checked);
+    void on_checkBox_infrared_response_rate_sample_clicked(bool checked);
+    void on_checkBox_infrared_temperature_curve_sample_clicked(bool checked);
+    void on_pushButton_factory_check_clicked();
+    void on_pushButton_sample_path_clicked();
+    void on_pushButton_sample_low_response_rate_clicked();
+    void on_pushButton_sample_high_response_rate_clicked();
+    void on_checkBox_infrared_osd_clicked(bool checked);
+    void on_checkBox_infrared_temperature_display_clicked(bool checked);
+    void on_checkBox_infrared_roi_clicked(bool checked);
+    void on_comboBox_infrared_temperture_roi_activated(int index);
+    void on_checkBox_infrared_blackbody_calibrate_clicked(bool checked);
+    void on_checkBox_infrared_color_map_clicked(bool checked);
+    void on_checkBox_infrared_high_warm_clicked(bool checked);
+    void on_checkBox_infrared_low_warm_clicked(bool checked);
+    void on_doubleSpinBox_infrared_temperature_compensation_valueChanged(double arg1);
+    void on_doubleSpinBox_infrared_distance_compensation_valueChanged(int arg1);
+    void on_doubleSpinBox_infrared_humidity_compensation_valueChanged(double arg1);
+    void on_pushButton_load_response_rate_file_clicked();
+    void on_pushButton_cover_low_clicked();
+    void on_pushButton_cover_high_clicked();
+    void on_pushButton_cover_load_clicked();
+    void on_pushButton_save_clicked();
+    void on_pushButton_load_clicked();
+    void on_pushButton_change_clicked();
+    void on_pushButton_saveToDevice_clicked();
+    void on_pushButton_deleteFilesInDevice_clicked();
+    void on_pushButton_up_clicked();
+    void on_pushButton_update_clicked();
+    bool copyDirectoryFiles(const QString &fromDir, const QString &toDir, bool coverFileIfExist);
+    int Bin_Search(InfraredParamsStatus,int temp);
 
 private:
     Ui::MainWindow *ui;

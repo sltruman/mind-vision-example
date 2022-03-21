@@ -6721,9 +6721,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-1283</y>
+              <y>-838</y>
               <width>265</width>
-              <height>2084</height>
+              <height>2290</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_31">
@@ -6737,12 +6737,41 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_temp_mode"/>
+                <widget class="QComboBox" name="comboBox_infrared_thermometry">
+                 <property name="currentIndex">
+                  <number>1</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>20℃~50℃</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>-40℃~150℃</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>40℃~500℃</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>100℃~1200℃</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>自定义模式</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_15">
+              <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,1">
                <item>
                 <widget class="QLabel" name="label_91">
                  <property name="text">
@@ -6751,7 +6780,144 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_color_mode"/>
+                <widget class="QComboBox" name="comboBox_infrared_color">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>彩虹色编码</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>热金属编码</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>白热编码</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>黑热编码</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>AUTUMN</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>BONE</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>JET</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>WINTER</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>RAINBOW</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>OCEAN</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>SUMMER</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>SPRING</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>COOL</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>HSV</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>PINK</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>HOT</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>PARULA</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MAGMA</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>INFERNO</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>PLASMA</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>VIRIDIS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>CIVIDIS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TWILIGHT</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TWILIGHT_SHIFTED</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>TURBO</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>DEEPGREEN</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
               </layout>
              </item>
@@ -6765,21 +6931,49 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_display_mode"/>
+                <widget class="QComboBox" name="comboBox_display_mode">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="currentIndex">
+                  <number>1</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>温度数据</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>伪彩色</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>伪彩色+温度数据</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
               </layout>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_118">
                <item>
-                <widget class="QCheckBox" name="checkBox_shutter">
+                <widget class="QCheckBox" name="checkBox_infrared_shutter">
                  <property name="text">
                   <string>打开快门</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="checkBox_cool_mode">
+                <widget class="QCheckBox" name="checkBox_infrared_cool">
                  <property name="text">
                   <string>冷机模式</string>
                  </property>
@@ -6800,13 +6994,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_emissivity">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_emissivity">
                  <property name="maximum">
                   <number>100</number>
                  </property>
@@ -6830,13 +7018,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_sharpen_grade">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_sharpen">
                  <property name="maximum">
                   <number>100</number>
                  </property>
@@ -6857,13 +7039,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_dde_grade">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_dde">
                  <property name="suffix">
                   <string/>
                  </property>
@@ -6887,12 +7063,9 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_exposure_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
+                <widget class="QSpinBox" name="spinBox_infrared_exposure">
+                 <property name="readOnly">
+                  <bool>true</bool>
                  </property>
                  <property name="suffix">
                   <string/>
@@ -6908,21 +7081,27 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_123">
+              <layout class="QHBoxLayout" name="horizontalLayout_123" stretch="0,0">
                <item>
                 <widget class="QLabel" name="label_78">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
                   <string>AD平均值</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_ad_value">
+                <widget class="QLineEdit" name="lineEdit_infrared_ad_value">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -6950,12 +7129,12 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_ad_diff">
+                <widget class="QLineEdit" name="lineEdit_infrared_ad_diff">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -6980,9 +7159,15 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_gst417m_temp">
+                <widget class="QLineEdit" name="lineEdit_infrared_gst417m_temp">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                  <property name="font">
                   <font>
@@ -7007,9 +7192,15 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit_temp_diff">
+                <widget class="QLineEdit" name="lineEdit_infrared_temp_diff">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                  <property name="font">
                   <font>
@@ -7024,7 +7215,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_122">
                <item>
-                <widget class="QCheckBox" name="checkBox_manual">
+                <widget class="QCheckBox" name="checkBox_infrared_manual">
                  <property name="text">
                   <string>手动模式（不用快门）</string>
                  </property>
@@ -7042,13 +7233,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_manual_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_manual">
                  <property name="suffix">
                   <string> ℃</string>
                  </property>
@@ -7063,23 +7248,19 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_124">
-               <item>
-                <widget class="QPushButton" name="pushButton_temp_chek">
-                 <property name="toolTip">
-                  <string>执行一次温度校正</string>
-                 </property>
-                 <property name="text">
-                  <string>执行一次温度校正</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QPushButton" name="pushButton_infrared_temperature_check">
+               <property name="toolTip">
+                <string>执行一次温度校正</string>
+               </property>
+               <property name="text">
+                <string>执行一次温度校正</string>
+               </property>
+              </widget>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_158">
                <item>
-                <widget class="QCheckBox" name="checkBox_stop_correct_2">
+                <widget class="QCheckBox" name="checkBox_infrared_stop_temperature_check">
                  <property name="text">
                   <string>停止温度校正</string>
                  </property>
@@ -7093,7 +7274,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_126">
                <item>
-                <widget class="QCheckBox" name="checkBox_shutter_mode">
+                <widget class="QCheckBox" name="checkBox_infrared_shutter_temperature_raise_sample">
                  <property name="text">
                   <string>快门温升采样</string>
                  </property>
@@ -7104,7 +7285,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_159">
                <item>
-                <widget class="QCheckBox" name="checkBox_factory_check_2">
+                <widget class="QCheckBox" name="checkBox_infrared_factory_check_detect">
                  <property name="text">
                   <string>出厂校正检测</string>
                  </property>
@@ -7115,7 +7296,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_125">
                <item>
-                <widget class="QCheckBox" name="checkBox_respons_sample_mode">
+                <widget class="QCheckBox" name="checkBox_infrared_response_rate_sample">
                  <property name="text">
                   <string>响应率采样</string>
                  </property>
@@ -7126,7 +7307,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_160">
                <item>
-                <widget class="QCheckBox" name="checkBox_temp_mode_2">
+                <widget class="QCheckBox" name="checkBox_infrared_temperature_curve_sample">
                  <property name="text">
                   <string>温度曲线采样</string>
                  </property>
@@ -7142,16 +7323,26 @@
               </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_127">
+              <widget class="QLabel" name="label_90">
+               <property name="text">
+                <string>保存样本路径</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_162">
                <item>
-                <widget class="QLabel" name="label_90">
+                <widget class="QLineEdit" name="lineEdit_sample_path">
                  <property name="text">
-                  <string>保存样本路径</string>
+                  <string/>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_path_file">
+                <widget class="QPushButton" name="pushButton_sample_path">
                  <property name="text">
                   <string>...</string>
                  </property>
@@ -7169,13 +7360,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_calibration_high">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_left_backbody_furnace_temperature">
                  <property name="suffix">
                   <string/>
                  </property>
@@ -7202,13 +7387,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_calibration_low_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_right_backbody_furnace_temperature">
                  <property name="suffix">
                   <string> ℃</string>
                  </property>
@@ -7226,23 +7405,26 @@
               </layout>
              </item>
              <item>
+              <widget class="QLabel" name="label_94">
+               <property name="text">
+                <string>低温响应率样本</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_130">
                <item>
-                <widget class="QLabel" name="label_94">
-                 <property name="text">
-                  <string>低温响应率样本</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="lineEdit_path_response_low">
+                <widget class="QLineEdit" name="lineEdit_infrared_path_to_low_response_rate_sample">
                  <property name="text">
                   <string/>
                  </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_response_low">
+                <widget class="QPushButton" name="pushButton_sample_low_response_rate">
                  <property name="toolTip">
                   <string>采样低温响应率样本</string>
                  </property>
@@ -7254,23 +7436,26 @@
               </layout>
              </item>
              <item>
+              <widget class="QLabel" name="label_93">
+               <property name="text">
+                <string>高温响应率样本</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_131">
                <item>
-                <widget class="QLabel" name="label_93">
-                 <property name="text">
-                  <string>高温响应率样本</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="lineEdit_path_response_high">
+                <widget class="QLineEdit" name="lineEdit_infrared_path_to_high_response_rate_sample">
                  <property name="text">
                   <string/>
                  </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButton_response_high">
+                <widget class="QPushButton" name="pushButton_sample_high_response_rate">
                  <property name="toolTip">
                   <string>采样高温响应率样本</string>
                  </property>
@@ -7282,7 +7467,7 @@
               </layout>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_response_load">
+              <widget class="QPushButton" name="pushButton_load_response_rate_file">
                <property name="toolTip">
                 <string>加载后立即生效</string>
                </property>
@@ -7292,14 +7477,14 @@
               </widget>
              </item>
              <item>
+              <widget class="QLabel" name="label_83">
+               <property name="text">
+                <string>低温锅盖样本</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_132">
-               <item>
-                <widget class="QLabel" name="label_83">
-                 <property name="text">
-                  <string>低温锅盖样本</string>
-                 </property>
-                </widget>
-               </item>
                <item>
                 <widget class="QLineEdit" name="lineEdit_path_cover_low">
                  <property name="text">
@@ -7320,14 +7505,14 @@
               </layout>
              </item>
              <item>
+              <widget class="QLabel" name="label_86">
+               <property name="text">
+                <string>高温锅盖样本</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_133">
-               <item>
-                <widget class="QLabel" name="label_86">
-                 <property name="text">
-                  <string>高温锅盖样本</string>
-                 </property>
-                </widget>
-               </item>
                <item>
                 <widget class="QLineEdit" name="lineEdit_path_cover_high">
                  <property name="text">
@@ -7399,7 +7584,11 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_135">
                <item>
-                <widget class="QLineEdit" name="lineEdit_updateFile"/>
+                <widget class="QLineEdit" name="lineEdit_updateFile">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
                <item>
                 <widget class="QPushButton" name="pushButton_up">
@@ -7408,24 +7597,24 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QPushButton" name="pushButton_update">
-                 <property name="text">
-                  <string>升级</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox_osd_enable">
+              <widget class="QPushButton" name="pushButton_update">
+               <property name="text">
+                <string>升级</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkBox_infrared_osd">
                <property name="text">
                 <string>打开画面叠加功能</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox_temp_display">
+              <widget class="QCheckBox" name="checkBox_infrared_temperature_display">
                <property name="text">
                 <string>打开最高最低和中心温度显示</string>
                </property>
@@ -7441,16 +7630,84 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_temp_roi"/>
+                <widget class="QComboBox" name="comboBox_infrared_temperture_roi">
+                 <item>
+                  <property name="text">
+                   <string>测温区域1</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>测温区域2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>测温区域3</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>测温区域4</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>测温区域5</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>测温区域6</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>测温区域7</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>测温区域8</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
               </layout>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_161">
                <item>
-                <widget class="QCheckBox" name="checkBox_roi_2">
+                <widget class="QCheckBox" name="checkBox_infrared_roi">
                  <property name="text">
                   <string>打开测温区域</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_167">
+               <item>
+                <widget class="QLabel" name="label_116">
+                 <property name="text">
+                  <string>发射率</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="spinBox_infrared_roi_emissivity">
+                 <property name="toolTip">
+                  <string/>
+                 </property>
+                 <property name="suffix">
+                  <string/>
+                 </property>
+                 <property name="maximum">
+                  <number>360</number>
+                 </property>
+                 <property name="value">
+                  <number>80</number>
                  </property>
                 </widget>
                </item>
@@ -7466,13 +7723,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_width_start">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_width_start">
                  <property name="toolTip">
                   <string/>
                  </property>
@@ -7499,13 +7750,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_width_end_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_width_end">
                  <property name="toolTip">
                   <string>pix</string>
                  </property>
@@ -7535,13 +7780,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_high_start">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_high_start">
                  <property name="suffix">
                   <string>pixel</string>
                  </property>
@@ -7568,13 +7807,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_high_end_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_high_end">
                  <property name="suffix">
                   <string>pixel</string>
                  </property>
@@ -7594,7 +7827,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_139">
                <item>
-                <widget class="QCheckBox" name="checkBox_calibration">
+                <widget class="QCheckBox" name="checkBox_infrared_blackbody_calibrate">
                  <property name="toolTip">
                   <string>人体测温时放置人体黑体炉提高测温精度，修改后需要重新勾选</string>
                  </property>
@@ -7618,13 +7851,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_calibration_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_infrared_blackbody_temperature">
                  <property name="suffix">
                   <string> ℃</string>
                  </property>
@@ -7648,13 +7875,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_width_start_calibration">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_blackbody_width_start">
                  <property name="toolTip">
                   <string/>
                  </property>
@@ -7681,13 +7902,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_width_end_calibration_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_blackbody_width_end">
                  <property name="toolTip">
                   <string>pix</string>
                  </property>
@@ -7717,13 +7932,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_high_start_calibration">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_blackbody_high_start">
                  <property name="suffix">
                   <string>pixel</string>
                  </property>
@@ -7750,13 +7959,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_high_end_calibration_2">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_blackbody_high_end">
                  <property name="suffix">
                   <string>pixel</string>
                  </property>
@@ -7774,7 +7977,7 @@
               </layout>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBox_color_map">
+              <widget class="QCheckBox" name="checkBox_infrared_color_map">
                <property name="toolTip">
                 <string>用户定义的温度范围占80%的色彩，,修改后需要重新勾选</string>
                </property>
@@ -7797,13 +8000,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_163">
                <item>
-                <widget class="QSpinBox" name="spinBox_curve_low_3">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_fake_color_low">
                  <property name="suffix">
                   <string>℃低</string>
                  </property>
@@ -7819,13 +8016,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_curve_high_3">
-                 <property name="font">
-                  <font>
-                   <pointsize>9</pointsize>
-                   <bold>true</bold>
-                  </font>
-                 </property>
+                <widget class="QSpinBox" name="spinBox_infrared_fake_color_high">
                  <property name="suffix">
                   <string>℃高</string>
                  </property>
@@ -7852,7 +8043,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_user_compensate">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_infrared_temperature_compensation">
                  <property name="font">
                   <font>
                    <pointsize>9</pointsize>
@@ -7885,7 +8076,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="doubleSpinBox_distance_compensate">
+                <widget class="QSpinBox" name="doubleSpinBox_infrared_distance_compensation">
                  <property name="font">
                   <font>
                    <pointsize>9</pointsize>
@@ -7918,7 +8109,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_humidity_compensate">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_infrared_humidity_compensation">
                  <property name="font">
                   <font>
                    <pointsize>9</pointsize>
@@ -7944,7 +8135,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_146">
                <item>
-                <widget class="QCheckBox" name="checkBox_high_warm">
+                <widget class="QCheckBox" name="checkBox_infrared_high_warm">
                  <property name="toolTip">
                   <string>打开高温报警，超过设置温度就通过音频设备报警，修改后需要重新勾选</string>
                  </property>
@@ -7954,7 +8145,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_high_warm">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_infrared_high_warm">
                  <property name="font">
                   <font>
                    <pointsize>9</pointsize>
@@ -7974,7 +8165,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_147">
                <item>
-                <widget class="QCheckBox" name="checkBox_low_warm">
+                <widget class="QCheckBox" name="checkBox_infrared_low_warm">
                  <property name="toolTip">
                   <string>打开高温报警，超过设置温度就通过音频设备报警，修改后需要重新勾选</string>
                  </property>
@@ -7984,7 +8175,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_low_warm">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_infrared_low_warm">
                  <property name="font">
                   <font>
                    <pointsize>9</pointsize>

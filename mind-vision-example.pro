@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets charts
 
@@ -36,6 +36,7 @@ SOURCES += \
     toplevelitemwidget.cpp
 
 HEADERS += \
+    GF120.h \
     aboutdialog.h \
     calibrationdialog.h \
     cameraprocess.h \

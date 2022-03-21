@@ -42,7 +42,7 @@ void TopLevelItemWidget::on_toolButton_refresh_clicked()
 
         auto lines = QList<QByteArray>(s);
         for(auto it=lines.begin();it!=lines.end();it++) {
-            QString line = *it;
+            QString line = QString::fromLocal8Bit(*it);
             auto info = line.split(','); //产品系列 产品名称 产品昵称 内核符号连接名 内部使用 驱动版本 sensor类型 接口类型 产品唯一序列号 实例索引号 相机IP 相机子网掩码 相机网关 网卡IP 网卡子网掩码 网卡网关
             if(-1 == series.indexOf(info[0])) continue;
 
@@ -108,6 +108,8 @@ DeviceItem::~DeviceItem() {
 
 bool DeviceItem::open() {
     cout << "open " << cameraName.toStdString() << endl;
+
+    if(cameraView->playing) cameraView->stop();
 
     QStringList args;
     args.append("open");
@@ -714,3 +716,235 @@ void DeviceItem::fpnSave(QString filepath) {
     cout << "fpn-save " << filepath.toLocal8Bit().data() << endl;
     camera.write(QString("fpn-save %1\n").arg(filepath).toLocal8Bit());
 }
+
+void DeviceItem::infrared_thermometry(int index) {
+    camera.write(QString("infrared-thermometry %1\n").arg(index).toLocal8Bit());
+}
+
+void DeviceItem::infrared_color(int index) {
+    camera.write(QString("infrared-color %1\n").arg(index).toLocal8Bit());
+}
+
+void DeviceItem::infrared_display(int index) {
+    camera.write(QString("infrared-display %1\n").arg(index).toLocal8Bit());
+}
+
+void DeviceItem::infrared_shutter(int checked) {
+    camera.write(QString("infrared-shutter %1\n").arg(checked).toLocal8Bit());
+}
+
+void DeviceItem::infrared_cool(int checked) {
+    camera.write(QString("infrared-cool %1\n").arg(checked).toLocal8Bit());
+}
+
+void DeviceItem::infrared_emissivity(int value) {
+    camera.write(QString("infrared-emissivity %1\n").arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_sharpen(int value) {
+    camera.write(QString("infrared-sharpen %1\n").arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_dde(int value) {
+    camera.write(QString("infrared-dde %1\n").arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_exposure(int value) {
+    camera.write(QString("infrared-exposure %1\n").arg(value).toLocal8Bit());
+}
+
+InfraredStatus DeviceItem::infrared_status() {
+    camera.write("infrared-status 0\n");
+
+    InfraredStatus status;
+
+    QSharedMemory sm(cameraName + ".infrared.sm");
+    if(!sm.isAttached()) sm.attach();
+    sm.lock();
+    memcpy(&status,sm.data(),sizeof(InfraredStatus));
+    sm.unlock();
+
+    return status;
+}
+
+void DeviceItem::infrared_manual(int checked,short value) {
+    camera.write(QString("infrared-manual %1 %2\n").arg(checked).arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_temperature_check() {
+    camera.write("infrared-temperature-check\n");
+}
+
+void DeviceItem::infrared_stop_temperature_check(bool checked) {
+    camera.write(QString("infrared-stop-temperature-check %1\n").arg(checked).toLocal8Bit());
+}
+
+void DeviceItem::infrared_factory_check_temperature_check_stop() {
+    camera.write(QString("infrared_factory_check_temperature_check_stop\n").toLocal8Bit());
+}
+
+void DeviceItem::infrared_shutter_temperature_raise_sample(bool checked) {
+    camera.write(QString("infrared-shutter-temperature-raise-sample %1\n").arg(checked).toLocal8Bit());
+}
+
+void DeviceItem::infrared_factory_check_detect(bool checked) {
+    camera.write(QString("infrared-factory-check-detect %1\n").arg(checked).toLocal8Bit());
+}
+
+void DeviceItem::infrared_response_rate_sample(bool checked) {
+    camera.write(QString("infrared-response-rate-sample %1\n").arg(checked).toLocal8Bit());
+}
+
+void DeviceItem::infrared_temperature_curve_sample(bool checked) {
+    camera.write(QString("infrared_temperature_curve_sample %1\n").arg(checked).toLocal8Bit());
+}
+
+void DeviceItem::infrared_factory_check() {
+    camera.write(QString("infrared_factory_check\n").toLocal8Bit());
+}
+
+void DeviceItem::infrared_frame_temp_cnt(int value) {
+    camera.write(QString("infrared_frame_temp_cnt %1\n").arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_factory_check_exposure(int value) {
+    camera.write(QString("infrared_factory_check_exposure %1\n").arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_sample_path(QString path) {
+    camera.write(QString("infrared_sample_path %1\n").arg(path).toLocal8Bit());
+}
+
+InfraredParamsStatus DeviceItem::infrared_params_status() {
+    camera.write(QString("infrared_params_status\n").toLocal8Bit());
+
+    InfraredParamsStatus status;
+
+    QSharedMemory sm(cameraName + ".infrared-params.sm");
+    if(!sm.isAttached()) sm.attach();
+    sm.lock();
+    memcpy(&status,reinterpret_cast<InfraredParamsStatus*>(sm.data()),sizeof(InfraredParamsStatus));
+    sm.unlock();
+
+    return status;
+}
+
+void DeviceItem::infrared_params_status(InfraredParamsStatus status) {
+    camera.write(QString("infrared_params_status\n").toLocal8Bit());
+
+    QSharedMemory sm(cameraName + ".infrared-params.sm");
+    if(!sm.isAttached()) sm.attach();
+    sm.lock();
+    memcpy(reinterpret_cast<InfraredParamsStatus*>(sm.data()),&status,sizeof(InfraredParamsStatus));
+    sm.unlock();
+}
+
+void DeviceItem::infrared_response_rate_start(int value,QString path) {
+    camera.write(QString("infrared_response_rate_start %1 %2\n").arg(value).arg(path).toLocal8Bit());
+}
+
+bool DeviceItem::infrared_response_rate_status() {
+    camera.write(QString("infrared_response_rate_status\n").toLocal8Bit());
+    return true;
+}
+
+void DeviceItem::infrared_response_rate_stop() {
+    camera.write(QString("infrared_response_rate_stop\n").toLocal8Bit());
+}
+
+bool DeviceItem::infrared_load_response_rate_file(QString path,QString path2) {
+    camera.write(QString("infrared_load_response_rate_file %1 %2\n").arg(path).arg(path2).toLocal8Bit());
+    return true;
+}
+
+void DeviceItem::infrared_cover_start(int value,QString path) {
+    camera.write(QString("infrared_cover_start %1 %2\n").arg(value).arg(path).toLocal8Bit());
+}
+
+bool DeviceItem::infrared_cover_status() {
+    camera.write(QString("infrared_cover_status\n").toLocal8Bit());
+    return true;
+}
+
+void DeviceItem::infrared_cover_stop() {
+    camera.write(QString("infrared_cover_stop\n").toLocal8Bit());
+}
+
+bool DeviceItem::infrared_load_cove_file(QString path,QString path2) {
+    camera.write(QString("infrared_load_cove_file %1 %2\n").arg(path).arg(path2).toLocal8Bit());
+    return true;
+}
+
+bool DeviceItem::infared_save_config(QStringList filenames) {
+    camera.write(QString("infared_save_config %1 %2\n").arg(filenames.size()).toLocal8Bit());
+    for(auto filename : filenames) {
+        camera.write((filename + "\n").toLocal8Bit());
+    }
+
+    return true;
+}
+
+bool DeviceItem::infared_delete_config() {
+    camera.write(QString("infared_delete_config\n").toLocal8Bit());
+    return true;
+}
+
+bool DeviceItem::infrared_cmd(QString cmd) {
+    camera.write(QString("infared_cmd %1\n").arg(cmd).toLocal8Bit());
+    return true;
+}
+
+void DeviceItem::infrared_osd(bool checked) {
+    camera.write(QString("infrared_osd %1\n").arg(checked).toLocal8Bit());
+}
+
+void DeviceItem::infrared_temperature_display(bool checked) {
+    camera.write(QString("infrared_temperature_display %1\n").arg(checked).toLocal8Bit());
+}
+
+InfraredTemperatureROIStatus DeviceItem::infrared_temperature_roi_status(int index) {
+    camera.write("infrared_temperature_roi_status 0\n");
+
+    InfraredTemperatureROIStatus status;
+
+    QSharedMemory sm(cameraName + ".infrared_temperature_roi.sm");
+    if(!sm.isAttached()) sm.attach();
+    sm.lock();
+    memcpy(&status,reinterpret_cast<InfraredTemperatureROIStatus*>(sm.data()) + index,sizeof(InfraredTemperatureROIStatus));
+    sm.unlock();
+
+    return status;
+}
+
+void DeviceItem::infrared_roi(bool checked,int index,int user_width_start,int user_width_number,int user_high_start,int user_high_number,int user_roi_emissivity) {
+    camera.write(QString("infrared_roi %1 %2 %3 %4 %5 %6 %7\n").arg(checked).arg(index).arg(user_width_start).arg(user_width_number).arg(user_high_start).arg(user_high_number).arg(user_roi_emissivity).toLocal8Bit());
+}
+
+void DeviceItem::infrared_blackbody_calibrate(bool checked,int blackbody_temprature,int user_width_start,int user_width_end,int user_high_start,int user_high_end) {
+    camera.write(QString("infrared_blackbody_calibrate %1 %2 %3 %4 %5 %6\n").arg(checked).arg(blackbody_temprature).arg(user_width_start).arg(user_width_end).arg(user_high_start).arg(user_high_end).toLocal8Bit());
+}
+
+void DeviceItem::infrared_color_map(bool checked,int low,int high) {
+    camera.write(QString("infrared_color_map %1 %2 %3\n").arg(checked).arg(low).arg(high).toLocal8Bit());
+}
+
+void DeviceItem::infrared_temperature_compensation(int value) {
+    camera.write(QString("infrared_temperature_compensation %1\n").arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_distance_compensation(int value) {
+    camera.write(QString("infrared_distance_compensation %1\n").arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_humidity_compensation(int value) {
+    camera.write(QString("infrared_humidity_compensation %1\n").arg(value).toLocal8Bit());
+}
+
+void DeviceItem::infrared_high_warm(bool checked,int temperature) {
+    camera.write(QString("infrared_high_warm %1 %2\n").arg(checked).arg(temperature).toLocal8Bit());
+}
+
+void DeviceItem::infrared_low_warm(bool checked,int temperature) {
+    camera.write(QString("infrared_low_warm %1 %2\n").arg(checked).arg(temperature).toLocal8Bit());
+}
+

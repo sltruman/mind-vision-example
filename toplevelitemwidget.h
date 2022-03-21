@@ -4,6 +4,7 @@
 #include "cameraview.h"
 #include "calibrationdialog.h"
 #include "cameraprocess.h"
+#include "GF120.h"
 
 #include <QWidget>
 #include <QTreeWidgetItem>
@@ -147,6 +148,60 @@ public:
     void fpnClear();
     void fpnLoad(QString filepath);
     void fpnSave(QString filepath);
+
+    void infrared_thermometry(int index);
+    void infrared_color(int index);
+    void infrared_display(int index);
+    void infrared_shutter(int checked);
+    void infrared_cool(int checked);
+    void infrared_emissivity(int value);
+    void infrared_sharpen(int value);
+    void infrared_dde(int value);
+    void infrared_exposure(int value);
+    InfraredStatus infrared_status();
+    void infrared_manual(int checked,short value);
+    void infrared_temperature_check();
+    void infrared_stop_temperature_check(bool checked);
+    void infrared_factory_check_temperature_check_stop();
+    void infrared_shutter_temperature_raise_sample(bool checked);
+    void infrared_factory_check_detect(bool checked);
+    void infrared_response_rate_sample(bool checked);
+    void infrared_temperature_curve_sample(bool checked);
+    void infrared_factory_check();
+    void infrared_frame_temp_cnt(int);
+    void infrared_factory_check_exposure(int);
+
+    void infrared_sample_path(QString path);
+
+    InfraredParamsStatus infrared_params_status();
+    void infrared_params_status(InfraredParamsStatus);
+
+    void infrared_response_rate_start(int value,QString path);
+    bool infrared_response_rate_status();
+    void infrared_response_rate_stop();
+    bool infrared_load_response_rate_file(QString path,QString path2);
+
+    void infrared_cover_start(int value,QString path);
+    bool infrared_cover_status();
+    void infrared_cover_stop();
+    bool infrared_load_cove_file(QString path,QString path2);
+
+    bool infared_save_config(QStringList);
+    bool infared_delete_config();
+    bool infrared_cmd(QString cmd);
+
+    void infrared_osd(bool checked);
+    void infrared_temperature_display(bool checked);
+
+    InfraredTemperatureROIStatus infrared_temperature_roi_status(int index);
+    void infrared_roi(bool checked,int index,int user_width_start,int user_width_number,int user_high_start,int user_high_number,int user_roi_emissivity);
+    void infrared_blackbody_calibrate(bool checked,int blackbody_temprature,int user_width_start,int user_width_end,int user_high_start,int user_high_end);
+    void infrared_color_map(bool checked,int low,int high);
+    void infrared_temperature_compensation(int value);
+    void infrared_distance_compensation(int value);
+    void infrared_humidity_compensation(int value);
+    void infrared_high_warm(bool checked,int temperature);
+    void infrared_low_warm(bool checked,int temperature);
 
     QString cameraName;
     QProcess camera;

@@ -84,77 +84,87 @@ void MainWindow::at_cameraStatusUpdate_timeout()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
-    if(deviceItem && deviceItem->camera.state() == QProcess::Running) {
-        if(deviceItem->cameraView->avgBrightness) {
-            auto brightness = deviceItem->brightness();
-            ui->label_brightness->setText(brightness);
-            ui->widget_bright->show();
+    if(deviceItem == nullptr || deviceItem->camera.state() != QProcess::Running) {
+        return;
+    }
+
+
+    if(deviceItem->cameraView->avgBrightness) {
+        auto brightness = deviceItem->brightness();
+        ui->label_brightness->setText(brightness);
+        ui->widget_bright->show();
+    } else {
+        ui->widget_bright->hide();
+    }
+
+    auto resolution = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->background->pixmap().size();
+    ui->label_resolution->setText(QString("%1x%2").arg(resolution.width()).arg(resolution.height()));
+    ui->label_zoom->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
+    ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
+    ui->label_coordinate->setText(deviceItem->cameraView->coordinate);
+
+    auto rgb = deviceItem->cameraView->rgb;
+    if(deviceItem->cameraView->img.format() != QImage::Format::Format_RGB888) {
+        ui->label_rgb_column->setText(tr("GrayLevel"));
+        ui->label_rgb->setText(QString("%4").arg(deviceItem->cameraView->brightness));
+    } else {
+        ui->label_rgb_column->setText("RGB");
+        ui->label_rgb->setText(QString("%1,%2,%3(%4)").arg(rgb.red()).arg(rgb.green()).arg(rgb.blue()).arg(deviceItem->cameraView->brightness));
+    }
+
+    ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing);
+
+    auto s = deviceItem->snapshotState();
+    ui->pushButton_snapshot->setText(s ? tr("Stop") : tr("Snapshot"));
+    ui->pushButton_snapshot->setCheckable(s);
+
+    s = deviceItem->recordState();
+    ui->pushButton_record->setText(s ? tr("Stop") : tr("Record"));
+    ui->pushButton_record->setCheckable(s);
+
+    auto portType = deviceItem->data(0,Qt::UserRole).toStringList()[6];
+
+    try {
+        auto status = deviceItem->status(portType);
+
+        ui->label_frames->setText(status[0]);
+        ui->label_recordFPS->setText(status[1]);
+
+        if(-1 != portType.indexOf("NET")) {
+            ui->label_temperature->setText(status[3]);
+            ui->label_lost->setText(status[4]);
+            ui->label_resend->setText(status[5]);
+            ui->label_packSize->setText(status[6]);
+        } else if(-1 != portType.indexOf("USB3")) {
+            ui->label_sensorFps->setText(status[2]);
+            ui->label_temperature->setText(status[3]);
+            ui->label_lost->setText(status[4]);
+            ui->label_resend->setText(status[5]);
+            ui->label_recover->setText(status[6]);
+            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
         } else {
-            ui->widget_bright->hide();
+            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
         }
+    } catch(...) {}
 
-        auto resolution = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->background->pixmap().size();
-        ui->label_resolution->setText(QString("%1x%2").arg(resolution.width()).arg(resolution.height()));
-        ui->label_zoom->setText(QString::number(deviceItem->cameraView->currentScale * 100) + '%');
-        ui->label_displayFPS->setText(QString::number(deviceItem->cameraView->displayFPS));
-        ui->label_coordinate->setText(deviceItem->cameraView->coordinate);
-
-        auto rgb = deviceItem->cameraView->rgb;
-        if(deviceItem->cameraView->img.format() != QImage::Format::Format_RGB888) {
-            ui->label_rgb_column->setText(tr("GrayLevel"));
-            ui->label_rgb->setText(QString("%4").arg(deviceItem->cameraView->brightness));
-        } else {
-            ui->label_rgb_column->setText("RGB");
-            ui->label_rgb->setText(QString("%1,%2,%3(%4)").arg(rgb.red()).arg(rgb.green()).arg(rgb.blue()).arg(deviceItem->cameraView->brightness));
-        }
-
-        ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing);
-
-        auto s = deviceItem->snapshotState();
-        ui->pushButton_snapshot->setText(s ? tr("Stop") : tr("Snapshot"));
-        ui->pushButton_snapshot->setCheckable(s);
-
-        s = deviceItem->recordState();
-        ui->pushButton_record->setText(s ? tr("Stop") : tr("Record"));
-        ui->pushButton_record->setCheckable(s);
-
-        auto portType = deviceItem->data(0,Qt::UserRole).toStringList()[6];
-
+    if(ui->radioButton_automationExposure->isChecked() && ui->tabWidget_params->currentIndex() == 0) {
         try {
-            auto status = deviceItem->status(portType);
+            auto exposure = get<0>(deviceItem->exposure(false));
+            ui->spinBox_gain->setValue(exposure[9].toInt() / 100.);
+            ui->slider_gain->setValue(exposure[9].toInt());
+            ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
+            ui->slider_exposureTime->setValue(exposure[12].toDouble());
+        } catch(...) {
 
-            ui->label_frames->setText(status[0]);
-            ui->label_recordFPS->setText(status[1]);
-
-            if(-1 != portType.indexOf("NET")) {
-                ui->label_temperature->setText(status[3]);
-                ui->label_lost->setText(status[4]);
-                ui->label_resend->setText(status[5]);
-                ui->label_packSize->setText(status[6]);
-            } else if(-1 != portType.indexOf("USB3")) {
-                ui->label_sensorFps->setText(status[2]);
-                ui->label_temperature->setText(status[3]);
-                ui->label_lost->setText(status[4]);
-                ui->label_resend->setText(status[5]);
-                ui->label_recover->setText(status[6]);
-                ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
-            } else {
-                ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
-            }
-        } catch(...) {}
-
-        if(ui->radioButton_automationExposure->isChecked() && ui->tabWidget_params->currentIndex() == 0) {
-            try {
-                auto exposure = get<0>(deviceItem->exposure(false));
-                ui->spinBox_gain->setValue(exposure[9].toInt() / 100.);
-                ui->slider_gain->setValue(exposure[9].toInt());
-                ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
-                ui->slider_exposureTime->setValue(exposure[12].toDouble());
-            } catch(...) {
-
-            }
         }
     }
+
+    auto infrared_status = deviceItem->infrared_status();
+    ui->lineEdit_infrared_ad_value->setText(QString::number(infrared_status.ad_value));
+    ui->lineEdit_infrared_ad_diff->setText(QString::number(infrared_status.diff_ad_value));
+    ui->lineEdit_infrared_gst417m_temp->setText(infrared_status.gst417m_temp + QString::fromLocal8Bit("°C"));
+    ui->lineEdit_infrared_temp_diff->setText(infrared_status.diff_temp_value + QString::fromLocal8Bit("°C"));
+    ui->spinBox_infrared_exposure->setValue(infrared_status.gst417m_ctia);
 }
 
 void MainWindow::on_treeWidget_devices_customContextMenuRequested(const QPoint &pos)
@@ -771,6 +781,15 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             ui->label_updatable->setText(firmware[4].toUInt() ? tr("older") : tr("newest"));
             ui->lineEdit_nickname->setText(firmware[5]);
             ui->lineEdit_SN->setText(firmware[6]);
+        } else if(index == 10) {
+            auto firmware= deviceItem->firmware();
+            auto pwd = QDir::current();
+            auto configDir = QString("Camera/Data/corr_%1").arg(deviceItem->cameraName);
+            pwd.mkpath(configDir);
+
+            ui->lineEdit_sample_path->setText(configDir);
+            ui->lineEdit_infrared_path_to_low_response_rate_sample->setText(configDir + "/response_temp40.bin");
+            ui->lineEdit_infrared_path_to_high_response_rate_sample->setText(configDir + "/response_temp140.bin");
         }
     } catch(...) {
         cout << "Failed to sync camera's params!" << endl;
@@ -1985,5 +2004,1706 @@ void MainWindow::on_pushButton_fpnSave_clicked()
 
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     deviceItem->fpnSave(filename);
+}
+
+
+void MainWindow::on_comboBox_infrared_thermometry_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_thermometry(index);
+
+    if(index == 1)
+    {
+        ui->spinBox_left_backbody_furnace_temperature->setValue(150);
+        ui->spinBox_right_backbody_furnace_temperature->setValue(30);
+    }
+    if(index == 2)
+    {
+        ui->spinBox_left_backbody_furnace_temperature->setValue(400);
+        ui->spinBox_right_backbody_furnace_temperature->setValue(30);
+    }
+    if(index == 3)
+    {
+        ui->spinBox_left_backbody_furnace_temperature->setValue(1200);
+        ui->spinBox_right_backbody_furnace_temperature->setValue(30);
+    }
+}
+
+void MainWindow::on_comboBox_infrared_color_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_color(index);
+}
+
+void MainWindow::on_comboBox_display_mode_currentIndexChanged(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_display(index);
+}
+
+void MainWindow::on_checkBox_infrared_shutter_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_shutter(checked);
+}
+
+void MainWindow::on_checkBox_infrared_cool_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_cool(checked);
+}
+
+void MainWindow::on_spinBox_infrared_emissivity_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_emissivity(arg1);
+}
+
+void MainWindow::on_spinBox_infrared_sharpen_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_sharpen(arg1);
+}
+
+void MainWindow::on_spinBox_infrared_exposure_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_exposure(arg1);
+}
+
+void MainWindow::on_spinBox_dde_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_dde(arg1);
+}
+
+void MainWindow::on_checkBox_infrared_manual_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto value = ui->spinBox_infrared_manual->value() * 100;
+    deviceItem->infrared_manual(checked,value);
+}
+
+void MainWindow::on_pushButton_infrared_temperature_check_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_temperature_check();
+}
+
+void MainWindow::on_checkBox_infrared_stop_temperature_check_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_stop_temperature_check(checked);
+}
+
+void MainWindow::on_checkBox_infrared_shutter_temperature_raise_sample_clicked(bool checked){
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_shutter_temperature_raise_sample(checked);
+
+    if(checked) //采样模式下不允许触发校正
+    {
+        ui->checkBox_infrared_response_rate_sample->setEnabled(false);
+        ui->checkBox_infrared_temperature_curve_sample->setEnabled(false);
+    }
+    else
+    {
+        ui->checkBox_infrared_response_rate_sample->setEnabled(true);
+        ui->checkBox_infrared_temperature_curve_sample->setEnabled(true);
+    }
+}
+
+void MainWindow::on_checkBox_infrared_factory_check_detect_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_factory_check_detect(checked);
+}
+
+void MainWindow::on_checkBox_infrared_response_rate_sample_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_response_rate_sample(checked);
+
+    if(checked) //采样模式下不允许触发校正
+    {
+        ui->checkBox_infrared_temperature_curve_sample->setEnabled(false);
+        ui->checkBox_infrared_shutter_temperature_raise_sample->setEnabled(false);
+        ui->spinBox_infrared_exposure->setEnabled(true);
+        ui->pushButton_sample_low_response_rate->setEnabled(true);
+        ui->pushButton_sample_high_response_rate->setEnabled(true);
+        ui->pushButton_load_response_rate_file->setEnabled(true);
+    }
+    else
+    {
+        ui->checkBox_infrared_temperature_curve_sample->setEnabled(true);
+        ui->checkBox_infrared_shutter_temperature_raise_sample->setEnabled(true);
+        ui->spinBox_infrared_exposure->setEnabled(false);
+        ui->pushButton_sample_low_response_rate->setEnabled(false);
+        ui->pushButton_sample_high_response_rate->setEnabled(false);
+        ui->pushButton_load_response_rate_file->setEnabled(false);
+    }
+}
+
+void MainWindow::on_checkBox_infrared_temperature_curve_sample_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_temperature_curve_sample(checked);
+
+    if(checked) //采样模式下不允许触发校正
+    {
+        ui->checkBox_infrared_temperature_curve_sample->setEnabled(false);
+        ui->checkBox_infrared_shutter_temperature_raise_sample->setEnabled(false);
+        ui->spinBox_infrared_exposure->setEnabled(false);
+    }
+    else
+    {
+        ui->checkBox_infrared_temperature_curve_sample->setEnabled(true);
+        ui->checkBox_infrared_shutter_temperature_raise_sample->setEnabled(true);
+        ui->spinBox_infrared_exposure->setEnabled(false);
+    }
+}
+
+//拷贝文件夹：
+bool MainWindow::copyDirectoryFiles(const QString &fromDir, const QString &toDir, bool coverFileIfExist)
+{
+    QDir sourceDir(fromDir);
+    QDir targetDir(toDir);
+    if(!targetDir.exists()){    /**< 如果目标目录不存在，则进行创建 */
+        if(!targetDir.mkdir(targetDir.absolutePath()))
+            return false;
+    }
+
+    QFileInfoList fileInfoList = sourceDir.entryInfoList();
+    foreach(QFileInfo fileInfo, fileInfoList){
+        if(fileInfo.fileName() == "." || fileInfo.fileName() == "..")
+            continue;
+
+        if(fileInfo.isDir()){    /**< 当为目录时，递归的进行copy */
+            if(!copyDirectoryFiles(fileInfo.filePath(),
+                targetDir.filePath(fileInfo.fileName()),
+                coverFileIfExist))
+                return false;
+        }
+        else{            /**< 当允许覆盖操作时，将旧文件进行删除操作 */
+            if(coverFileIfExist && targetDir.exists(fileInfo.fileName())){
+                targetDir.remove(fileInfo.fileName());
+            }
+
+            /// 进行文件copy
+            if(!QFile::copy(fileInfo.filePath(),
+                targetDir.filePath(fileInfo.fileName()))){
+                    return false;
+            }
+        }
+    }
+    return true;
+}
+
+int				temp_data_mode1[0x10000];			//温度模式1的温度曲线查找表
+int				temp_data_mode2[0x10000];			//温度模式2的温度曲线查找表
+//二分法查找
+int MainWindow::Bin_Search(InfraredParamsStatus GF120_set_param,int temp)
+{
+    int first = 0,last = 0x10000 -1,mid;
+    int counter = 0;
+
+
+    if(GF120_set_param.temp_mode == 2)
+    {
+        while(first <= last)
+        {
+            counter ++;
+            mid = (first + last) / 2;//确定中间元素
+            if(temp_data_mode2[mid] > temp)
+            {
+                last = mid-1; //mid已经交换过了,last往前移一位
+            }
+            else if(temp_data_mode2[mid] < temp)
+            {
+                first = mid+1;//mid已经交换过了,first往后移一位
+            }
+            else //判断是否相等
+            {
+                //printf("查找次数:%d temp :%d value :%d \n",counter,temp,mid);
+                return mid;
+            }
+        }
+         //printf("查找次数:%d temp :%d value :%d \n",counter,temp,mid);
+        return mid;
+    }
+    else
+    {
+        while(first <= last)
+        {
+            counter ++;
+            mid = (first + last) / 2;//确定中间元素
+            if(temp_data_mode1[mid] > temp)
+            {
+                last = mid-1; //mid已经交换过了,last往前移一位
+            }
+            else if(temp_data_mode1[mid] < temp)
+            {
+                first = mid+1;//mid已经交换过了,first往后移一位
+            }
+            else //判断是否相等
+            {
+                // printf("查找次数:%d temp :%d value :%d \n",counter,temp,mid);
+                return mid;
+            }
+        }
+         //printf("查找次数:%d temp :%d value :%d \n",counter,temp,mid);
+        return mid;
+    }
+}
+
+void MainWindow::on_pushButton_factory_check_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto GF120_get_param = deviceItem->infrared_status();
+
+
+    int i= 0;
+    int time = 0;
+    //1.先计算锅盖现象引起的偏差
+    int diff_cover_ad = 0;
+    int diff_ad_value = 50;//(150-30)*70;
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
+    QProgressDialog progress;
+    progress.setWindowTitle("出厂校正");
+    progress.setLabelText(tr("出厂校正中。。。").arg(GF120_get_param.outside_temp/100));
+    progress.setCancelButtonText("取消");
+    progress.setRange(0, 128);//设置范围
+    progress.setModal(true);//设置为模态对话框
+    progress.show();
+
+    //2.调节曝光 每摄氏度70个灰度值
+    //QMessageBox::information(this, "提示", "出厂校正。。。");
+    printf("on_pushButton_factory_check_released\r\n");
+    QString src_fileName="./config/corre_default";
+    QString dest_fileName = QString("./config/corre_%1").arg(deviceItem->cameraName);     //str =  "Joy was born in 1993.";
+    printf("%s %s \n",src_fileName.toStdString().data(),dest_fileName.toStdString().data());
+    copyDirectoryFiles(src_fileName,dest_fileName,0);
+    progress.setValue(2);
+
+    int calibration_high = ui->spinBox_left_backbody_furnace_temperature->value()*100;
+    int calibration_low = ui->spinBox_right_backbody_furnace_temperature->value()*100;
+    printf("calibration_high:%d calibration_low:%d \r\n",calibration_high,calibration_low);
+
+    deviceItem->infrared_frame_temp_cnt(10);
+    int cita = 128;
+    deviceItem->infrared_factory_check_exposure(cita);
+    std::this_thread::sleep_for(chrono::milliseconds(100));
+    deviceItem->infrared_factory_check();
+    std::this_thread::sleep_for(chrono::milliseconds(3000));
+
+    deviceItem->infrared_temperature_check();
+    deviceItem->infrared_factory_check_temperature_check_stop();
+
+    progress.setValue(10);
+
+    if(progress.wasCanceled())
+    {
+        QApplication::restoreOverrideCursor();
+        progress.close();
+        return;
+    }
+    FILE *corre_fp;
+    char filename[256];
+    sprintf(filename,"%s/sample_data_mode1.bin",dest_fileName.toStdString().data());
+    printf("filename:%s \r\n",filename);
+
+    if((corre_fp=fopen(filename,"rb"))==NULL) //读取1.txt的文件
+    {
+        printf("open filed %s\r\n ",filename);
+        QApplication::restoreOverrideCursor();
+        progress.close();
+        return;
+
+    }
+    else
+    {
+        fread(&temp_data_mode1, 0x40000, 1, corre_fp);
+        fclose(corre_fp);
+    }
+    sprintf(filename,"%s/sample_data_mode2.bin",dest_fileName.toStdString().data());
+    if((corre_fp=fopen(filename,"rb"))==NULL) //读取1.txt的文件
+    {
+        printf("open filed %s\r\n ",filename);
+        QApplication::restoreOverrideCursor();
+        progress.close();
+        return;
+    }
+    else
+    {
+        fread(&temp_data_mode2, 0x40000, 1, corre_fp);
+        fclose(corre_fp);
+    }
+
+    auto GF120_set_param = deviceItem->infrared_params_status();
+
+    printf("calibration_high_bin:%d calibration_low:%d \r\n",Bin_Search(GF120_set_param,calibration_high),Bin_Search(GF120_set_param,calibration_low));
+    diff_ad_value = abs(Bin_Search(GF120_set_param,calibration_high) - Bin_Search(GF120_set_param,calibration_low))/4 -80;
+    int last_ad_value = 0;
+
+    printf("on_pushButton_factory_check_released diff_ad_value:%d %d %d \r\n",diff_ad_value,Bin_Search(GF120_set_param,calibration_high),Bin_Search(GF120_set_param,calibration_low));
+    deviceItem->infrared_factory_check_exposure(cita);
+
+    std::this_thread::sleep_for(chrono::milliseconds(500));
+    GF120_get_param = deviceItem->infrared_status();
+
+    int last_ad_diff = 0;
+    printf("last_ad_diff :%d \r\n",last_ad_diff);
+
+
+    for(i = 0 ; i < 128 ; i ++)
+    {
+         std::this_thread::sleep_for(chrono::milliseconds(1000));
+         progress.setValue(i + 10);
+         GF120_get_param = deviceItem->infrared_status();
+         if(i == 0)
+         {
+             if(abs(GF120_get_param.diff_ad_value - diff_ad_value) <= 30)
+                 break;
+         }
+         printf("i:%d last_ad_diff :%d %d \r\n",i,last_ad_diff,abs(GF120_get_param.diff_ad_value - diff_ad_value));
+         printf("qt diff_ad_value :%d %d\r\n",GF120_get_param.diff_ad_value,diff_ad_value);
+         //QMessageBox::information(this, "提示", QString("实际灰度差值:%1 计算灰度差值:%2").arg(GF120_get_param.diff_ad_value).arg(diff_ad_value));
+         if(i > 0 && (abs(GF120_get_param.diff_ad_value - diff_ad_value) >= last_ad_diff) && (abs(GF120_get_param.diff_ad_value - diff_ad_value) <= 100)) //已经找到最优值的后一个值 取前一个值
+         {
+             //记录曝光值
+             if(cita > 128)
+                 cita =  cita - 1;
+             else
+                 cita =  cita + 1;
+              printf("found best cita value :%d \r\n",cita);
+              deviceItem->infrared_factory_check_exposure(cita);
+              break;
+         }
+         else if((GF120_get_param.diff_ad_value - diff_ad_value) > 40)
+         {
+             cita ++;
+         }
+         else
+         {
+            cita --;
+         }
+         last_ad_diff = abs(GF120_get_param.diff_ad_value - diff_ad_value); //上一次的差值
+         //cita 超过范围或者改变cita后ad值变化太小说明有问题
+
+          printf("last_ad_value :%d GF120_get_param.diff_ad_value：%d\r\n",last_ad_value,GF120_get_param.diff_ad_value);
+         if(cita < 16 || cita > 224 || (abs(last_ad_value - GF120_get_param.diff_ad_value) <= 4) || progress.wasCanceled())
+         {
+            QMessageBox::critical(this, QStringLiteral("错误"), ("1.请检查高低温黑体炉的设置温度和界面设置温度是否一致\r\n2.高低温黑体炉是否对中左右十字星"));
+            QApplication::restoreOverrideCursor();
+            progress.close();
+            return;
+         }
+         last_ad_value = GF120_get_param.diff_ad_value;
+         if(cita%16 == 0)   //随着曝光变化 需要调节GSK NUC
+         {
+             deviceItem->infrared_temperature_check();
+             std::this_thread::sleep_for(chrono::milliseconds(5000));
+         }
+          deviceItem->infrared_factory_check_exposure(cita);
+    }
+    //QMessageBox::information(this, "提示", QString("曝光值设置正确:%1").arg(cita));
+    printf("check OK cita :%d \r\n",cita);
+    printf("diff_ad_value :%d %d\r\n",GF120_get_param.diff_ad_value,diff_ad_value);
+    progress.setValue(100);
+
+    //3.计算快门偏移
+    deviceItem->infrared_temperature_check();
+    std::this_thread::sleep_for(chrono::milliseconds(5000));
+    progress.setValue(110);
+    GF120_get_param = deviceItem->infrared_status();
+
+    printf("calibration_high_temp:%d calibration_low_temp:%d\r\n",GF120_get_param.calibration_high_temp,GF120_get_param.calibration_low_temp);
+    calibration_high = (calibration_high - GF120_get_param.calibration_high_temp);
+    calibration_low = (calibration_low - GF120_get_param.calibration_low_temp);
+    int shutter_offset = 0;
+    shutter_offset = (calibration_high + calibration_low)/2;
+    printf("/////////////shutter_offset:%d calibration_high:%d calibration_low:%d\r\n",shutter_offset,calibration_high,calibration_low);
+    if(shutter_offset > 150)
+    {
+        shutter_offset = 150;
+    }
+    if(shutter_offset < -150)
+    {
+        shutter_offset = -150;
+    }
+    printf("cal shutter_offset:%d \r\n",shutter_offset);
+
+    QString file;
+    if(GF120_set_param.temp_mode == 1)
+    {
+        file = dest_fileName + "/correction_temp_mode_1.txt";
+    }
+    else  if(GF120_set_param.temp_mode == 2)
+    {
+        file = dest_fileName + "/correction_temp_mode_2.txt";
+    }
+
+    QFile fileSave(file);
+    if( ! fileSave.open( QIODevice::WriteOnly ))
+    {
+        //无法打开要写入的文件
+        QMessageBox::warning(this, tr("打开写入文件"),tr("打开要写入的文件失败，请检查文件名和是否具有写入权限！"));
+        return;
+    }
+    QString file_data;
+    if(GF120_set_param.temp_mode == 1)
+    {
+        file_data = QString("shutter_offset = %1    \r\ngst417m_ctia = %2   \r\ngst417m_gfid = 150  \r\ngst417m_gain = 2 \r\n").arg(shutter_offset).arg(cita);
+    }
+    else  if(GF120_set_param.temp_mode == 2)
+    {
+         file_data = QString("shutter_offset = %1    \r\ngst417m_ctia = %2   \r\ngst417m_gfid = 80  \r\ngst417m_gain = 6 \r\n").arg(shutter_offset).arg(cita);
+    }
+    fileSave.write(file_data.toStdString().data());
+    //关闭文件
+    fileSave.close();
+     progress.setValue(128);
+    QApplication::restoreOverrideCursor();
+    progress.close();
+
+}
+
+void MainWindow::on_pushButton_sample_path_clicked()
+{
+    auto dirPath = QFileDialog::getExistingDirectory(this,tr("Save Path"));
+    if(dirPath.isEmpty()) return;
+
+    auto low_sample_path = dirPath += "/response_temp40.bin";
+    auto high_sample_path = dirPath += "/response_temp140.bin";
+
+    ui->lineEdit_infrared_path_to_low_response_rate_sample->setText(low_sample_path);
+    ui->lineEdit_infrared_path_to_high_response_rate_sample->setText(high_sample_path);
+
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_sample_path(dirPath);
+}
+
+void MainWindow::on_pushButton_sample_low_response_rate_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    QString file_path = ui->lineEdit_sample_path->text();
+
+    deviceItem->infrared_response_rate_start(40,file_path);
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
+    QProgressDialog progress;
+    progress.setWindowTitle("响应率采集");
+    progress.setLabelText("请确保对中低温黑体,采集低温响应率样本中 。。。");
+    progress.setCancelButtonText("取消");
+    progress.setRange(0, 100);//设置范围
+    progress.setModal(true);//设置为模态对话框
+    progress.show();
+
+    auto GF120_set_param = deviceItem->infrared_params_status();
+
+    int i = 0;
+    for (; i < 100; i++)
+    {
+         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+         progress.setValue(i);
+
+         deviceItem->infrared_response_rate_status();
+
+         //用户取消的话则中止
+         if (progress.wasCanceled())
+         {
+             QMessageBox::critical(this, QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("取消采集低温响应率样本！").arg(GF120_set_param.collect_response_temp));
+             break;
+         }
+
+         QCoreApplication::processEvents();
+     }
+
+     QApplication::restoreOverrideCursor();
+     progress.close();
+
+     if(i == 100)
+        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), tr("采集低温响应率样本超时!").arg(GF120_set_param.collect_response_temp));
+     else
+        QMessageBox::information(this, QString::fromLocal8Bit("提示"), tr("采集低温响应率样本完成！").arg(GF120_set_param.collect_response_temp));
+
+     deviceItem->infrared_response_rate_stop();
+}
+
+void MainWindow::on_pushButton_sample_high_response_rate_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    QString file_path = ui->lineEdit_sample_path->text();
+
+    deviceItem->infrared_response_rate_start(140,file_path);
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
+    QProgressDialog progress;
+    progress.setWindowTitle("响应率采集");
+    progress.setLabelText("请确保对中低温黑体,采集低温响应率样本中 。。。");
+    progress.setCancelButtonText("取消");
+    progress.setRange(0, 100);//设置范围
+    progress.setModal(true);//设置为模态对话框
+    progress.show();
+
+    auto GF120_set_param = deviceItem->infrared_params_status();
+
+    int i = 0;
+    for (; i < 100; i++)
+    {
+         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+         progress.setValue(i);
+
+         deviceItem->infrared_response_rate_status();
+
+         //用户取消的话则中止
+         if (progress.wasCanceled())
+         {
+             QMessageBox::critical(this, QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("取消采集低温响应率样本！").arg(GF120_set_param.collect_response_temp));
+             break;
+         }
+
+         QCoreApplication::processEvents();
+     }
+
+     QApplication::restoreOverrideCursor();
+     progress.close();
+
+
+     if(i == 100)
+     {
+        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), tr("采集低温响应率样本超时!").arg(GF120_set_param.collect_response_temp));
+     }
+     else
+     {
+         QMessageBox::information(this, QString::fromLocal8Bit("提示"), tr("采集低温响应率样本完成！").arg(GF120_set_param.collect_response_temp));
+     }
+
+     deviceItem->infrared_response_rate_stop();
+}
+
+
+
+void MainWindow::on_checkBox_infrared_osd_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_osd(checked);
+}
+
+void MainWindow::on_checkBox_infrared_temperature_display_clicked(bool checked)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_temperature_display(checked);
+    ui->checkBox_infrared_osd->setChecked(checked);
+}
+
+void MainWindow::on_checkBox_infrared_roi_clicked(bool checked)
+{
+    int index = ui->comboBox_infrared_temperture_roi->currentIndex();
+
+    USHORT  user_width_start;			//用户设置区域检测温度区宽开始点
+    USHORT  user_width_number;			//用户设置区域检测温度区宽像素个数
+    USHORT  user_high_start;			//用户设置区域检测温度区高开始点
+    USHORT  user_high_number;			//用户设置区域检测温度区宽像素个数
+    USHORT  user_roi_emissivity;
+
+    user_width_start = ui->spinBox_infrared_width_start->value();
+    user_width_number = ui->spinBox_infrared_width_end ->value();
+    user_high_start = ui->spinBox_infrared_high_start->value();
+    user_high_number = ui->spinBox_infrared_high_end->value();
+    user_roi_emissivity = ui->spinBox_infrared_roi_emissivity->value();
+    if((user_width_start + user_width_number ) > 400)
+    {
+        QMessageBox::critical(this, QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("总宽度不能大于400"));
+        return;
+    }
+    if((user_high_start + user_high_number) > 300)
+    {
+        QMessageBox::critical(this,  QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("总高度不能大于300"));
+        return;
+    }
+
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_roi(checked,index,user_width_start,user_width_number,user_high_start,user_high_number,user_roi_emissivity);
+}
+
+void MainWindow::on_comboBox_infrared_temperture_roi_activated(int index)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto status = deviceItem->infrared_temperature_roi_status(index);
+
+    ui->checkBox_infrared_roi->setChecked(status.user_roi_enable);
+    ui->spinBox_infrared_width_start->setValue(status.user_width_start);
+    ui->spinBox_infrared_width_end ->setValue(status.user_width_number);
+    ui->spinBox_infrared_high_start->setValue(status.user_high_start);
+    ui->spinBox_infrared_high_end->setValue(status.user_high_number);
+    ui->spinBox_infrared_roi_emissivity->setValue(status.user_roi_emissivity);
+}
+
+
+void MainWindow::on_checkBox_infrared_blackbody_calibrate_clicked(bool checked)
+{
+    if(ui->spinBox_infrared_width_start->value() >= ui->spinBox_infrared_width_end ->value())
+    {
+        QMessageBox::critical(this, QStringLiteral("错误"), tr("宽开始不能大于宽结束"));
+        return;
+    }
+    if(ui->spinBox_infrared_high_start->value() >= ui->spinBox_infrared_high_end->value())
+    {
+        QMessageBox::critical(this, QStringLiteral("错误"), tr("高开始不能大于高结束"));
+        return;
+    }
+
+    auto user_calibration_temp = ui->doubleSpinBox_infrared_blackbody_temperature->value() *100;
+    auto user_width_start = ui->spinBox_infrared_blackbody_width_start->value();
+    auto user_width_end = ui->spinBox_infrared_blackbody_width_end->value();
+    auto user_high_start = ui->spinBox_infrared_blackbody_high_start->value();
+    auto user_high_end = ui->spinBox_infrared_blackbody_high_end->value();
+
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_blackbody_calibrate(checked,user_calibration_temp,user_width_start,user_width_end,user_high_start,user_high_end);
+}
+
+void MainWindow::on_checkBox_infrared_color_map_clicked(bool checked)
+{
+    auto low = ui->spinBox_infrared_fake_color_low->value()*100;
+    auto high = ui->spinBox_infrared_fake_color_high->value()*100;
+
+    if(low >= high)
+    {
+        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("请检查输入 低温大于高温"));
+        return;
+    }
+
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_color_map(checked,low,high);
+}
+
+void MainWindow::on_doubleSpinBox_infrared_temperature_compensation_valueChanged(double arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_temperature_compensation(arg1*100);
+}
+
+void MainWindow::on_doubleSpinBox_infrared_distance_compensation_valueChanged(int arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_distance_compensation(arg1);
+}
+
+void MainWindow::on_doubleSpinBox_infrared_humidity_compensation_valueChanged(double arg1)
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_humidity_compensation(arg1 * 100);
+}
+
+void MainWindow::on_checkBox_infrared_high_warm_clicked(bool checked)
+{
+    auto temperature = ui->doubleSpinBox_infrared_high_warm->value()*100;
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_high_warm(checked,temperature);
+}
+
+
+void MainWindow::on_checkBox_infrared_low_warm_clicked(bool checked)
+{
+    auto  temperature = ui->doubleSpinBox_infrared_low_warm->value()*100;
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    deviceItem->infrared_low_warm(checked,temperature);
+}
+
+
+void MainWindow::on_pushButton_load_response_rate_file_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    auto path = ui->lineEdit_infrared_path_to_low_response_rate_sample->text();
+    auto path2 = ui->lineEdit_infrared_path_to_high_response_rate_sample->text();
+
+    auto rt = deviceItem->infrared_load_response_rate_file(path,path2);
+
+    if(rt < 0)
+    {
+        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("加载响应率文件错误，请检查响应率配置文件！"));
+    }
+    else
+    {
+        QMessageBox::information(this, QString::fromLocal8Bit("正常"), QString::fromLocal8Bit("加载响应率文件完成！"));
+    }
+}
+
+
+void MainWindow::on_pushButton_cover_low_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+
+    auto file_path = ui->lineEdit_sample_path->text();
+    deviceItem->infrared_cover_start(30,file_path);
+
+    auto GF120_get_param = deviceItem->infrared_status();
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
+    QProgressDialog progress;
+    progress.setWindowTitle("锅盖采集");
+    progress.setLabelText(tr("采集%1℃锅盖样本中 。。。").arg(GF120_get_param.outside_temp/100));
+    progress.setCancelButtonText("取消");
+    progress.setRange(0, 100);//设置范围
+    progress.setModal(true);//设置为模态对话框
+    progress.show();
+
+    auto GF120_set_param = deviceItem->infrared_params_status();
+    int i;
+
+    for (i = 0; i < 100; i++)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        progress.setValue(i);
+
+        auto rt = deviceItem->infrared_cover_status();
+
+        printf("cover status :%d \r\n",rt);
+        if(rt == 0)
+        {
+            QMessageBox::information(this, QStringLiteral("提示"), tr("采集%1℃锅盖样本完成！").arg(GF120_set_param.collect_cover_temp));
+            break;
+        }
+        //用户取消的则中止
+        if (progress.wasCanceled())
+        {
+            QMessageBox::critical(this, QStringLiteral("错误"), tr("取消采集%1℃锅盖样本！").arg(GF120_set_param.collect_cover_temp));
+            break;
+        }
+
+        QCoreApplication::processEvents();
+    }
+    QApplication::restoreOverrideCursor();
+    progress.close();
+    if(i == 100)
+    {
+        QMessageBox::critical(this, QStringLiteral("错误"), tr("采集%1℃锅盖样本失败！").arg(GF120_set_param.collect_cover_temp));
+    }
+
+    deviceItem->infrared_cover_stop();
+}
+
+
+void MainWindow::on_pushButton_cover_high_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    auto file_path = ui->lineEdit_sample_path->text();
+    deviceItem->infrared_cover_start(40,file_path);
+
+    auto GF120_get_param = deviceItem->infrared_status();
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
+    QProgressDialog progress;
+    progress.setWindowTitle("锅盖采集");
+    progress.setLabelText(tr("采集%1℃锅盖样本中 。。。").arg(GF120_get_param.outside_temp/100));
+    progress.setCancelButtonText("取消");
+    progress.setRange(0, 100);//设置范围
+    progress.setModal(true);//设置为模态对话框
+    progress.show();
+
+    auto GF120_set_param = deviceItem->infrared_params_status();
+    int i;
+
+    for (i = 0; i < 100; i++)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        progress.setValue(i);
+
+        auto rt = deviceItem->infrared_cover_status();
+
+        printf("cover status :%d \r\n",rt);
+        if(rt == 0)
+        {
+            QMessageBox::information(this, QStringLiteral("提示"), tr("采集%1℃锅盖样本完成！").arg(GF120_set_param.collect_cover_temp));
+            break;
+        }
+        //用户取消的则中止
+        if (progress.wasCanceled())
+        {
+            QMessageBox::critical(this, QStringLiteral("错误"), tr("取消采集%1℃锅盖样本！").arg(GF120_set_param.collect_cover_temp));
+            break;
+        }
+
+        QCoreApplication::processEvents();
+    }
+    QApplication::restoreOverrideCursor();
+    progress.close();
+    if(i == 100)
+    {
+        QMessageBox::critical(this, QStringLiteral("错误"), tr("采集%1℃锅盖样本失败！").arg(GF120_set_param.collect_cover_temp));
+    }
+
+    deviceItem->infrared_cover_stop();
+}
+
+
+void MainWindow::on_pushButton_cover_load_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    auto path = ui->lineEdit_path_cover_low->text();
+    auto path2 = ui->lineEdit_path_cover_high->text();
+
+    auto rt = deviceItem->infrared_load_response_rate_file(path,path2);
+
+    if(!rt)
+    {
+        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("加载响应率文件错误，请检查响应率配置文件！"));
+    }
+    else
+    {
+        QMessageBox::information(this, QString::fromLocal8Bit("正常"), QString::fromLocal8Bit("加载响应率文件完成！"));
+    }
+}
+
+#include <QtXml/QtXml>
+
+
+void MainWindow::on_pushButton_save_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    QString file = QString("GF120_%1_%2.xml").arg(deviceItem->cameraName).arg(2020);
+    QString strSaveName = QFileDialog::getSaveFileName(this,"保存配置文件",file,"xml(*xml)");
+    //判断文件名
+    if( strSaveName.isEmpty() )
+    {
+      QMessageBox::warning(this, tr("打开写入文件"),tr("操作已经取消"));
+      return;
+    }
+    QFile fileSave(strSaveName);
+    printf("strSaveName：%s",strSaveName.data());
+    if( ! fileSave.open( QIODevice::WriteOnly ))
+    {
+        //无法打开要写入的文件
+        QMessageBox::warning(this, tr("打开写入文件"),tr("打开要写入的文件失败，请检查文件名和是否具有写入权限！"));
+        return;
+    }
+
+    auto GF120_set_param = deviceItem->infrared_params_status();
+
+    //创建xml文档在内存中
+   QDomDocument doc;
+   //添加处理命令
+   QDomProcessingInstruction instruction;
+   instruction = doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
+   //创建注释
+   doc.appendChild(instruction); //文档开始声明
+
+   //添加根节点
+   QDomElement root=doc.createElement("GF120_config");
+   root.setAttribute("Version","2.1");
+   doc.appendChild(root);
+   //添加第一个子节点及其子元素
+   QDomElement element;
+   element=doc.createElement("temp_mode");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.temp_mode)));
+   root.appendChild(element);
+
+   element=doc.createElement("color_mode");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.color_mode)));
+   root.appendChild(element);
+
+
+   element=doc.createElement("manual_mode");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.manual_mode)));
+   root.appendChild(element);
+
+   element=doc.createElement("manual_temp");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.manual_temp)));
+   root.appendChild(element);
+
+
+   element=doc.createElement("user_emissivity");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.user_emissivity)));
+   root.appendChild(element);
+
+   element=doc.createElement("sharpen_grade");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.sharpen_grade)));
+   root.appendChild(element);
+
+
+   element=doc.createElement("out_rgb888_enable");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.out_rgb888_enable)));
+   root.appendChild(element);
+
+   element=doc.createElement("osd_enable");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.osd_enable)));
+   root.appendChild(element);
+
+
+   element=doc.createElement("qt_img");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.qt_img)));
+   root.appendChild(element);
+
+   element=doc.createElement("temp_display_enable");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.temp_display_enable)));
+   root.appendChild(element);
+
+   element=doc.createElement("user_compensate_temp");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.user_compensate_temp)));
+   root.appendChild(element);
+
+   element=doc.createElement("humidity_compensate_temp");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.humidity_compensate_temp)));
+   root.appendChild(element);
+
+   element=doc.createElement("humidity_compensate_temp");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.distance_compensate_temp)));
+   root.appendChild(element);
+
+   element=doc.createElement("compensate_temp");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.compensate_temp)));
+   root.appendChild(element);
+
+
+   element=doc.createElement("high_temp_warm_enable");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.high_temp_warm_enable)));
+   root.appendChild(element);
+
+   element=doc.createElement("high_temp_warm_temp");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.high_temp_warm_temp)));
+   root.appendChild(element);
+
+   element=doc.createElement("low_temp_warm_enable");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.low_temp_warm_enable)));
+   root.appendChild(element);
+
+   element=doc.createElement("low_temp_warm_temp");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.low_temp_warm_temp)));
+   root.appendChild(element);
+
+   element=doc.createElement("file_path");
+   element.appendChild(doc.createTextNode(ui->lineEdit_sample_path->text()));
+   root.appendChild(element);
+
+   element=doc.createElement("low_cover_file");
+   element.appendChild(doc.createTextNode(ui->lineEdit_path_cover_low->text()));
+   root.appendChild(element);
+
+   element=doc.createElement("high_cover_file");
+   element.appendChild(doc.createTextNode(ui->lineEdit_path_cover_high->text()));
+   root.appendChild(element);
+
+   element=doc.createElement("low_response_file");
+   element.appendChild(doc.createTextNode(ui->lineEdit_infrared_path_to_low_response_rate_sample->text()));
+   root.appendChild(element);
+
+
+   element=doc.createElement("high_response_file");
+   element.appendChild(doc.createTextNode(ui->lineEdit_infrared_path_to_high_response_rate_sample->text()));
+   root.appendChild(element);
+
+
+   QDomElement GF120_roi=doc.createElement("GF120_roi");
+   root.appendChild(GF120_roi);
+
+   element=doc.createElement("user_roi_enable");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_roi.user_roi_enable)));
+   GF120_roi.appendChild(element);
+
+  /* element=doc.createElement("user_width_start");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_roi.user_width_start)));
+   GF120_roi.appendChild(element);
+
+   element=doc.createElement("user_width_end");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_roi.user_width_end)));
+   GF120_roi.appendChild(element);
+
+   element=doc.createElement("user_high_start");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_roi.user_high_start)));
+   GF120_roi.appendChild(element);
+
+
+   element=doc.createElement("user_high_end");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_roi.user_high_end)));
+   GF120_roi.appendChild(element);*/
+
+   QDomElement GF120_color=doc.createElement("GF120_color");
+   root.appendChild(GF120_color);
+
+   element=doc.createElement("user_color_enable");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_color.user_color_enable)));
+   GF120_color.appendChild(element);
+
+   element=doc.createElement("user_color_high");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_color.user_color_high)));
+   GF120_color.appendChild(element);
+
+   element=doc.createElement("user_color_low");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_color.user_color_low)));
+   GF120_color.appendChild(element);
+
+   QDomElement GF120_calibration=doc.createElement("GF120_calibration");
+   root.appendChild(GF120_calibration);
+
+   element=doc.createElement("user_calibration_enable");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_calibration.user_calibration_enable)));
+   GF120_calibration.appendChild(element);
+
+   element=doc.createElement("user_calibration_temp");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_calibration.user_calibration_temp)));
+   GF120_calibration.appendChild(element);
+
+   element=doc.createElement("user_width_start");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_calibration.user_width_start)));
+   GF120_calibration.appendChild(element);
+
+   element=doc.createElement("user_width_end");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_calibration.user_width_end)));
+   GF120_calibration.appendChild(element);
+
+   element=doc.createElement("user_high_start");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_calibration.user_high_start)));
+   GF120_calibration.appendChild(element);
+
+   element=doc.createElement("user_high_end");
+   element.appendChild(doc.createTextNode(tr("%1").arg(GF120_set_param.GF120_calibration.user_high_end)));
+   GF120_calibration.appendChild(element);
+
+   //输出到文件
+   QTextStream out_stream(&fileSave);
+   doc.save(out_stream,4); //缩进4格
+   fileSave.close();
+}
+
+
+void MainWindow::on_pushButton_load_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    QString file = QString("GF120_%1_%2.xml").arg(deviceItem->cameraName).arg(2020);
+    QString strSaveName = QFileDialog::getOpenFileName(this,"载入配置文件",file,"xml(*xml)");
+    //判断文件名
+    if( strSaveName.isEmpty() )
+    {
+       QMessageBox::warning(this, tr("打开写入文件"),tr("操作已经取消"));
+      return;
+    }
+    QFile fileSave(strSaveName);
+    printf("strSaveName：%s",strSaveName.toStdString().data());
+    if( ! fileSave.open( QIODevice::ReadOnly ))
+    {
+        //无法打开要写入的文件
+        QMessageBox::warning(this, tr("打开写入文件"),tr("打开要写入的文件失败，请检查文件名和是否具有写入权限！"));
+        return;
+    }
+    QDomDocument doc;
+    QString error;
+    int row = 0, column = 0;
+    //setContent是将指定的内容指定给QDomDocument解析，***参数可以是QByteArray或者是文件名等
+    if(!doc.setContent(&fileSave,true,&error,&row,&column))
+    {
+        //如果出错，则会进入这里。errorStr得到的是出错说明
+        QMessageBox::information(NULL, QString("title"), QString("parse file failed at line row and column") + QString::number(row, 10) + QString(",") + QString::number(column, 10));
+
+    }
+    if(doc.isNull())
+    {
+        QMessageBox::information(NULL, QString("title"), QString("document is null!"));
+        fileSave.close();
+        return;
+    }
+
+    InfraredParamsStatus GF120_set_param;
+
+    QDomElement root = doc.documentElement();
+
+   //root_tag_name为persons
+    QString root_tag_name = root.tagName();
+    printf("root_tag_name:%s",root_tag_name.toStdString().data());
+
+    QDomNode node=root.firstChild();
+    while(!node.isNull())  //如果节点不空
+    {
+
+        if(node.isElement()) //如果节点是元素
+        {
+            //转换为元素
+            printf("nodeName:%s value:%d\r\n",node.toElement().tagName().toStdString().data(),node.toElement().text().toInt());
+            //qDebug()<<node.nodeName()<<":"<<node.toElement().text();
+            if(node.toElement().tagName() == "color_mode")
+            {
+                GF120_set_param.collect_cover_temp= node.toElement().text().toInt();
+            }
+            if(node.toElement().tagName() == "color_mode")
+            {
+                GF120_set_param.color_mode= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "manual_mode")
+            {
+                GF120_set_param.manual_mode= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "manual_temp")
+            {
+                GF120_set_param.manual_temp= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "user_emissivity")
+            {
+                GF120_set_param.user_emissivity= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "sharpen_grade")
+            {
+                GF120_set_param.sharpen_grade= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "exposure_time")
+            {
+                GF120_set_param.exposure_time= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "out_rgb888_enable")
+            {
+                GF120_set_param.out_rgb888_enable= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "osd_enable")
+            {
+                GF120_set_param.osd_enable= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "temp_display_enable")
+            {
+                GF120_set_param.temp_display_enable= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "user_compensate_temp")
+            {
+                GF120_set_param.user_compensate_temp= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "humidity_compensate_temp")
+            {
+                GF120_set_param.humidity_compensate_temp= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "distance_compensate_temp")
+            {
+                GF120_set_param.distance_compensate_temp= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "compensate_temp")
+            {
+                GF120_set_param.compensate_temp= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "high_temp_warm_enable")
+            {
+                GF120_set_param.high_temp_warm_enable= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "high_temp_warm_temp")
+            {
+                GF120_set_param.high_temp_warm_temp= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "low_temp_warm_enable")
+            {
+                GF120_set_param.low_temp_warm_enable= node.toElement().text().toInt();
+            }
+
+            if(node.toElement().tagName() == "low_temp_warm_temp")
+            {
+                GF120_set_param.low_temp_warm_temp= node.toElement().text().toInt();
+            }
+
+
+
+            if(node.toElement().tagName() == "low_cover_file")
+            {
+                memcpy(&GF120_set_param.low_cover_file,node.toElement().text().toStdString().data(),node.toElement().text().size());
+                printf("file name :%s \r\n",GF120_set_param.low_cover_file);
+            }
+
+
+            if(node.toElement().tagName() == "high_cover_file")
+            {
+                memcpy(&GF120_set_param.high_cover_file,node.toElement().text().toStdString().data(),node.toElement().text().size());
+                printf("file name :%s \r\n",GF120_set_param.high_cover_file);
+            }
+
+
+            if(node.toElement().tagName() == "low_response_file")
+            {
+                memcpy(&GF120_set_param.low_response_file,node.toElement().text().toStdString().data(),node.toElement().text().size());
+                printf("file name :%s \r\n",GF120_set_param.low_response_file);
+            }
+
+            if(node.toElement().tagName() == "high_response_file")
+            {
+                memcpy(&GF120_set_param.high_response_file,node.toElement().text().toStdString().data(),node.toElement().text().size());
+                printf("file name :%s \r\n",GF120_set_param.high_response_file);
+            }
+            QDomNodeList list;
+            if(node.toElement().tagName() == "GF120_roi")
+            {
+                list=node.toElement().childNodes();
+                for(int i=0;i<list.count();i++)
+                {
+                    QDomNode n=list.at(i);
+                    if(n.isElement())
+                    {
+                      qDebug()<<n.nodeName()<<":"<<n.toElement().text();
+                      if(n.toElement().tagName() == "user_roi_enable")
+                      {
+                          GF120_set_param.GF120_roi.user_roi_enable = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_width_start")
+                      {
+                          GF120_set_param.GF120_roi.user_width_start = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_width_end")
+                      {
+                          GF120_set_param.GF120_roi.user_width_number = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_high_start")
+                      {
+                          GF120_set_param.GF120_roi.user_high_start = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_high_end")
+                      {
+                          GF120_set_param.GF120_roi.user_high_number = n.toElement().text().toInt();
+                      }
+                    }
+                }
+            }
+            if(node.toElement().tagName() == "GF120_calibration")
+            {
+                list=node.toElement().childNodes();
+                for(int i=0;i<list.count();i++)
+                {
+                    QDomNode n=list.at(i);
+                    if(n.isElement())
+                    {
+                      qDebug()<<n.nodeName()<<":"<<n.toElement().text();
+                      if(n.toElement().tagName() == "user_roi_enable")
+                      {
+                          GF120_set_param.GF120_calibration.user_calibration_enable = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_calibration_temp")
+                      {
+                          GF120_set_param.GF120_calibration.user_calibration_temp = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_width_start")
+                      {
+                          GF120_set_param.GF120_calibration.user_width_start = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_width_end")
+                      {
+                          GF120_set_param.GF120_calibration.user_width_end = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_high_start")
+                      {
+                          GF120_set_param.GF120_calibration.user_high_start = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_high_end")
+                      {
+                          GF120_set_param.GF120_calibration.user_high_end = n.toElement().text().toInt();
+                      }
+                    }
+                }
+            }
+            if(node.toElement().tagName() == "GF120_color")
+            {
+                list=node.toElement().childNodes();
+                for(int i=0;i<list.count();i++)
+                {
+                    QDomNode n=list.at(i);
+                    if(n.isElement())
+                    {
+                      qDebug()<<n.nodeName()<<":"<<n.toElement().text();
+                      if(n.toElement().tagName() == "user_color_enable")
+                      {
+                          GF120_set_param.GF120_color.user_color_enable = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_color_low")
+                      {
+                          GF120_set_param.GF120_color.user_color_low = n.toElement().text().toInt();
+                      }
+                      if(n.toElement().tagName() == "user_color_high")
+                      {
+                          GF120_set_param.GF120_color.user_color_high = n.toElement().text().toInt();
+                      }
+                    }
+                }
+            }
+        }
+        //下一个兄弟节点
+        node=node.nextSibling();
+    }
+
+    fileSave.close();
+
+    deviceItem->infrared_params_status(GF120_set_param);
+
+    gui_init(GF120_set_param);
+}
+
+void MainWindow::gui_init(InfraredParamsStatus GF120_set_param)
+{
+    ui->comboBox_infrared_thermometry->setCurrentIndex(GF120_set_param.temp_mode);
+    ui->comboBox_infrared_color->setCurrentIndex(GF120_set_param.color_mode);
+    ui->comboBox_display_mode->setCurrentIndex(1);
+    printf("gui_init \r\n");
+
+    ui->checkBox_infrared_osd->setChecked(GF120_set_param.osd_enable);
+    ui->checkBox_infrared_temperature_display->setChecked(GF120_set_param.temp_display_enable);
+
+    ui->lineEdit_sample_path->setText(GF120_set_param.file_path);
+    ui->lineEdit_path_cover_low->setText(GF120_set_param.low_cover_file);
+    ui->lineEdit_path_cover_high->setText(GF120_set_param.high_cover_file);
+    ui->lineEdit_infrared_path_to_low_response_rate_sample->setText(GF120_set_param.low_response_file);
+    ui->lineEdit_infrared_path_to_high_response_rate_sample->setText(GF120_set_param.high_response_file);
+
+    ui->checkBox_infrared_blackbody_calibrate->setChecked(GF120_set_param.GF120_calibration.user_calibration_enable);
+
+    ui->spinBox_infrared_blackbody_width_start->setValue(GF120_set_param.GF120_calibration.user_width_start);
+    ui->spinBox_infrared_blackbody_width_end->setValue(GF120_set_param.GF120_calibration.user_width_end);
+    ui->spinBox_infrared_blackbody_high_start->setValue(GF120_set_param.GF120_calibration.user_high_start);
+    ui->spinBox_infrared_blackbody_high_end->setValue(GF120_set_param.GF120_calibration.user_high_end);
+
+    ui->checkBox_infrared_color_map->setChecked(GF120_set_param.GF120_color.user_color_enable);
+    ui->spinBox_infrared_fake_color_low->setValue(GF120_set_param.GF120_color.user_color_low/100);
+    ui->spinBox_infrared_fake_color_high->setValue(GF120_set_param.GF120_color.user_color_high/100);
+
+    ui->checkBox_infrared_high_warm->setChecked(GF120_set_param.high_temp_warm_enable);
+    ui->doubleSpinBox_infrared_high_warm->setValue((double)GF120_set_param.high_temp_warm_temp/100);
+    ui->checkBox_infrared_low_warm->setChecked(GF120_set_param.low_temp_warm_enable);
+    ui->doubleSpinBox_infrared_low_warm->setValue((double)GF120_set_param.low_temp_warm_temp/100);
+    ui->doubleSpinBox_infrared_temperature_compensation->setValue((double)GF120_set_param.user_compensate_temp/100);
+    ui->doubleSpinBox_infrared_distance_compensation->setValue((double)GF120_set_param.distance_compensate_temp);
+    ui->doubleSpinBox_infrared_humidity_compensation->setValue((double)GF120_set_param.humidity_compensate_temp/100);
+
+}
+
+
+void MainWindow::on_pushButton_change_clicked()
+{
+    static int temp_value[0x10000];
+    static double a;
+    static double b;
+    static double c;
+    static double d;
+    static double e;
+    static double f;
+    static double g;
+
+    char*  filename;
+    int size,len;
+    char file_char[512];
+   QFileDialog *fileDialog = new QFileDialog(this);
+   fileDialog->setWindowTitle(tr("Select file"));
+   fileDialog->setNameFilter(tr("config Files(sample_coefficient_mode*.txt )"));
+   if(fileDialog->exec() == QDialog::Accepted) {
+       QString path = fileDialog->selectedFiles()[0];
+       //QMessageBox::information(NULL, tr("Path"), tr("You selected ") + path);
+
+
+       QByteArray tmp = path.toLatin1();
+       filename=tmp.data();
+       printf("input file name :%s \r\n",filename);
+
+   }
+   FILE *corre_fp;
+   if((corre_fp=fopen(filename,"rb"))==NULL) //读取1.txt的文件
+   {
+       printf("open filed %s\r\n ",filename);
+       return ;
+   }
+   else
+   {
+       printf("corre_fp :%d \n",corre_fp);
+   }
+   fseek(corre_fp, 0L, SEEK_END);
+   size = ftell(corre_fp);//此处返回一个很大的值
+   fseek(corre_fp, 0L, SEEK_SET);
+   memset(file_char,0x0,sizeof(file_char));
+   len = fread(&file_char, size, 1, corre_fp);
+   if(len <= 0)
+   {
+       fclose(corre_fp);
+       return;
+   }
+   printf("%s \r\n",file_char);
+   sscanf(file_char,"a = %lf b = %lf c = %lf d = %lf e = %lf f = %lf g = %lf ",&a,&b,&c,&d,&e,&f,&g);
+   fclose(corre_fp);
+   printf("a:%.32lf,b:%.32lf,c:%.32lf,d:%.32lf,e:%.32lf,f:%.32lf,g:%.32lf",a,b,c,d,e,f,g);
+
+   std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+   fileDialog->setWindowTitle(tr("Select file"));
+   fileDialog->setNameFilter(tr("config Files(*sample_data_mode*.bin )"));
+   if(fileDialog->exec() == QDialog::Accepted) {
+       QString path = fileDialog->selectedFiles()[0];
+       //QMessageBox::information(NULL, tr("Path"), tr("You selected ") + path);
+
+
+       QByteArray tmp = path.toLatin1();
+       filename=tmp.data();
+       printf("output file name :%s \r\n",filename);
+
+   }
+   if((corre_fp=fopen(filename,"wb+"))==NULL) //读取1.txt的文件
+   {
+       printf("open filed %s\r\n ",filename);
+       return ;
+   }
+   else
+   {
+       printf("corre_fp :%d \n",corre_fp);
+   }
+   int i;
+   double tmp;
+   double temp = 0;
+   for(i = 0 ; i < 0x10000; i ++)
+   {
+       tmp = i;
+       temp = 0;
+       temp += (tmp*tmp*tmp*tmp*tmp*tmp)*g;
+       temp += (tmp*tmp*tmp*tmp*tmp)*f;
+       temp += (tmp*tmp*tmp*tmp)*e;
+       temp += (tmp*tmp*tmp)*d;
+       temp += (tmp*tmp)*c;
+       temp += (tmp)*b;
+       temp += a;
+       temp_value[i] = (int)temp;
+
+   }
+   fwrite(&temp_value, sizeof(temp_value), 1, corre_fp); //将采集的温度写入数据开始
+   fflush(corre_fp);
+   fclose(corre_fp);
+   printf("value: %d %d %d %d \r\n ",temp_value[19223],temp_value[24113],temp_value[38866],temp_value[56256]);
+   printf("%d %d %d %d \r\n",temp_value[19223],temp_value[20693],temp_value[22360],temp_value[24113]);
+   delete fileDialog;
+}
+
+
+void MainWindow::on_pushButton_saveToDevice_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    QString srcDirPath = QFileDialog::getExistingDirectory(
+                   this, "choose src Directory",
+                    "/");
+    if (srcDirPath.isEmpty())
+    {
+        return;
+    }
+
+    QDir dir(srcDirPath);
+    if (!dir.exists())
+    {
+        QMessageBox::information(this, "提示", "请选择正确的目录");
+        return;
+    }
+
+    dir.setFilter(QDir::Files);
+    QStringList filter;
+    QList<QFileInfo> fileInfo(dir.entryInfoList(filter));
+    if (fileInfo.count() < 1)
+    {
+        QMessageBox::information(this, "提示", "目录不能为空");
+        return;
+    }
+
+    QString strText = QString("将写入如下文件 %1:\n").arg(srcDirPath);
+    QVector<QByteArray> FileNames;
+
+    FileNames.append(srcDirPath.toLatin1());
+    for (int i = 0; i < fileInfo.count(); ++i)
+    {
+        QString fileName = fileInfo.at(i).fileName();
+        strText += fileName + "\n";
+        FileNames.append(fileName.toLatin1());
+    }
+    strText += "\n写入新的校正文件会覆盖相机内原有内容，确认要覆盖吗？";
+     strText += "\n写入新的校正文件大约需要35s,请等待,60s后没有响应关闭程序！";
+    QMessageBox::StandardButton selected = QMessageBox::warning(this, "warning", strText, QMessageBox::Yes | QMessageBox::No);
+    if (selected == QMessageBox::Yes)
+    {
+        QStringList FileNamePtrs;
+        for (int i = 0; i < FileNames.count(); ++i)
+        {
+            FileNamePtrs.append(FileNames[i].data());
+        }
+
+        auto status = deviceItem->infared_save_config(FileNamePtrs);
+
+        if (status == 0)
+        {
+            QMessageBox::information(this, "提示", "保存成功");
+        }
+        else
+        {
+            QMessageBox::information(this, "提示", QString("保存失败:%1").arg(status));
+        }
+    }
+}
+
+
+void MainWindow::on_pushButton_deleteFilesInDevice_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    QString strText = "确认要删除相机内的校正文件吗？删除后测试温度误差会增大";
+    QMessageBox::StandardButton selected = QMessageBox::warning(this, "warning", strText, QMessageBox::Yes | QMessageBox::No);
+    if (selected == QMessageBox::Yes)
+    {
+        auto status = deviceItem->infared_delete_config();
+
+        if (status == 0)
+        {
+            QMessageBox::information(this, "提示", "删除成功");
+        }
+        else
+        {
+            QMessageBox::information(this, "提示", QString("删除失败:%1").arg(status));
+        }
+    }
+}
+
+
+void MainWindow::on_pushButton_up_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    char*  filename;
+    int size,len;
+    char file_char[512];
+    QFileDialog *fileDialog = new QFileDialog(this);
+    fileDialog->setWindowTitle(tr("Select file"));
+    fileDialog->setNameFilter(tr("*.* )"));
+    if(fileDialog->exec() != QDialog::Accepted)
+    {
+        return;
+    }
+
+    QString path = fileDialog->selectedFiles()[0];
+    //QMessageBox::information(NULL, tr("Path"), tr("You selected ") + path);
+    QByteArray tmp = path.toLatin1();
+    filename=tmp.data();
+    printf("input file name :%s \r\n",filename);
+    ui->lineEdit_updateFile->setText(path);
+
+    QFile tmpfile(path);
+    tmpfile.open(QIODevice::ReadOnly);
+    QDataStream in(&tmpfile);
+
+    int fileSize = tmpfile.size();
+    int nn = 0;
+    int nCount = 0;
+    int xxx=0;
+    char cmd_buff[512];
+    char result[64];
+    memset(cmd_buff,0x0,sizeof(cmd_buff));
+    memset(result,0x0,sizeof(result));
+    BYTE temp = 0;
+    BYTE tempT[100] = {0};
+    QString file_path = tmpfile.fileName();
+    QString file_name = file_path.section("/",-1,-1);
+    printf("%s\n",file_name.toStdString().data());
+    sprintf(cmd_buff,"updatefile_start(%s )",file_name.toStdString().data() );//bbbbb
+    printf("cmd_buff :%s \r\n",cmd_buff);
+
+    xxx = deviceItem->infrared_cmd(cmd_buff);
+
+    //while (!in.atEnd())
+    while ( (nCount = in.readRawData((char*)tempT, 100)) !=0 )
+    {
+        //in >> temp;
+//        memset(tempT,0,100);
+        //in.readBytes(rbytes, len);
+//        in.readRawData((char*)tempT, 100);
+        //nn++;
+        nn = nn + nCount;
+
+        //sprintf(cmd_buff,"updatefile %d",temp);
+        sprintf(cmd_buff,"data(%d %d %d %d %d %d %d %d %d %d "
+                "%d %d %d %d %d %d %d %d %d %d "
+                "%d %d %d %d %d %d %d %d %d %d "
+                "%d %d %d %d %d %d %d %d %d %d "
+                "%d %d %d %d %d %d %d %d %d %d "
+
+                "%d %d %d %d %d %d %d %d %d %d "
+                "%d %d %d %d %d %d %d %d %d %d "
+                "%d %d %d %d %d %d %d %d %d %d "
+                "%d %d %d %d %d %d %d %d %d %d "
+                "%d %d %d %d %d %d %d %d %d %d "
+                ")"
+                ,tempT[0],tempT[1],tempT[2],tempT[3],tempT[4],tempT[5],tempT[6],tempT[7],tempT[8],tempT[9]
+                ,tempT[10],tempT[11],tempT[12],tempT[13],tempT[14],tempT[15],tempT[16],tempT[17],tempT[18],tempT[19]
+                ,tempT[20],tempT[21],tempT[22],tempT[23],tempT[24],tempT[25],tempT[26],tempT[27],tempT[28],tempT[29]
+                ,tempT[30],tempT[31],tempT[32],tempT[33],tempT[34],tempT[35],tempT[36],tempT[37],tempT[38],tempT[39]
+                ,tempT[40],tempT[41],tempT[42],tempT[43],tempT[44],tempT[45],tempT[46],tempT[47],tempT[48],tempT[49]
+                ,tempT[50],tempT[51],tempT[52],tempT[53],tempT[54],tempT[55],tempT[56],tempT[57],tempT[58],tempT[59]
+                ,tempT[60],tempT[61],tempT[62],tempT[63],tempT[64],tempT[65],tempT[66],tempT[67],tempT[68],tempT[69]
+                ,tempT[70],tempT[71],tempT[72],tempT[73],tempT[74],tempT[75],tempT[76],tempT[77],tempT[78],tempT[79]
+                ,tempT[80],tempT[81],tempT[82],tempT[83],tempT[84],tempT[85],tempT[86],tempT[87],tempT[88],tempT[89]
+                ,tempT[90],tempT[91],tempT[92],tempT[93],tempT[94],tempT[95],tempT[96],tempT[97],tempT[98],tempT[99]
+                );
+
+        xxx = deviceItem->infrared_cmd(cmd_buff);
+        //printf("xxx=%d cmd_buff=%s result:%s \r\n",xxx, cmd_buff, result);
+        if(xxx != 0 )
+        {
+    //        break;
+        }
+        memset(tempT,0,100);
+        if(nn%100 == 0 )
+        {
+            //printf("xxx=%d cmd_buff=%s result:%s \r\n",xxx, cmd_buff, result);
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+            //m_camera_updateStatus->setText(QString("process:%1 / %2 ").arg(QString::number(nn*100 )).arg(QString::number(fileSize )) );
+            double bfb = nn*1.0 / fileSize;
+        //    m_camera_updateStatus->setText(QString("UploadFile:%1 %").arg( QString::number( bfb*100.0, 'f', 2 ) ) );
+        }
+
+    }
+    sprintf(cmd_buff,"updatefile_end(%s )",file_name.toStdString().data() );//写完成关闭文件
+    printf("cmd_buff :%s \r\n",cmd_buff);
+    xxx = deviceItem->infrared_cmd(cmd_buff);
+
+    temp = 1;
+    sprintf(cmd_buff,"updatefile data.rbf",temp);
+    //m_camera_updateStatus->setText(QString("process:%1 %").arg( QString::number( 100.0, 'f', 2 ) ) );
+
+//    double c = 0;
+//    int d = 0;
+//    tmpfile.read((char*)&c, sizeof(c));
+//    tmpfile.read((char*)&d, sizeof(d));
+//    //cout<<c<<' '<<d<<endl;
+//    //QByteArray bytes = tmpfile.readAll();
+//    //c = *((double*)bytes.data());
+//    //d = *((int*)(bytes.data() + sizeof(c)));
+//    //cout<<c<<' '<<d<<endl;
+
+
+    printf("nn=%d", nn);
+}
+
+
+void MainWindow::on_pushButton_update_clicked()
+{
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+
+    char cmd_buff[512];
+    char result[64];
+    memset(cmd_buff,0x0,sizeof(cmd_buff));
+    memset(result,0x0,sizeof(result));
+    sprintf(cmd_buff,"update_fpga(gev300_gf120_mipi.rbf )");//写完成关闭文件
+    printf("cmd_buff :%s \r\n",cmd_buff);
+
+    deviceItem->infrared_cmd(cmd_buff);
 }
 
