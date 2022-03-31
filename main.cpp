@@ -21,6 +21,11 @@ int main(int argc, char *argv[])
 
     QString css;
 
+    QFile cssMainWindow("theme/black/mainwindow.css");
+    cssMainWindow.open(QFile::ReadOnly);
+    css += cssMainWindow.readAll();
+    cssMainWindow.close();
+
     QFile cssMenubar("theme/black/menubar.css");
     cssMenubar.open(QFile::ReadOnly);
     css += cssMenubar.readAll();

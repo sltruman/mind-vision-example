@@ -1,8 +1,14 @@
 #ifndef CALIBRATIONDIALOG_H
 #define CALIBRATIONDIALOG_H
+#include "wrap/device.hpp"
 
+#ifdef WIN32
 #include <opencv2/imgproc/types_c.h>
 #include <opencv2/opencv.hpp>
+#else
+#include <opencv2/imgproc/types_c.h>
+#include <opencv2/opencv.hpp>
+#endif
 
 #include <vector>
 #include <memory>
@@ -45,7 +51,7 @@ public:
 
     std::vector<Board*> m_Boards;
     std::shared_ptr<Result> m_Result;
-    QProcess* camera;
+    std::shared_ptr<Device> camera;
 
 private slots:
     void on_pushButton_load_clicked();

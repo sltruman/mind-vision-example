@@ -2332,7 +2332,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>10</number>
+        <number>0</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -6697,7 +6697,7 @@
        </widget>
        <widget class="QWidget" name="tab_10">
         <attribute name="title">
-         <string>Infrared</string>
+         <string>红外线扫</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <property name="leftMargin">
@@ -6721,7 +6721,7 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-838</y>
+              <y>-497</y>
               <width>265</width>
               <height>2290</height>
              </rect>
@@ -6995,6 +6995,9 @@
                </item>
                <item>
                 <widget class="QSpinBox" name="spinBox_infrared_emissivity">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
                  <property name="maximum">
                   <number>100</number>
                  </property>

@@ -4,10 +4,14 @@
 #include <QApplication>
 #include <QDateTime>
 #include <QGraphicsScene>
+#include <QTextStream>
 
 #include <iostream>
+#include <tuple>
 using std::endl;
 using std::cout;
+using std::tuple;
+using std::make_tuple;
 
 CameraView::CameraView(QTreeWidgetItem* owner,QWidget *parent) :
     QGraphicsView(parent),
@@ -27,6 +31,7 @@ CameraView::CameraView(QTreeWidgetItem* owner,QWidget *parent) :
 
 CameraView::~CameraView()
 {
+    stop();
     delete ui;
 }
 
@@ -90,50 +95,33 @@ void CameraView::paintEvent(QPaintEvent *event) {
 }
 
 void CameraView::play() {
-    cout << "play " << pipeName.toStdString() << endl;
-
-    camera->write("play\n");
+    camera->play();
     playing = true;
     if(task.joinable()) return;
 
     interupt = false;
 
-    sm.setKey(pipeName + ".0.sm");
-    sm.attach();
-
-    tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
-
     task = std::thread([=]() {
-      while(!this->interupt) {
-          auto frame_head_length = sizeof(FrameHead);
+        unsigned long long lastStatusTick = 0,tick = 0;
 
-          if(framesCaptured > 1) {
-              std::this_thread::sleep_for(std::chrono::milliseconds(100));
-              continue;
+        while(!this->interupt) {
+          auto lastStatusTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - lastStatusTick;
+
+          if(lastStatusTime > 1000) {
+              camera->status_sync();
+              lastStatusTick = QDateTime::currentDateTime().toMSecsSinceEpoch();
           }
 
-          if(!sm.lock()) {
-              std::this_thread::sleep_for(std::chrono::milliseconds(100));
-              continue;
-          }
+          if(framesCaptured > 1) continue;
 
-          auto frameHeadBuffer = reinterpret_cast<unsigned char*>(sm.data());
-          auto frame_head = (FrameHead*)frameHeadBuffer;
+          auto rgbBuffer = camera->frame().data();
 
-          if(current_frame_head.num != frame_head->num) {
-              current_frame_head = *frame_head;
+          std::lock_guard<std::mutex> locked(m_img);
+          img = QImage(rgbBuffer,camera->frame_head.iWidth,camera->frame_head.iHeight,camera->frame_head.uiMediaType == CAMERA_MEDIA_TYPE_MONO8 ? QImage::Format::Format_Indexed8 : QImage::Format::Format_RGB888);
 
-              auto rgbBuffer = frameHeadBuffer + frame_head_length;
-
-              std::lock_guard<std::mutex> locked(m_img);
-              img = QImage(rgbBuffer,frame_head->width,frame_head->height,frame_head->bits == 3 ? QImage::Format::Format_RGB888 : QImage::Format::Format_Indexed8);
-
-              auto elapsedTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
-              displayFPS = 1.0f / elapsedTime * 1000;
-              tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
-          }
-
-          sm.unlock();
+          auto lastFrameTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - tick;
+          displayFPS = 1000 / lastFrameTime;
+          tick = QDateTime::currentDateTime().toMSecsSinceEpoch();
 
           if(QImage::Format::Format_Indexed8 == img.format()) {
               QVector<QRgb> grayColorTable;
@@ -159,7 +147,7 @@ void CameraView::play() {
           }
 
           emit updated(QPixmap::fromImage(img));
-      }
+        }
     });
 }
 
@@ -185,8 +173,7 @@ void CameraView::update(const QPixmap &img) {
 }
 
 void CameraView::pause() {
-    cout << "pause " << pipeName.toStdString() << endl;
-    camera->write("pause\n");
+    camera->pause();
     playing = false;
 }
 
@@ -201,7 +188,6 @@ void CameraView::stop() {
     playing = false;
 
     task.join();
-    sm.detach();
 
     scene()->addPixmap(QPixmap(0,0));
 }

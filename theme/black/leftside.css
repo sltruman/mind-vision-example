@@ -59,6 +59,7 @@
 
 #treeWidget_devices #toolButton_refresh {
     background:transparent;
+    border:none;
 }
 
 #treeWidget_devices #toolButton_refresh:hover {

@@ -7,10 +7,6 @@
 #include "loadingdialog.h"
 #include "offlinefpndialog.h"
 
-#include "qtpropertymanager.h"
-#include "qtvariantproperty.h"
-#include "qttreepropertybrowser.h"
-
 #include <QProcess>
 #include <QSpacerItem>
 #include <QToolButton>
@@ -35,14 +31,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     auto rightSide = new RightSideTitleBar(this,ui->treeWidget_devices);
     ui->dockWidget_rightSide->setTitleBarWidget(rightSide);
+    ui->dockWidget_rightSide->hide();
+    ui->widget_control->hide();
+    ui->widget_status->hide();
+    ui->tabWidget_preview->tabBar()->hide();
 
-    auto at_tabWidget_params_currentChanged = [=](){
+    auto at_tabWidget_params_currentChanged = [=]() {
         emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
     };
-
-    connect(rightSide,&RightSideTitleBar::save_clicked,at_tabWidget_params_currentChanged);
-    connect(rightSide,&RightSideTitleBar::default_clicked,at_tabWidget_params_currentChanged);
-    connect(rightSide,&RightSideTitleBar::params_activated,at_tabWidget_params_currentChanged);
 
     auto gige = ui->treeWidget_devices->topLevelItem(0);
     auto usb = ui->treeWidget_devices->topLevelItem(1);
@@ -50,10 +46,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeWidget_devices->setItemWidget(gige,0,new TopLevelItemWidget(gige,"GIGE,GiGeCamera",ui->treeWidget_devices));
     ui->treeWidget_devices->setItemWidget(usb,0,new TopLevelItemWidget(usb,"U3V,Usb3Camera0,Usb2Camera1",ui->treeWidget_devices));
     ui->treeWidget_devices->expandAll();
-    ui->dockWidget_rightSide->hide();
-    ui->widget_control->hide();
-    ui->widget_status->hide();
-    ui->tabWidget_preview->tabBar()->hide();
+
+    connect(rightSide,&RightSideTitleBar::save_clicked,at_tabWidget_params_currentChanged);
+    connect(rightSide,&RightSideTitleBar::default_clicked,at_tabWidget_params_currentChanged);
+    connect(rightSide,&RightSideTitleBar::params_activated,at_tabWidget_params_currentChanged);
 
     connect(&cameraStatusUpdate,SIGNAL(timeout()),SLOT(at_cameraStatusUpdate_timeout()));
     cameraStatusUpdate.setInterval(1000);
@@ -74,7 +70,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         for(auto subItemIndex=0;subItemIndex< topLevelItem->childCount();subItemIndex++) {
             auto deviceItem = dynamic_cast<DeviceItem*>(topLevelItem->child(subItemIndex));
 
-            if(QProcess::NotRunning == deviceItem->camera.state()) continue;
+            if(!deviceItem->camera->opened()) continue;
             deviceItem->close();
         }
     }
@@ -84,13 +80,10 @@ void MainWindow::at_cameraStatusUpdate_timeout()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
-    if(deviceItem == nullptr || deviceItem->camera.state() != QProcess::Running) {
-        return;
-    }
-
+    if(deviceItem == nullptr || !deviceItem->camera->opened()) return;
 
     if(deviceItem->cameraView->avgBrightness) {
-        auto brightness = deviceItem->brightness();
+        auto brightness = QString::number(deviceItem->cameraView->brightness);
         ui->label_brightness->setText(brightness);
         ui->widget_bright->show();
     } else {
@@ -114,38 +107,34 @@ void MainWindow::at_cameraStatusUpdate_timeout()
 
     ui->pushButton_playOrStop->setChecked(deviceItem->cameraView->playing);
 
-    auto s = deviceItem->snapshotState();
+    auto s = deviceItem->camera->snapshoting;
     ui->pushButton_snapshot->setText(s ? tr("Stop") : tr("Snapshot"));
     ui->pushButton_snapshot->setCheckable(s);
 
-    s = deviceItem->recordState();
+    s = deviceItem->camera->recording;
     ui->pushButton_record->setText(s ? tr("Stop") : tr("Record"));
     ui->pushButton_record->setCheckable(s);
 
-    auto portType = deviceItem->data(0,Qt::UserRole).toStringList()[6];
+    auto status = QString::fromStdString(deviceItem->camera->status_string.str()).split(',');
 
-    try {
-        auto status = deviceItem->status(portType);
+    ui->label_frames->setText(status[0]);
+    ui->label_recordFPS->setText(status[1]);
 
-        ui->label_frames->setText(status[0]);
-        ui->label_recordFPS->setText(status[1]);
-
-        if(-1 != portType.indexOf("NET")) {
-            ui->label_temperature->setText(status[3]);
-            ui->label_lost->setText(status[4]);
-            ui->label_resend->setText(status[5]);
-            ui->label_packSize->setText(status[6]);
-        } else if(-1 != portType.indexOf("USB3")) {
-            ui->label_sensorFps->setText(status[2]);
-            ui->label_temperature->setText(status[3]);
-            ui->label_lost->setText(status[4]);
-            ui->label_resend->setText(status[5]);
-            ui->label_recover->setText(status[6]);
-            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
-        } else {
-            ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
-        }
-    } catch(...) {}
+    if(std::dynamic_pointer_cast<GIGEDevice>(deviceItem->camera)) {
+        ui->label_temperature->setText(status[3]);
+        ui->label_lost->setText(status[4]);
+        ui->label_resend->setText(status[5]);
+        ui->label_packSize->setText(status[6]);
+    } else if(std::dynamic_pointer_cast<USB3Device>(deviceItem->camera)) {
+        ui->label_sensorFps->setText(status[2]);
+        ui->label_temperature->setText(status[3]);
+        ui->label_lost->setText(status[4]);
+        ui->label_resend->setText(status[5]);
+        ui->label_recover->setText(status[6]);
+        ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
+    } else {
+        ui->label_linkSpeed->setText(status[7] == "3" ? tr("SuperSpeed") : status[7] == "2" ? tr("HighSpeed") : tr("FullSpeed"));
+    }
 
     if(ui->radioButton_automationExposure->isChecked() && ui->tabWidget_params->currentIndex() == 0) {
         try {
@@ -154,24 +143,32 @@ void MainWindow::at_cameraStatusUpdate_timeout()
             ui->slider_gain->setValue(exposure[9].toInt());
             ui->spinBox_exposureTime->setValue(exposure[12].toDouble() / 1000.);
             ui->slider_exposureTime->setValue(exposure[12].toDouble());
-        } catch(...) {
-
-        }
+        } catch(...) {}
     }
 
-    auto infrared_status = deviceItem->infrared_status();
-    ui->lineEdit_infrared_ad_value->setText(QString::number(infrared_status.ad_value));
-    ui->lineEdit_infrared_ad_diff->setText(QString::number(infrared_status.diff_ad_value));
-    ui->lineEdit_infrared_gst417m_temp->setText(infrared_status.gst417m_temp + QString::fromLocal8Bit("°C"));
-    ui->lineEdit_infrared_temp_diff->setText(infrared_status.diff_temp_value + QString::fromLocal8Bit("°C"));
-    ui->spinBox_infrared_exposure->setValue(infrared_status.gst417m_ctia);
+    auto camera_gf = std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+
+    if(camera_gf) {
+        auto infrared_status = camera_gf->status();
+        ui->lineEdit_infrared_ad_value->setText(QString::number(infrared_status.ad_value));
+        ui->lineEdit_infrared_ad_diff->setText(QString::number(infrared_status.diff_ad_value));
+        ui->lineEdit_infrared_gst417m_temp->setText(QString::number(infrared_status.outside_temp / 100.) + QString::fromLocal8Bit("°C"));
+        ui->lineEdit_infrared_temp_diff->setText(QString::number(infrared_status.diff_temp_value / 100.) + QString::fromLocal8Bit("°C"));
+        ui->spinBox_infrared_exposure->setValue(infrared_status.gst417m_ctia);
+
+        ui->tabWidget_params->setTabVisible(10,true);
+        for(int i=0;i<10;i++) ui->tabWidget_params->setTabVisible(i,false);
+    } else {
+        ui->tabWidget_params->setTabVisible(10,false);
+        for(int i=0;i<10;i++) ui->tabWidget_params->setTabVisible(i,true);
+    }
 }
 
 void MainWindow::on_treeWidget_devices_customContextMenuRequested(const QPoint &pos)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
-    cout << "menu " << deviceItem->text(0).toStdString() << endl;
+    cout << "menu " << deviceItem->text(0).toStdString() << std::endl;
 
     auto qMenu = new QMenu(ui->treeWidget_devices);
     qMenu->setObjectName("menu_devices");
@@ -187,7 +184,7 @@ void MainWindow::on_action_open_triggered()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     if(!deviceItem) return;
 
-    if(QProcess::NotRunning == deviceItem->camera.state()) {
+    if(!deviceItem->camera->opened()) {
         connect(deviceItem->cameraView,&CameraView::focused,this,[=](){
             ui->treeWidget_devices->setCurrentItem(deviceItem);
         },Qt::UniqueConnection);
@@ -197,15 +194,15 @@ void MainWindow::on_action_open_triggered()
             ui->tabWidget_preview->setCurrentIndex(1);
         },Qt::UniqueConnection);
 
-        cout << "open " << endl;
+        cout << "open " << std::endl;
         if(!deviceItem->open()) {
             QMessageBox::critical(nullptr, tr("Device"), tr("Failed Connecting the camera!"), QMessageBox::Ok);
             return;
         }
     } else {
-        cout << "close " << endl;
+        cout << "close " << std::endl;
         deviceItem->close();
-        cout << "closed " << endl;
+        cout << "closed " << std::endl;
         deviceItem->cameraView->setParent(nullptr);
     }
 
@@ -240,33 +237,33 @@ void MainWindow::on_pushButton_zoomFull_clicked()
 void MainWindow::on_pushButton_snapshot_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(ui->pushButton_snapshot->isChecked()) {
-        cout << "snapshot-state" << endl;
-        deviceItem->snapshotStop();
+        cout << "snapshot-state" << std::endl;
+        deviceItem->camera->snapshot_stop();
         return;
     }
 
-    cout << "snapshot-start" << endl;
+    cout << "snapshot-start" << std::endl;
     auto mainMenu = dynamic_cast<MainMenu*>(this->menuWidget());
-    deviceItem->snapshotStart(mainMenu->snapshotDialog.dir(),mainMenu->snapshotDialog.resolution(),mainMenu->snapshotDialog.format(),mainMenu->snapshotDialog.period());
+    deviceItem->camera->snapshot_start(mainMenu->snapshotDialog.dir().toStdString(),mainMenu->snapshotDialog.format(),mainMenu->snapshotDialog.period());
     emit at_cameraStatusUpdate_timeout();
 }
 
 void MainWindow::on_pushButton_record_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(ui->pushButton_record->isChecked()) {
-        cout << "record-state" << endl;
-        deviceItem->recordStop();
+        cout << "record-state" << std::endl;
+        deviceItem->camera->record_stop();
         return;
     }
 
     auto mainMenu = dynamic_cast<MainMenu*>(this->menuWidget());
-    deviceItem->recordStart(mainMenu->recordDialog.dir(),mainMenu->recordDialog.format(),mainMenu->recordDialog.quality(),mainMenu->recordDialog.frames());
+    deviceItem->camera->record_start(mainMenu->recordDialog.dir().toStdString(),mainMenu->recordDialog.format(),mainMenu->recordDialog.quality());
     emit at_cameraStatusUpdate_timeout();
 }
 
@@ -301,10 +298,7 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
 
         for(auto subItemIndex=0;subItemIndex< topLevelItem->childCount();subItemIndex++) {
             auto deviceItem = dynamic_cast<DeviceItem*>(topLevelItem->child(subItemIndex));
-
-            if(QProcess::Running == deviceItem->camera.state()) {
-                availableDevices++;
-            }
+            if(deviceItem->camera->opened()) availableDevices++;
         }
     }
 
@@ -324,7 +318,7 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
         ui->dockWidget_rightSide->hide();
         ui->widget_control->hide();
         ui->widget_status->hide();
-    } else if(QProcess::NotRunning == deviceItem->camera.state()) {
+    } else if(!deviceItem->camera->opened()) {
         ui->dockWidget_rightSide->hide();
         ui->widget_control->hide();
         ui->widget_status->hide();
@@ -337,64 +331,58 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
     }
 
     if(!deviceItem) return;
-    auto info = deviceItem->data(0,Qt::UserRole).toStringList();
-    ui->label_series_2->setText(info[0].left(4));
-    ui->label_deviceName_2->setText(info[1]);
-    auto cameraName = info[2];
-    ui->label_sensor_2->setText(info[5]);
+
+    auto info = deviceItem->camera->info;
+    ui->label_series_2->setText(QString(info.acProductSeries).left(4));
+    ui->label_deviceName_2->setText(info.acProductName);
+    ui->label_sensor_2->setText(info.acSensorType);
     ui->label_manufacturer_2->setText("Mind Vision");
 
-    if(info.size() > 9) {
+    auto gige_camera = std::dynamic_pointer_cast<GIGEDevice>(deviceItem->camera);
+    if(gige_camera) {
         ui->label_ip_2->show();
         ui->label_ip->show();
+        ui->label_mask_2->show();
+        ui->label_mask->show();
+        ui->label_gateway_2->show();
+        ui->label_gateway->show();
+
+        ui->label_ip_2->setText(gige_camera->camIp.c_str());
+        ui->label_mask_2->setText(gige_camera->camMask.c_str());
+        ui->label_gateway_2->setText(gige_camera->camGateWay.c_str());
     } else {
         ui->label_ip_2->hide();
         ui->label_ip->hide();
-    }
-
-    if(info.size() > 10) {
-        ui->label_mask_2->show();
-        ui->label_mask->show();
-    } else {
         ui->label_mask_2->hide();
         ui->label_mask->hide();
-    }
-
-    if(info.size() > 11) {
-        ui->label_gateway_2->show();
-        ui->label_gateway->show();
-    } else {
         ui->label_gateway_2->hide();
         ui->label_gateway->hide();
     }
 
-    ui->label_ip_2->setText(info.size() > 9 ? info[9] : "");
-    ui->label_mask_2->setText(info.size() > 10 ? info[10] : "");
-    ui->label_gateway_2->setText(info.size() > 11 ? info[11] : "");
-
-    auto portType = info[6];
-    ui->widget_lost->hide();
-    ui->widget_resend->hide();
-    ui->widget_recover->hide();
     ui->widget_packSize->hide();
     ui->widget_sfps->hide();
-    ui->widget_temperature->hide();
 
-    if(-1 != portType.indexOf("NET")) {
+    if(std::dynamic_pointer_cast<GIGEDevice>(deviceItem->camera)) {
         ui->widget_lost->show();
         ui->widget_resend->show();
         ui->widget_packSize->show();
         ui->widget_temperature->show();
+        auto portType = QString(info.acPortType);
         if(-1 != portType.indexOf("10000M")) ui->label_linkSpeed->setText("10000M");
         if(-1 != portType.indexOf("1000M")) ui->label_linkSpeed->setText("1000M");
         if(-1 != portType.indexOf("100M")) ui->label_linkSpeed->setText("100M");
-    } else if(-1 != portType.indexOf("USB3")) {
+    } else if(std::dynamic_pointer_cast<USB3Device>(deviceItem->camera)) {
         ui->widget_lost->show();
         ui->widget_resend->show();
         ui->widget_recover->show();
         ui->widget_sfps->show();
         ui->widget_temperature->show();
-    } else {    }
+    } else {
+        ui->widget_lost->hide();
+        ui->widget_resend->hide();
+        ui->widget_recover->hide();
+        ui->widget_temperature->hide();
+    }
 
     ui->checkBox_showBright->setChecked(deviceItem->cameraView->avgBrightness);
 
@@ -408,57 +396,57 @@ void MainWindow::on_treeWidget_devices_itemSelectionChanged()
 void MainWindow::on_checkBox_flicker_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-     deviceItem->flicker(arg1);
+     deviceItem->camera->flicker(arg1);
 }
 
 void MainWindow::on_comboBox_frequency_currentIndexChanged(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->frequency(index);
+    deviceItem->camera->frequency(index);
 }
 
 void MainWindow::on_checkBox_horizontalMirrorSoft_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->horizontalMirror(0,arg1);
+    deviceItem->camera->horizontal_mirror(0,arg1);
 }
 
 void MainWindow::on_checkBox_verticalMirrorSoft_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->verticalMirror(0,arg1);
+    deviceItem->camera->vertical_mirror(0,arg1);
 }
 
 void MainWindow::on_checkBox_horizontalMirrorHard_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->horizontalMirror(1,arg1);
+    deviceItem->camera->horizontal_mirror(1,arg1);
 }
 
 void MainWindow::on_checkBox_verticalMirrorHard_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->verticalMirror(2,arg1);
+    deviceItem->camera->vertical_mirror(2,arg1);
 }
 
 void MainWindow::on_pushButton_onceWhiteBalance_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->onceWhiteBalance();
+    deviceItem->camera->once_white_balance();
 
     emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
@@ -466,16 +454,16 @@ void MainWindow::on_pushButton_onceWhiteBalance_clicked()
 void MainWindow::on_comboBox_resolution_currentIndexChanged(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->resolution(index);
+    deviceItem->camera->resolution(index);
 }
 
 void MainWindow::on_spinBox_acutance_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto v = ui->spinBox_acutance->value();
-    deviceItem->acutance(v);
+    deviceItem->camera->acutance(v);
     ui->slider_acutance->setValue(v);
 }
 
@@ -489,22 +477,22 @@ void MainWindow::on_slider_acutance_sliderMoved(int position)
 void MainWindow::on_pushButton_loadParamsFromFile_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto filename = QFileDialog::getOpenFileName(this,tr("Select file"),"",tr("config Files(*.config )"));
     if(filename.isEmpty()) return;
-    deviceItem->paramsLoadFromFile(filename);
+    deviceItem->camera->params_load_from_file(filename.toStdString());
     emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
 }
 
 void MainWindow::on_pushButton_saveParamsToFile_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto filename = QFileDialog::getSaveFileName(this,tr("File name"),"",tr("config Files(*.config )"));
     if(filename.isEmpty()) return;
-    deviceItem->paramsSaveToFile(filename);
+    deviceItem->camera->params_save_to_file(filename.toStdString());
 }
 
 void MainWindow::on_actionTop_triggered()
@@ -524,13 +512,13 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
     ui->checkBox_exposureWIndow->setChecked(false);
 
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->resolutionWindow = false;
 
     try {
         if(index == 0) {
-            auto exposure = deviceItem->exposure();
+            auto exposure = deviceItem->exposure(true);
             auto values = get<0>(exposure);
 
             if(values[0].toUInt()) ui->radioButton_automationExposure->setChecked(true);
@@ -636,8 +624,8 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             cs->whiteBalanceWindowPos.setHeight(values[20].toInt());
             ui->checkBox_fpn->setChecked(values[21].toInt());
         } else if(index == 2) {
-            auto lookupTableMode = deviceItem->lookupTableMode();
-            ui->comboBox_lutMode->setCurrentIndex(lookupTableMode.toInt());
+            auto lookupTableMode = deviceItem->camera->lookup_table_mode();
+            ui->comboBox_lutMode->setCurrentIndex(lookupTableMode);
         } else if(index == 3) {
             auto isp = deviceItem->isp();
             ui->checkBox_horizontalMirrorSoft->setChecked(isp[0].toUInt());
@@ -659,16 +647,8 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
             auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
             cs->existedPixels.clear();
 
-            QFile f(isp[11]);
-            f.open(QIODevice::ReadOnly | QIODevice::Text);
-            auto xylist = QString(f.readAll()).split('\n');
-            if(xylist.size()) xylist.removeLast();
-            f.close();
-
-            for(auto xystr : xylist) {
-                auto xy = xystr.split(',');
-                cs->existedPixels.append(QPoint(xy[0].toUInt(),xy[1].toUInt()));
-            }
+            for(auto xy : deviceItem->camera->dead_pixels())
+                cs->existedPixels.append(QPoint(xy[0],xy[1]));
 
             ui->checkBox_anamorphose->setChecked(isp[12].toUInt());
             if(isp[13] != "-1") ui->checkBox_horizontalMirrorSoft->setChecked(isp[13].toUInt());
@@ -784,15 +764,20 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
         } else if(index == 10) {
             auto firmware= deviceItem->firmware();
             auto pwd = QDir::current();
-            auto configDir = QString("Camera/Data/corr_%1").arg(deviceItem->cameraName);
+            auto configDir = QString("Camera/Data/corr_%1").arg(deviceItem->camera->info.acSn);
             pwd.mkpath(configDir);
 
             ui->lineEdit_sample_path->setText(configDir);
             ui->lineEdit_infrared_path_to_low_response_rate_sample->setText(configDir + "/response_temp40.bin");
             ui->lineEdit_infrared_path_to_high_response_rate_sample->setText(configDir + "/response_temp140.bin");
+
+            auto gf120 = std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+            gui_init(gf120);
+        } else {
+
         }
     } catch(...) {
-        cout << "Failed to sync camera's params!" << endl;
+        cout << "Failed to sync camera's params!" << std::endl;
         emit ui->tabWidget_params->currentChanged(ui->tabWidget_params->currentIndex());
     }
 }
@@ -800,41 +785,41 @@ void MainWindow::on_tabWidget_params_currentChanged(int index)
 void MainWindow::on_checkBox_monochrome_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->monochrome(checked);
+    deviceItem->camera->monochrome(checked);
 }
 
 void MainWindow::on_checkBox_inverse_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->inverse(checked);
+    deviceItem->camera->inverse(checked);
 }
 
 void MainWindow::on_comboBox_algorithm_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->algorithm(index);
+    deviceItem->camera->algorithm(index);
 }
 
 void MainWindow::on_comboBox_colorTemrature_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->colorTemrature(index);
+    deviceItem->camera->color_temrature(index);
 }
 
 void MainWindow::on_comboBox_lutPreset_currentIndexChanged(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->lookupTablePreset(index);
+    deviceItem->camera->lookup_table_preset(index);
     auto lookupTables = deviceItem->lookupTablesForPreset();
 
     auto line = new QSplineSeries();
@@ -851,7 +836,7 @@ void MainWindow::on_comboBox_lutPreset_currentIndexChanged(int index)
 void MainWindow::on_comboBox_lutColorChannel_currentIndexChanged(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto lookupTables = deviceItem->lookupTablesForCustom(index);
 
@@ -869,42 +854,42 @@ void MainWindow::on_comboBox_lutColorChannel_currentIndexChanged(int index)
 void MainWindow::on_checkBox_noise_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->noise(checked);
+    deviceItem->camera->noise(checked);
 }
 
 void MainWindow::on_comboBox_noise3D_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    if(index) deviceItem->noise3d(1,index + 1);
-    else deviceItem->noise3d(0,0);
+    if(index) deviceItem->camera->noise3d(1,index + 1);
+    else deviceItem->camera->noise3d(0,0);
 }
 
 void MainWindow::on_comboBox_rotate_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->rotate(index);
+    deviceItem->camera->rotate(index);
 }
 
 void MainWindow::on_comboBox_frameRateSpeed_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->frameRateSpeed(index);
+    deviceItem->camera->frame_rate_speed(index);
 }
 
 void MainWindow::on_spinBox_frameRateLimit_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->frameRateLimit(ui->spinBox_frameRateLimit->value());
+    deviceItem->camera->frame_rate_limit(ui->spinBox_frameRateLimit->value());
 }
 
 
@@ -951,7 +936,7 @@ void MainWindow::on_spinBox_resolutionH_valueChanged(int arg1)
 void MainWindow::on_pushButton_resetResolutionRect_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->resolution(0);
+    deviceItem->camera->resolution(0);
 
     auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
     cs->resolutionWindow = true;
@@ -965,121 +950,121 @@ void MainWindow::on_pushButton_resolution_clicked()
     cs->resolutionWindow = false;
 
     auto rect = cs->resolutionWindowPos;
-    deviceItem->resolution(rect.x(),rect.y(),rect.width(),rect.height());
+    deviceItem->camera->resolution(rect.x(),rect.y(),rect.width(),rect.height());
 }
 
 void MainWindow::on_comboBox_ioMode0_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioMode("Input",0,index == 0 ? 0 : 2);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_mode("Input",0,index == 0 ? 0 : 2);
 }
 
 void MainWindow::on_comboBox_ioState0_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->ioState("Input",0,index);
+    deviceItem->camera->io_state("Input",0,index);
 }
 
 void MainWindow::on_comboBox_ioMode1_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioMode("Input",1,2);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_mode("Input",1,2);
 }
 
 void MainWindow::on_comboBox_ioState1_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->ioState("Input",1,index);
+    deviceItem->camera->io_state("Input",1,index);
 }
 
 void MainWindow::on_comboBox_ioMode2_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioMode("Input",2,2);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_mode("Input",2,2);
 }
 
 void MainWindow::on_comboBox_ioState2_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioState("Input",2,index);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_state("Input",2,index);
 }
 
 void MainWindow::on_comboBox_outputIoMode0_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioMode("Output",0,index == 0 ? 1 : 3);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_mode("Output",0,index == 0 ? 1 : 3);
 }
 
 void MainWindow::on_comboBox_outputIoState0_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioState("Output",0,index);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_state("Output",0,index);
 }
 
 void MainWindow::on_comboBox_outputIoMode1_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioMode("Output",1,3);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_mode("Output",1,3);
 }
 
 void MainWindow::on_comboBox_outputIoState1_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioState("Output",1,index);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_state("Output",1,index);
 }
 
 void MainWindow::on_comboBox_outputIoMode2_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioMode("Output",2,3);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_mode("Output",2,3);
 }
 
 void MainWindow::on_comboBox_outputIoState2_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioState("Output",2,index);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_state("Output",2,index);
 }
 
 void MainWindow::on_comboBox_outputIoMode3_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioMode("Output",3,3);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_mode("Output",3,3);
 }
 
 void MainWindow::on_comboBox_outputIoState3_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioState("Output",3,index);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_state("Output",3,index);
 }
 
 void MainWindow::on_comboBox_outputIoMode4_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioMode("Output",3,3);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_mode("Output",3,3);
 }
 
 void MainWindow::on_comboBox_outputIoState4_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->ioState("Output",3,index);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->io_state("Output",3,index);
 }
 
 void MainWindow::on_comboBox_triggerMode_currentIndexChanged(int index)
@@ -1101,57 +1086,57 @@ void MainWindow::on_comboBox_triggerMode_currentIndexChanged(int index)
 void MainWindow::on_comboBox_triggerMode_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->triggerMode(index);
+    deviceItem->camera->trigger_mode(index);
 }
 
 void MainWindow::on_pushButton_softTrigger_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->onceSoftTrigger();
+    deviceItem->camera->once_soft_trigger();
 }
 
 void MainWindow::on_spinBox_frameCount_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->triggerFrames(ui->spinBox_frameCount->value());
+    deviceItem->camera->trigger_frames(ui->spinBox_frameCount->value());
 }
 
 void MainWindow::on_spinBox_delay_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->triggerDelay(ui->spinBox_delay->value());
+    deviceItem->camera->trigger_delay(ui->spinBox_delay->value());
 }
 
 void MainWindow::on_spinBox_interval_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->triggerInterval(ui->spinBox_interval->value());
+    deviceItem->camera->trigger_interval(ui->spinBox_interval->value());
 }
 
 void MainWindow::on_comboBox_outsideTriggerMode_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->outsideTriggerMode(index);
+    deviceItem->camera->outside_trigger_mode(index);
 }
 
 void MainWindow::on_spinBox_debounce_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->outsideTriggerDebounce(ui->spinBox_debounce->value());
+    deviceItem->camera->outside_trigger_debounce(ui->spinBox_debounce->value());
 }
 
 void MainWindow::on_comboBox_flashMode_currentIndexChanged(int index)
@@ -1170,38 +1155,38 @@ void MainWindow::on_comboBox_flashMode_currentIndexChanged(int index)
 void MainWindow::on_comboBox_flashMode_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
-    deviceItem->flashMode(index);
+    if(!deviceItem || !deviceItem->camera->opened()) return;
+    deviceItem->camera->strobe_mode(index);
 }
 
 void MainWindow::on_comboBox_flashPolarity_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->flashPolarity(index);
+    deviceItem->camera->strobe_polarity(index);
 }
 
 void MainWindow::on_spinBox_strobeDelay_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->strobeDelay(ui->spinBox_strobeDelay->value());
+    deviceItem->camera->strobe_delay(ui->spinBox_strobeDelay->value());
 }
 
 void MainWindow::on_spinBox_strobePulse_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->strobePulse(ui->spinBox_strobePulse->value());
+    deviceItem->camera->strobe_pulse(ui->spinBox_strobePulse->value());
 }
 
 void MainWindow::on_checkBox_line1_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x1->value();
@@ -1216,7 +1201,7 @@ void MainWindow::on_checkBox_line1_stateChanged(int arg1)
 void MainWindow::on_checkBox_line2_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x2->value();
@@ -1231,7 +1216,7 @@ void MainWindow::on_checkBox_line2_stateChanged(int arg1)
 void MainWindow::on_checkBox_line3_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x3->value();
@@ -1246,7 +1231,7 @@ void MainWindow::on_checkBox_line3_stateChanged(int arg1)
 void MainWindow::on_checkBox_line4_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x4->value();
@@ -1261,7 +1246,7 @@ void MainWindow::on_checkBox_line4_stateChanged(int arg1)
 void MainWindow::on_checkBox_line5_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x5->value();
@@ -1276,7 +1261,7 @@ void MainWindow::on_checkBox_line5_stateChanged(int arg1)
 void MainWindow::on_checkBox_line6_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x6->value();
@@ -1291,7 +1276,7 @@ void MainWindow::on_checkBox_line6_stateChanged(int arg1)
 void MainWindow::on_checkBox_line7_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x7->value();
@@ -1306,7 +1291,7 @@ void MainWindow::on_checkBox_line7_stateChanged(int arg1)
 void MainWindow::on_checkBox_line8_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x8->value();
@@ -1321,7 +1306,7 @@ void MainWindow::on_checkBox_line8_stateChanged(int arg1)
 void MainWindow::on_checkBox_line9_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(arg1) {
         auto lineX = ui->spinBox_x9->value();
@@ -1336,7 +1321,7 @@ void MainWindow::on_checkBox_line9_stateChanged(int arg1)
 void MainWindow::on_pushButton_modifyNickname_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     if(-1 != ui->lineEdit_nickname->text().indexOf("V")
             || -1 != ui->lineEdit_nickname->text().indexOf(":")
@@ -1347,7 +1332,7 @@ void MainWindow::on_pushButton_modifyNickname_clicked()
             || -1 != ui->lineEdit_nickname->text().indexOf(">")) {
         QMessageBox::information(this,tr("Nickname"),tr("Nickname cannot include:") + "V:*?\"<>|" );
     } else {
-        deviceItem->rename(ui->lineEdit_nickname->text().trimmed());
+        deviceItem->camera->rename(ui->lineEdit_nickname->text().trimmed().toStdString());
         QMessageBox::information(this,tr("Nickname"),tr("Nickname has been modifyed and to restart the application!"));
     }
 }
@@ -1355,7 +1340,7 @@ void MainWindow::on_pushButton_modifyNickname_clicked()
 void MainWindow::on_checkBox_whiteBalanceWindow_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->whiteBalanceWindow = arg1;
 }
@@ -1363,16 +1348,16 @@ void MainWindow::on_checkBox_whiteBalanceWindow_stateChanged(int arg1)
 void MainWindow::on_pushButton_setWhiteBalanceWindow_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto rect = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->whiteBalanceWindowPos;
-    deviceItem->whiteBalanceWindow(rect.x(),rect.y(),rect.width(),rect.height());
+    deviceItem->camera->white_balance_window(rect.x(),rect.y(),rect.width(),rect.height());
 }
 
 void MainWindow::on_pushButton_defaultWhiteBalanceWindow_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
     cs->whiteBalanceWindowPos = cs->background->pixmap().rect();
@@ -1381,7 +1366,7 @@ void MainWindow::on_pushButton_defaultWhiteBalanceWindow_clicked()
 void MainWindow::on_checkBox_deadPixelsWindow_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
     cs->deadPixelWindow = arg1;
@@ -1390,18 +1375,18 @@ void MainWindow::on_checkBox_deadPixelsWindow_stateChanged(int arg1)
 void MainWindow::on_pushButton_saveDeadPixels_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto cs = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene());
 
-    QString x,y;
+    string x,y;
     for(auto pos : cs->existedPixels + cs->manualPixels + cs->deadPixels + cs->brightPixels) {
-        x += QString("%1,").arg(pos.x());
-        y += QString("%1,").arg(pos.y());
+        x += pos.x() + ",";
+        y += pos.y() + ",";
     }
 
-    if(!x.isEmpty()) x.remove(x.length()-1,1);
-    deviceItem->deadPixels(x,y);
+    if(!x.empty()) x.erase(x.length()-1,1);
+    deviceItem->camera->dead_pixels(x,y);
 
     QMessageBox::information(this, tr("Dead Pixels"), tr("Saved Dead Pixels!"), QMessageBox::Ok);
 }
@@ -1409,18 +1394,18 @@ void MainWindow::on_pushButton_saveDeadPixels_clicked()
 void MainWindow::on_checkBox_flatFiledCorrect_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
-    deviceItem->flatFieldCorrent(arg1);
+    deviceItem->camera->flat_field_corrent(arg1);
 }
 
 void MainWindow::on_pushButton_darkField_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     try {
-        deviceItem->flatFieldInit(0);
+        deviceItem->camera->flat_field_init(0);
         QMessageBox::information(this, tr("Dark Field"), tr("Ok!"), QMessageBox::Ok);
     } catch(...) {
         QMessageBox::warning(nullptr, tr("Light Field"), tr("Light is not enough!"), QMessageBox::Ok);
@@ -1430,10 +1415,10 @@ void MainWindow::on_pushButton_darkField_clicked()
 void MainWindow::on_pushButton_lightField_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     try {
-        deviceItem->flatFieldInit(1);
+        deviceItem->camera->flat_field_init(1);
         QMessageBox::information(this, tr("Light Field"), tr("Ok!"), QMessageBox::Ok);
     } catch(...) {
         QMessageBox::warning(nullptr, tr("Light Field"), tr("Light is not enough!"), QMessageBox::Ok);
@@ -1443,21 +1428,21 @@ void MainWindow::on_pushButton_lightField_clicked()
 void MainWindow::on_pushButton_saveFlatFieldParams_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto filename = QFileDialog::getSaveFileName(this,tr("File name"),"",tr("config Files(*.ffc )"));
     if(filename.isEmpty()) return;
-    deviceItem->flatFieldParamsSave(filename.replace('/','\\'));
+    deviceItem->camera->flat_field_params_save(filename.replace('/','\\').toStdString());
 }
 
 void MainWindow::on_pushButton_loadFlatFieldParams_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto filename = QFileDialog::getOpenFileName(this,tr("Select file"),"",tr("config Files(*.ffc )"));
     if(filename.isEmpty()) return;
-    deviceItem->flatFieldParamsLoad(filename.replace('/','\\'));
+    deviceItem->camera->flat_field_params_load(filename.replace('/','\\').toStdString());
 }
 
 void MainWindow::on_pushButton_calibration_clicked()
@@ -1466,7 +1451,7 @@ void MainWindow::on_pushButton_calibration_clicked()
     if(!deviceItem->calibrationDialog.exec())
         return;
 
-    deviceItem->undistortParams(deviceItem->calibrationDialog.width(),deviceItem->calibrationDialog.height(),deviceItem->calibrationDialog.cameraMatraix(),deviceItem->calibrationDialog.distortCoeffs());
+    deviceItem->camera->undistory_params(deviceItem->calibrationDialog.width(),deviceItem->calibrationDialog.height(),deviceItem->calibrationDialog.cameraMatraix().toStdString(),deviceItem->calibrationDialog.distortCoeffs().toStdString());
     QMessageBox::information(this,tr("Calibration"),tr("Apply ok!"));
 }
 
@@ -1481,7 +1466,7 @@ void MainWindow::on_spinBox_brightness_editingFinished()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto v = ui->spinBox_brightness->value();
     ui->slider_brightness->setValue(v);
-    deviceItem->brightness(v);
+    deviceItem->camera->brightness(v);
 }
 
 void MainWindow::on_slider_gain_sliderMoved(int position)
@@ -1501,7 +1486,7 @@ void MainWindow::on_spinBox_gain_valueChanged(double value)
 
     auto v = ui->spinBox_gain->value()  * 100.;
     ui->slider_gain->setValue(v);
-    deviceItem->gain(v);
+    deviceItem->camera->gain(v);
 }
 
 void MainWindow::on_slider_exposureTime_sliderMoved(int position)
@@ -1521,31 +1506,31 @@ void MainWindow::on_spinBox_exposureTime_valueChanged(double value)
 
     auto v = ui->spinBox_exposureTime->value() * 1000.;
     ui->slider_exposureTime->setValue(static_cast<int>(v));
-    deviceItem->exposureTime(v);
+    deviceItem->camera->exposure_time(v);
 }
 
 void MainWindow::on_spinBox_gainMinimum_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->gainRange(ui->spinBox_gainMinimum->value() * 100.f,ui->spinBox_gainMaximum->value() * 100.f);
+    deviceItem->camera->gain_range(ui->spinBox_gainMinimum->value() * 100.f,ui->spinBox_gainMaximum->value() * 100.f);
 }
 
 void MainWindow::on_spinBox_gainMaximum_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->gainRange(ui->spinBox_gainMinimum->value() * 100.f,ui->spinBox_gainMaximum->value() * 100.f);
+    deviceItem->camera->gain_range(ui->spinBox_gainMinimum->value() * 100.f,ui->spinBox_gainMaximum->value() * 100.f);
 }
 
 void MainWindow::on_spinBox_exposureTimeMaximum_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->exposureTimeRange(ui->spinBox_exposureTimeMinimum->value() * 1000.,ui->spinBox_exposureTimeMaximum->value() * 1000.);
+    deviceItem->camera->exposure_time_range(ui->spinBox_exposureTimeMinimum->value() * 1000.,ui->spinBox_exposureTimeMaximum->value() * 1000.);
 }
 
 void MainWindow::on_spinBox_exposureTimeMinimum_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->exposureTimeRange(ui->spinBox_exposureTimeMinimum->value() * 1000.,ui->spinBox_exposureTimeMaximum->value() * 1000.);
+    deviceItem->camera->exposure_time_range(ui->spinBox_exposureTimeMinimum->value() * 1000.,ui->spinBox_exposureTimeMaximum->value() * 1000.);
 }
 
 void MainWindow::on_slider_r_sliderMoved(int position)
@@ -1558,7 +1543,7 @@ void MainWindow::on_spinBox_r_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto v = ui->spinBox_r->value() * 100.f;
-    deviceItem->rgb(v,ui->slider_g->value(),ui->slider_b->value());
+    deviceItem->camera->rgb(v,ui->slider_g->value(),ui->slider_b->value());
     ui->slider_r->setValue(v);
 }
 
@@ -1572,7 +1557,7 @@ void MainWindow::on_spinBox_g_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto v = ui->spinBox_g->value() * 100.f;
-    deviceItem->rgb(ui->slider_r->value(),v,ui->slider_b->value());
+    deviceItem->camera->rgb(ui->slider_r->value(),v,ui->slider_b->value());
     ui->slider_g->setValue(v);
 }
 
@@ -1586,7 +1571,7 @@ void MainWindow::on_spinBox_b_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto v = ui->spinBox_b->value() *  100.f;
-    deviceItem->rgb(ui->slider_r->value(),ui->slider_g->value(),v);
+    deviceItem->camera->rgb(ui->slider_r->value(),ui->slider_g->value(),v);
     ui->slider_b->setValue(v);
 }
 
@@ -1600,14 +1585,14 @@ void MainWindow::on_spinBox_saturation_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto v = ui->spinBox_saturation->value();
-    deviceItem->saturation(v);
+    deviceItem->camera->saturation(v);
     ui->slider_saturation->setValue(v);
 }
 
 void MainWindow::on_comboBox_lutMode_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->lookupTableMode(index);
+    deviceItem->camera->lookup_table_mode(index);
 }
 
 void MainWindow::on_comboBox_lutMode_currentIndexChanged(int index)
@@ -1648,7 +1633,7 @@ void MainWindow::on_spinBox_gamma_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto v = ui->spinBox_gamma->value() * 100;
-    deviceItem->gamma(v);
+    deviceItem->camera->gamma(v);
     ui->slider_gamma->setValue(v);
 
     auto lookupTables = deviceItem->lookupTablesForDynamic();
@@ -1674,7 +1659,7 @@ void MainWindow::on_spinBox_contrastRatio_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto v= ui->spinBox_contrastRatio->value();
-    deviceItem->contrastRatio(v);
+    deviceItem->camera->contrast_ratio(v);
     ui->slider_contrastRatio->setValue(v);
 
     auto lookupTables = deviceItem->lookupTablesForDynamic();
@@ -1699,7 +1684,7 @@ void MainWindow::on_slider_contrastRatio_sliderMoved(int position)
 void MainWindow::on_checkBox_anamorphose_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->undistort(checked);
+    deviceItem->camera->undistort(checked);
 }
 
 void MainWindow::on_pushButton_layout_clicked()
@@ -1710,7 +1695,7 @@ void MainWindow::on_pushButton_layout_clicked()
 void MainWindow::on_spinBox_threshold_editingFinished()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->threshold(ui->spinBox_threshold->value());
+    deviceItem->camera->threshold(ui->spinBox_threshold->value());
 }
 
 void MainWindow::on_pushButton_analyzeDeadPixels_clicked()
@@ -1764,7 +1749,7 @@ void MainWindow::on_pushButton_clearNewPixels_clicked()
 void MainWindow::on_slider_outputRange_sliderMoved(int position)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->rawOutputRange(position);
+    deviceItem->camera->raw_output_range(position);
 
     if(position < 0) {
         ui->label_outputRange->setText(tr("Full Output"));
@@ -1776,7 +1761,7 @@ void MainWindow::on_slider_outputRange_sliderMoved(int position)
 void MainWindow::on_comboBox_outputFormats_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->rawOutputFormat(index);
+    deviceItem->camera->raw_output_format(index);
 }
 
 void MainWindow::on_pushButton_low8Bit_clicked()
@@ -1813,7 +1798,7 @@ void MainWindow::on_treeWidget_devices_itemDoubleClicked(QTreeWidgetItem *item, 
 void MainWindow::on_checkBox_exposureWIndow_stateChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->exposureWindow = arg1;
 }
@@ -1821,10 +1806,10 @@ void MainWindow::on_checkBox_exposureWIndow_stateChanged(int arg1)
 void MainWindow::on_pushButton_setExposureWindow_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    if(!deviceItem || QProcess::NotRunning == deviceItem->camera.state()) return;
+    if(!deviceItem || !deviceItem->camera->opened()) return;
 
     auto rect = dynamic_cast<CameraScene*>(deviceItem->cameraView->scene())->exposureWindowPos;
-    deviceItem->exposureWindow(rect.x(),rect.y(),rect.width(),rect.height());
+    deviceItem->camera->exposure_window(rect.x(),rect.y(),rect.width(),rect.height());
 }
 
 void MainWindow::on_radioButton_manualExposure_toggled(bool checked)
@@ -1836,7 +1821,7 @@ void MainWindow::on_radioButton_manualExposure_toggled(bool checked)
 void MainWindow::on_radioButton_manualExposure_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->exposureMode(0);
+    deviceItem->camera->exposure_mode(0);
 }
 
 void MainWindow::on_radioButton_automationExposure_toggled(bool checked)
@@ -1848,7 +1833,7 @@ void MainWindow::on_radioButton_automationExposure_toggled(bool checked)
 void MainWindow::on_radioButton_automationExposure_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->exposureMode(1);
+    deviceItem->camera->exposure_mode(1);
 }
 
 void MainWindow::on_radioButton_presetResolution_clicked()
@@ -1889,7 +1874,7 @@ void MainWindow::on_radioButton_customResolution_clicked()
     ui->groupBox_resolutionPreset->setHidden(1);
     ui->groupBox_resolutionCustom->setVisible(1);
 
-    deviceItem->resolution(0);
+    deviceItem->camera->resolution(0);
     auto resolution = deviceItem->resolution();
     ui->spinBox_resolutionX->setValue(resolution[0].toInt());
     ui->spinBox_resolutionY->setValue(resolution[1].toInt());
@@ -1908,7 +1893,7 @@ void MainWindow::on_checkBox_showBright_stateChanged(int arg1)
 void MainWindow::on_radioButton_wbManual_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->whiteBalanceMode(0);
+    deviceItem->camera->white_balance_mode(0);
 }
 
 void MainWindow::on_radioButton_wbAutomation_toggled(bool checked)
@@ -1926,7 +1911,7 @@ void MainWindow::on_radioButton_wbAutomation_toggled(bool checked)
 void MainWindow::on_radioButton_wbAutomation_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->whiteBalanceMode(1);
+    deviceItem->camera->white_balance_mode(1);
 }
 
 void MainWindow::on_tabWidget_preview_currentChanged(int index)
@@ -1938,7 +1923,7 @@ void MainWindow::on_tabWidget_preview_currentChanged(int index)
             for(auto subItemIndex=0;subItemIndex< topLevelItem->childCount();subItemIndex++) {
                 auto deviceItem = dynamic_cast<DeviceItem*>(topLevelItem->child(subItemIndex));
 
-                if(QProcess::NotRunning == deviceItem->camera.state()) continue;
+                if(!deviceItem->camera->opened()) continue;
 
                 auto i=0,j=ui->tab_all_contents->columnCount();
                 if(ui->tab_all_contents->count() < j*j) {
@@ -1981,20 +1966,20 @@ void MainWindow::on_pushButton_fpnEdit_clicked()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     OfflineFpnDialog fpn(nullptr,deviceItem->cameraView->snapshot());
     if(QDialog::Accepted == fpn.exec()) {
-        deviceItem->fpnLoad(fpn.fpnfilepath);
+        deviceItem->camera->fpn_load(fpn.fpnfilepath.toStdString());
     }
 }
 
 void MainWindow::on_pushButton_fpnClear_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->fpnClear();
+    deviceItem->camera->fpn_clear();
 }
 
 void MainWindow::on_checkBox_fpn_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->fpn(checked);
+    deviceItem->camera->fpn(checked);
 }
 
 void MainWindow::on_pushButton_fpnSave_clicked()
@@ -2003,14 +1988,16 @@ void MainWindow::on_pushButton_fpnSave_clicked()
     if(filename.isEmpty()) return;
 
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->fpnSave(filename);
+    deviceItem->camera->fpn_save(filename.toStdString());
 }
 
 
 void MainWindow::on_comboBox_infrared_thermometry_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_thermometry(index);
+
+    auto camera_gf120 = std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_thermometry(index);
 
     if(index == 1)
     {
@@ -2032,73 +2019,85 @@ void MainWindow::on_comboBox_infrared_thermometry_activated(int index)
 void MainWindow::on_comboBox_infrared_color_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_color(index);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_color(index);
 }
 
 void MainWindow::on_comboBox_display_mode_currentIndexChanged(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_display(index);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_display(index);
 }
 
 void MainWindow::on_checkBox_infrared_shutter_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_shutter(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_shutter(checked);
 }
 
 void MainWindow::on_checkBox_infrared_cool_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_cool(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_cool(checked);
 }
 
 void MainWindow::on_spinBox_infrared_emissivity_valueChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_emissivity(arg1);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_emissivity(arg1);
 }
 
 void MainWindow::on_spinBox_infrared_sharpen_valueChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_sharpen(arg1);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_sharpen(arg1);
 }
 
 void MainWindow::on_spinBox_infrared_exposure_valueChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_exposure(arg1);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_exposure(arg1);
 }
 
 void MainWindow::on_spinBox_dde_valueChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_dde(arg1);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_dde(arg1);
 }
 
 void MainWindow::on_checkBox_infrared_manual_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
     auto value = ui->spinBox_infrared_manual->value() * 100;
-    deviceItem->infrared_manual(checked,value);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_manual(checked,value);
 }
 
 void MainWindow::on_pushButton_infrared_temperature_check_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_temperature_check();
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->temperature_check();
 }
 
 void MainWindow::on_checkBox_infrared_stop_temperature_check_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_stop_temperature_check(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_temperature_check_stop(checked);
 }
 
 void MainWindow::on_checkBox_infrared_shutter_temperature_raise_sample_clicked(bool checked){
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_shutter_temperature_raise_sample(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_shutter_temperature_raise_sample(checked);
 
     if(checked) //采样模式下不允许触发校正
     {
@@ -2115,13 +2114,15 @@ void MainWindow::on_checkBox_infrared_shutter_temperature_raise_sample_clicked(b
 void MainWindow::on_checkBox_infrared_factory_check_detect_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_factory_check_detect(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_factory_check_detect(checked);
 }
 
 void MainWindow::on_checkBox_infrared_response_rate_sample_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_response_rate_sample(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_response_rate_sample(checked);
 
     if(checked) //采样模式下不允许触发校正
     {
@@ -2146,16 +2147,19 @@ void MainWindow::on_checkBox_infrared_response_rate_sample_clicked(bool checked)
 void MainWindow::on_checkBox_infrared_temperature_curve_sample_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_temperature_curve_sample(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_temperature_curve_sample(checked);
 
     if(checked) //采样模式下不允许触发校正
     {
-        ui->checkBox_infrared_temperature_curve_sample->setEnabled(false);
+        ui->checkBox_infrared_response_rate_sample->setEnabled(false);
+        ui->checkBox_infrared_temperature_curve_sample->setEnabled(true);
         ui->checkBox_infrared_shutter_temperature_raise_sample->setEnabled(false);
         ui->spinBox_infrared_exposure->setEnabled(false);
     }
     else
     {
+        ui->checkBox_infrared_response_rate_sample->setEnabled(true);
         ui->checkBox_infrared_temperature_curve_sample->setEnabled(true);
         ui->checkBox_infrared_shutter_temperature_raise_sample->setEnabled(true);
         ui->spinBox_infrared_exposure->setEnabled(false);
@@ -2201,11 +2205,14 @@ bool MainWindow::copyDirectoryFiles(const QString &fromDir, const QString &toDir
 int				temp_data_mode1[0x10000];			//温度模式1的温度曲线查找表
 int				temp_data_mode2[0x10000];			//温度模式2的温度曲线查找表
 //二分法查找
-int MainWindow::Bin_Search(InfraredParamsStatus GF120_set_param,int temp)
+int MainWindow::Bin_Search(int temp)
 {
     int first = 0,last = 0x10000 -1,mid;
     int counter = 0;
 
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    auto GF120_set_param = camera_gf120->GF120_set_param;
 
     if(GF120_set_param.temp_mode == 2)
     {
@@ -2255,11 +2262,20 @@ int MainWindow::Bin_Search(InfraredParamsStatus GF120_set_param,int temp)
     }
 }
 
+
+void sleep(unsigned int msec)
+{
+    QTime dieTime = QTime::currentTime().addMSecs(msec);
+    while( QTime::currentTime() < dieTime )
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
 void MainWindow::on_pushButton_factory_check_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    auto GF120_get_param = deviceItem->infrared_status();
-
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    auto GF120_get_param = camera_gf120->status();
+    auto& GF120_set_param = camera_gf120->GF120_set_param;
 
     int i= 0;
     int time = 0;
@@ -2269,9 +2285,9 @@ void MainWindow::on_pushButton_factory_check_clicked()
 
     QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
     QProgressDialog progress;
-    progress.setWindowTitle("出厂校正");
-    progress.setLabelText(tr("出厂校正中。。。").arg(GF120_get_param.outside_temp/100));
-    progress.setCancelButtonText("取消");
+    progress.setWindowTitle(QString::fromLocal8Bit("出厂校正"));
+    progress.setLabelText(QString::fromLocal8Bit("出厂校正中。。。").arg(GF120_get_param.outside_temp/100));
+    progress.setCancelButtonText(QString::fromLocal8Bit("取消"));
     progress.setRange(0, 128);//设置范围
     progress.setModal(true);//设置为模态对话框
     progress.show();
@@ -2280,7 +2296,7 @@ void MainWindow::on_pushButton_factory_check_clicked()
     //QMessageBox::information(this, "提示", "出厂校正。。。");
     printf("on_pushButton_factory_check_released\r\n");
     QString src_fileName="./config/corre_default";
-    QString dest_fileName = QString("./config/corre_%1").arg(deviceItem->cameraName);     //str =  "Joy was born in 1993.";
+    QString dest_fileName = QString("./config/corre_%1").arg(deviceItem->camera->info.acSn);     //str =  "Joy was born in 1993.";
     printf("%s %s \n",src_fileName.toStdString().data(),dest_fileName.toStdString().data());
     copyDirectoryFiles(src_fileName,dest_fileName,0);
     progress.setValue(2);
@@ -2289,16 +2305,15 @@ void MainWindow::on_pushButton_factory_check_clicked()
     int calibration_low = ui->spinBox_right_backbody_furnace_temperature->value()*100;
     printf("calibration_high:%d calibration_low:%d \r\n",calibration_high,calibration_low);
 
-    deviceItem->infrared_frame_temp_cnt(10);
+    camera_gf120->infrared_frame_temp_cnt(10);
     int cita = 128;
-    deviceItem->infrared_factory_check_exposure(cita);
-    std::this_thread::sleep_for(chrono::milliseconds(100));
-    deviceItem->infrared_factory_check();
-    std::this_thread::sleep_for(chrono::milliseconds(3000));
+    camera_gf120->exposure_time(cita);
+    sleep(100);
 
-    deviceItem->infrared_temperature_check();
-    deviceItem->infrared_factory_check_temperature_check_stop();
-
+    camera_gf120->sample_mode(FACTORY_SAMPLE_MODE);
+    camera_gf120->temperature_check();
+    sleep(3000);
+    camera_gf120->shutter_correct_for_stop();
     progress.setValue(10);
 
     if(progress.wasCanceled())
@@ -2339,27 +2354,21 @@ void MainWindow::on_pushButton_factory_check_clicked()
         fclose(corre_fp);
     }
 
-    auto GF120_set_param = deviceItem->infrared_params_status();
-
-    printf("calibration_high_bin:%d calibration_low:%d \r\n",Bin_Search(GF120_set_param,calibration_high),Bin_Search(GF120_set_param,calibration_low));
-    diff_ad_value = abs(Bin_Search(GF120_set_param,calibration_high) - Bin_Search(GF120_set_param,calibration_low))/4 -80;
+    printf("calibration_high_bin:%d calibration_low:%d \r\n",Bin_Search(calibration_high),Bin_Search(calibration_low));
+    diff_ad_value = abs(Bin_Search(calibration_high) - Bin_Search(calibration_low))/4 -80;
     int last_ad_value = 0;
 
-    printf("on_pushButton_factory_check_released diff_ad_value:%d %d %d \r\n",diff_ad_value,Bin_Search(GF120_set_param,calibration_high),Bin_Search(GF120_set_param,calibration_low));
-    deviceItem->infrared_factory_check_exposure(cita);
-
-    std::this_thread::sleep_for(chrono::milliseconds(500));
-    GF120_get_param = deviceItem->infrared_status();
-
+    printf("on_pushButton_factory_check_released diff_ad_value:%d %d %d \r\n",diff_ad_value,Bin_Search(calibration_high),Bin_Search(calibration_low));
+    camera_gf120->exposure_time(cita);
+    sleep(500);
+    GF120_get_param = camera_gf120->status();
     int last_ad_diff = 0;
     printf("last_ad_diff :%d \r\n",last_ad_diff);
-
-
     for(i = 0 ; i < 128 ; i ++)
     {
-         std::this_thread::sleep_for(chrono::milliseconds(1000));
+         sleep(1000);
          progress.setValue(i + 10);
-         GF120_get_param = deviceItem->infrared_status();
+         GF120_get_param = camera_gf120->status();
          if(i == 0)
          {
              if(abs(GF120_get_param.diff_ad_value - diff_ad_value) <= 30)
@@ -2376,7 +2385,7 @@ void MainWindow::on_pushButton_factory_check_clicked()
              else
                  cita =  cita + 1;
               printf("found best cita value :%d \r\n",cita);
-              deviceItem->infrared_factory_check_exposure(cita);
+              camera_gf120->exposure_time(cita);
               break;
          }
          else if((GF120_get_param.diff_ad_value - diff_ad_value) > 40)
@@ -2393,7 +2402,7 @@ void MainWindow::on_pushButton_factory_check_clicked()
           printf("last_ad_value :%d GF120_get_param.diff_ad_value：%d\r\n",last_ad_value,GF120_get_param.diff_ad_value);
          if(cita < 16 || cita > 224 || (abs(last_ad_value - GF120_get_param.diff_ad_value) <= 4) || progress.wasCanceled())
          {
-            QMessageBox::critical(this, QStringLiteral("错误"), ("1.请检查高低温黑体炉的设置温度和界面设置温度是否一致\r\n2.高低温黑体炉是否对中左右十字星"));
+            QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("1.请检查高低温黑体炉的设置温度和界面设置温度是否一致\r\n2.高低温黑体炉是否对中左右十字星"));
             QApplication::restoreOverrideCursor();
             progress.close();
             return;
@@ -2401,10 +2410,10 @@ void MainWindow::on_pushButton_factory_check_clicked()
          last_ad_value = GF120_get_param.diff_ad_value;
          if(cita%16 == 0)   //随着曝光变化 需要调节GSK NUC
          {
-             deviceItem->infrared_temperature_check();
-             std::this_thread::sleep_for(chrono::milliseconds(5000));
+             camera_gf120->temperature_check();
+             sleep(5000);
          }
-          deviceItem->infrared_factory_check_exposure(cita);
+          camera_gf120->exposure_time(cita);
     }
     //QMessageBox::information(this, "提示", QString("曝光值设置正确:%1").arg(cita));
     printf("check OK cita :%d \r\n",cita);
@@ -2412,11 +2421,10 @@ void MainWindow::on_pushButton_factory_check_clicked()
     progress.setValue(100);
 
     //3.计算快门偏移
-    deviceItem->infrared_temperature_check();
-    std::this_thread::sleep_for(chrono::milliseconds(5000));
+    camera_gf120->temperature_check();
+    sleep(5000);
     progress.setValue(110);
-    GF120_get_param = deviceItem->infrared_status();
-
+    GF120_get_param = camera_gf120->status();
     printf("calibration_high_temp:%d calibration_low_temp:%d\r\n",GF120_get_param.calibration_high_temp,GF120_get_param.calibration_low_temp);
     calibration_high = (calibration_high - GF120_get_param.calibration_high_temp);
     calibration_low = (calibration_low - GF120_get_param.calibration_low_temp);
@@ -2434,6 +2442,7 @@ void MainWindow::on_pushButton_factory_check_clicked()
     printf("cal shutter_offset:%d \r\n",shutter_offset);
 
     QString file;
+
     if(GF120_set_param.temp_mode == 1)
     {
         file = dest_fileName + "/correction_temp_mode_1.txt";
@@ -2447,7 +2456,7 @@ void MainWindow::on_pushButton_factory_check_clicked()
     if( ! fileSave.open( QIODevice::WriteOnly ))
     {
         //无法打开要写入的文件
-        QMessageBox::warning(this, tr("打开写入文件"),tr("打开要写入的文件失败，请检查文件名和是否具有写入权限！"));
+        QMessageBox::warning(this, QString::fromLocal8Bit("打开写入文件"),QString::fromLocal8Bit("打开要写入的文件失败，请检查文件名和是否具有写入权限！"));
         return;
     }
     QString file_data;
@@ -2462,7 +2471,7 @@ void MainWindow::on_pushButton_factory_check_clicked()
     fileSave.write(file_data.toStdString().data());
     //关闭文件
     fileSave.close();
-     progress.setValue(128);
+    progress.setValue(128);
     QApplication::restoreOverrideCursor();
     progress.close();
 
@@ -2473,62 +2482,54 @@ void MainWindow::on_pushButton_sample_path_clicked()
     auto dirPath = QFileDialog::getExistingDirectory(this,tr("Save Path"));
     if(dirPath.isEmpty()) return;
 
+    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    memcpy(&gf120->GF120_set_param.file_path,dirPath.toStdString().data(),dirPath.size());
     auto low_sample_path = dirPath += "/response_temp40.bin";
     auto high_sample_path = dirPath += "/response_temp140.bin";
-
     ui->lineEdit_infrared_path_to_low_response_rate_sample->setText(low_sample_path);
     ui->lineEdit_infrared_path_to_high_response_rate_sample->setText(high_sample_path);
-
-    auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_sample_path(dirPath);
 }
 
 void MainWindow::on_pushButton_sample_low_response_rate_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
 
     QString file_path = ui->lineEdit_sample_path->text();
-
-    deviceItem->infrared_response_rate_start(40,file_path);
+    gf120->response_rate_sample_start(40,file_path.toStdString());
 
     QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
     QProgressDialog progress;
-    progress.setWindowTitle("响应率采集");
-    progress.setLabelText("请确保对中低温黑体,采集低温响应率样本中 。。。");
-    progress.setCancelButtonText("取消");
+    progress.setWindowTitle(QString::fromLocal8Bit("响应率采集"));
+    progress.setLabelText(QString::fromLocal8Bit("请确保对中低温黑体,采集低温响应率样本中 。。。"));
+    progress.setCancelButtonText(QString::fromLocal8Bit("取消"));
     progress.setRange(0, 100);//设置范围
     progress.setModal(true);//设置为模态对话框
     progress.show();
 
-    auto GF120_set_param = deviceItem->infrared_params_status();
 
     int i = 0;
     for (; i < 100; i++)
     {
-         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+         sleep(100);
          progress.setValue(i);
-
-         deviceItem->infrared_response_rate_status();
+         gf120->response_rate_sample_status();
 
          //用户取消的话则中止
          if (progress.wasCanceled())
          {
-             QMessageBox::critical(this, QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("取消采集低温响应率样本！").arg(GF120_set_param.collect_response_temp));
+             QMessageBox::critical(this, QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("取消采集低温响应率样本！").arg(gf120->GF120_set_param.collect_response_temp));
              break;
          }
 
          QCoreApplication::processEvents();
      }
-
      QApplication::restoreOverrideCursor();
      progress.close();
-
-     if(i == 100)
-        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), tr("采集低温响应率样本超时!").arg(GF120_set_param.collect_response_temp));
-     else
-        QMessageBox::information(this, QString::fromLocal8Bit("提示"), tr("采集低温响应率样本完成！").arg(GF120_set_param.collect_response_temp));
-
-     deviceItem->infrared_response_rate_stop();
+     if(i == 100) QMessageBox::critical(this, QString::fromLocal8Bit("错误"), tr("采集低温响应率样本超时!").arg(gf120->GF120_set_param.collect_response_temp));
+     else QMessageBox::information(this, QString::fromLocal8Bit("提示"), tr("采集低温响应率样本完成！").arg(gf120->GF120_set_param.collect_response_temp));
+     gf120->response_rate_sample_stop();
 }
 
 void MainWindow::on_pushButton_sample_high_response_rate_clicked()
@@ -2536,32 +2537,29 @@ void MainWindow::on_pushButton_sample_high_response_rate_clicked()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
     QString file_path = ui->lineEdit_sample_path->text();
-
-    deviceItem->infrared_response_rate_start(140,file_path);
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    gf120->response_rate_sample_start(140,file_path.toStdString());
 
     QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
     QProgressDialog progress;
-    progress.setWindowTitle("响应率采集");
-    progress.setLabelText("请确保对中低温黑体,采集低温响应率样本中 。。。");
-    progress.setCancelButtonText("取消");
+    progress.setWindowTitle(QString::fromLocal8Bit("响应率采集"));
+    progress.setLabelText(QString::fromLocal8Bit("请确保对中低温黑体,采集低温响应率样本中 。。。"));
+    progress.setCancelButtonText(QString::fromLocal8Bit("取消"));
     progress.setRange(0, 100);//设置范围
     progress.setModal(true);//设置为模态对话框
     progress.show();
 
-    auto GF120_set_param = deviceItem->infrared_params_status();
-
     int i = 0;
     for (; i < 100; i++)
     {
-         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+         sleep(100);
          progress.setValue(i);
-
-         deviceItem->infrared_response_rate_status();
+         gf120->response_rate_sample_status();
 
          //用户取消的话则中止
          if (progress.wasCanceled())
          {
-             QMessageBox::critical(this, QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("取消采集低温响应率样本！").arg(GF120_set_param.collect_response_temp));
+             QMessageBox::critical(this, QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("取消采集低温响应率样本！").arg(gf120->GF120_set_param.collect_response_temp));
              break;
          }
 
@@ -2571,17 +2569,10 @@ void MainWindow::on_pushButton_sample_high_response_rate_clicked()
      QApplication::restoreOverrideCursor();
      progress.close();
 
+     if(i == 100) QMessageBox::critical(this, QString::fromLocal8Bit("错误"), tr("采集低温响应率样本超时!").arg(gf120->GF120_set_param.collect_response_temp));
+     else QMessageBox::information(this, QString::fromLocal8Bit("提示"), tr("采集低温响应率样本完成！").arg(gf120->GF120_set_param.collect_response_temp));
 
-     if(i == 100)
-     {
-        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), tr("采集低温响应率样本超时!").arg(GF120_set_param.collect_response_temp));
-     }
-     else
-     {
-         QMessageBox::information(this, QString::fromLocal8Bit("提示"), tr("采集低温响应率样本完成！").arg(GF120_set_param.collect_response_temp));
-     }
-
-     deviceItem->infrared_response_rate_stop();
+     gf120->response_rate_sample_stop();
 }
 
 
@@ -2589,20 +2580,22 @@ void MainWindow::on_pushButton_sample_high_response_rate_clicked()
 void MainWindow::on_checkBox_infrared_osd_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_osd(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_osd(checked);
 }
 
 void MainWindow::on_checkBox_infrared_temperature_display_clicked(bool checked)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_temperature_display(checked);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_temperature_display(checked);
     ui->checkBox_infrared_osd->setChecked(checked);
 }
 
 void MainWindow::on_checkBox_infrared_roi_clicked(bool checked)
 {
     int index = ui->comboBox_infrared_temperture_roi->currentIndex();
-
+    typedef unsigned short USHORT;
     USHORT  user_width_start;			//用户设置区域检测温度区宽开始点
     USHORT  user_width_number;			//用户设置区域检测温度区宽像素个数
     USHORT  user_high_start;			//用户设置区域检测温度区高开始点
@@ -2626,13 +2619,15 @@ void MainWindow::on_checkBox_infrared_roi_clicked(bool checked)
     }
 
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_roi(checked,index,user_width_start,user_width_number,user_high_start,user_high_number,user_roi_emissivity);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_roi(checked,index,user_width_start,user_width_number,user_high_start,user_high_number,user_roi_emissivity);
 }
 
 void MainWindow::on_comboBox_infrared_temperture_roi_activated(int index)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    auto status = deviceItem->infrared_temperature_roi_status(index);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    auto status = camera_gf120->infrared_temperature_roi_status()[index];
 
     ui->checkBox_infrared_roi->setChecked(status.user_roi_enable);
     ui->spinBox_infrared_width_start->setValue(status.user_width_start);
@@ -2663,7 +2658,8 @@ void MainWindow::on_checkBox_infrared_blackbody_calibrate_clicked(bool checked)
     auto user_high_end = ui->spinBox_infrared_blackbody_high_end->value();
 
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_blackbody_calibrate(checked,user_calibration_temp,user_width_start,user_width_end,user_high_start,user_high_end);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_blackbody_calibrate(checked,user_calibration_temp,user_width_start,user_width_end,user_high_start,user_high_end);
 }
 
 void MainWindow::on_checkBox_infrared_color_map_clicked(bool checked)
@@ -2678,32 +2674,37 @@ void MainWindow::on_checkBox_infrared_color_map_clicked(bool checked)
     }
 
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_color_map(checked,low,high);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_color_map(checked,low,high);
 }
 
 void MainWindow::on_doubleSpinBox_infrared_temperature_compensation_valueChanged(double arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_temperature_compensation(arg1*100);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_temperature_compensation(arg1*100);
 }
 
 void MainWindow::on_doubleSpinBox_infrared_distance_compensation_valueChanged(int arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_distance_compensation(arg1);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_distance_compensation(arg1);
 }
 
 void MainWindow::on_doubleSpinBox_infrared_humidity_compensation_valueChanged(double arg1)
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_humidity_compensation(arg1 * 100);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_humidity_compensation(arg1 * 100);
 }
 
 void MainWindow::on_checkBox_infrared_high_warm_clicked(bool checked)
 {
     auto temperature = ui->doubleSpinBox_infrared_high_warm->value()*100;
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_high_warm(checked,temperature);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_high_warm(checked,temperature);
 }
 
 
@@ -2711,7 +2712,8 @@ void MainWindow::on_checkBox_infrared_low_warm_clicked(bool checked)
 {
     auto  temperature = ui->doubleSpinBox_infrared_low_warm->value()*100;
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
-    deviceItem->infrared_low_warm(checked,temperature);
+    auto camera_gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    camera_gf120->infrared_low_warm(checked,temperature);
 }
 
 
@@ -2721,17 +2723,11 @@ void MainWindow::on_pushButton_load_response_rate_file_clicked()
 
     auto path = ui->lineEdit_infrared_path_to_low_response_rate_sample->text();
     auto path2 = ui->lineEdit_infrared_path_to_high_response_rate_sample->text();
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    auto rt = gf120->response_rate_sample_file_load(path.toStdString(),path2.toStdString());
 
-    auto rt = deviceItem->infrared_load_response_rate_file(path,path2);
-
-    if(rt < 0)
-    {
-        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("加载响应率文件错误，请检查响应率配置文件！"));
-    }
-    else
-    {
-        QMessageBox::information(this, QString::fromLocal8Bit("正常"), QString::fromLocal8Bit("加载响应率文件完成！"));
-    }
+    if(rt < 0) QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("加载响应率文件错误，请检查响应率配置文件！"));
+    else QMessageBox::information(this, QString::fromLocal8Bit("正常"), QString::fromLocal8Bit("加载响应率文件完成！"));
 }
 
 
@@ -2741,39 +2737,34 @@ void MainWindow::on_pushButton_cover_low_clicked()
 
 
     auto file_path = ui->lineEdit_sample_path->text();
-    deviceItem->infrared_cover_start(30,file_path);
-
-    auto GF120_get_param = deviceItem->infrared_status();
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    gf120->cover_sample_start(30,file_path.toStdString());
+    auto GF120_get_param = gf120->status();
 
     QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
     QProgressDialog progress;
-    progress.setWindowTitle("锅盖采集");
-    progress.setLabelText(tr("采集%1℃锅盖样本中 。。。").arg(GF120_get_param.outside_temp/100));
-    progress.setCancelButtonText("取消");
+    progress.setWindowTitle(QString::fromLocal8Bit("锅盖采集"));
+    progress.setLabelText(QString::fromLocal8Bit("采集%1℃锅盖样本中 。。。").arg(GF120_get_param.outside_temp/100));
+    progress.setCancelButtonText(QString::fromLocal8Bit("取消"));
     progress.setRange(0, 100);//设置范围
     progress.setModal(true);//设置为模态对话框
     progress.show();
-
-    auto GF120_set_param = deviceItem->infrared_params_status();
     int i;
-
     for (i = 0; i < 100; i++)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        sleep(100);
         progress.setValue(i);
-
-        auto rt = deviceItem->infrared_cover_status();
-
+        auto rt = gf120->cover_sample_status();
         printf("cover status :%d \r\n",rt);
         if(rt == 0)
         {
-            QMessageBox::information(this, QStringLiteral("提示"), tr("采集%1℃锅盖样本完成！").arg(GF120_set_param.collect_cover_temp));
+            QMessageBox::information(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("采集%1℃锅盖样本完成！").arg(gf120->GF120_set_param.collect_cover_temp));
             break;
         }
         //用户取消的则中止
         if (progress.wasCanceled())
         {
-            QMessageBox::critical(this, QStringLiteral("错误"), tr("取消采集%1℃锅盖样本！").arg(GF120_set_param.collect_cover_temp));
+            QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("取消采集%1℃锅盖样本！").arg(gf120->GF120_set_param.collect_cover_temp));
             break;
         }
 
@@ -2783,10 +2774,10 @@ void MainWindow::on_pushButton_cover_low_clicked()
     progress.close();
     if(i == 100)
     {
-        QMessageBox::critical(this, QStringLiteral("错误"), tr("采集%1℃锅盖样本失败！").arg(GF120_set_param.collect_cover_temp));
+        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("采集%1℃锅盖样本失败！").arg(gf120->GF120_set_param.collect_cover_temp));
     }
 
-    deviceItem->infrared_cover_stop();
+    gf120->cover_sample_stop();
 }
 
 
@@ -2795,9 +2786,9 @@ void MainWindow::on_pushButton_cover_high_clicked()
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
     auto file_path = ui->lineEdit_sample_path->text();
-    deviceItem->infrared_cover_start(40,file_path);
-
-    auto GF120_get_param = deviceItem->infrared_status();
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    gf120->cover_sample_start(40,file_path.toStdString());
+    auto GF120_get_param = gf120->status();
 
     QApplication::setOverrideCursor(Qt::WaitCursor);//设置鼠标为等待状态
     QProgressDialog progress;
@@ -2808,7 +2799,6 @@ void MainWindow::on_pushButton_cover_high_clicked()
     progress.setModal(true);//设置为模态对话框
     progress.show();
 
-    auto GF120_set_param = deviceItem->infrared_params_status();
     int i;
 
     for (i = 0; i < 100; i++)
@@ -2816,18 +2806,18 @@ void MainWindow::on_pushButton_cover_high_clicked()
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         progress.setValue(i);
 
-        auto rt = deviceItem->infrared_cover_status();
+        auto rt = gf120->cover_sample_status();
 
         printf("cover status :%d \r\n",rt);
         if(rt == 0)
         {
-            QMessageBox::information(this, QStringLiteral("提示"), tr("采集%1℃锅盖样本完成！").arg(GF120_set_param.collect_cover_temp));
+            QMessageBox::information(this,  QString::fromLocal8Bit("提示"),  QString::fromLocal8Bit("采集%1℃锅盖样本完成！").arg(gf120->GF120_set_param.collect_cover_temp));
             break;
         }
         //用户取消的则中止
         if (progress.wasCanceled())
         {
-            QMessageBox::critical(this, QStringLiteral("错误"), tr("取消采集%1℃锅盖样本！").arg(GF120_set_param.collect_cover_temp));
+            QMessageBox::critical(this,  QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("取消采集%1℃锅盖样本！").arg(gf120->GF120_set_param.collect_cover_temp));
             break;
         }
 
@@ -2837,10 +2827,10 @@ void MainWindow::on_pushButton_cover_high_clicked()
     progress.close();
     if(i == 100)
     {
-        QMessageBox::critical(this, QStringLiteral("错误"), tr("采集%1℃锅盖样本失败！").arg(GF120_set_param.collect_cover_temp));
+        QMessageBox::critical(this,  QString::fromLocal8Bit("错误"),  QString::fromLocal8Bit("采集%1℃锅盖样本失败！").arg(gf120->GF120_set_param.collect_cover_temp));
     }
 
-    deviceItem->infrared_cover_stop();
+    gf120->cover_sample_stop();
 }
 
 
@@ -2851,16 +2841,11 @@ void MainWindow::on_pushButton_cover_load_clicked()
     auto path = ui->lineEdit_path_cover_low->text();
     auto path2 = ui->lineEdit_path_cover_high->text();
 
-    auto rt = deviceItem->infrared_load_response_rate_file(path,path2);
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    auto rt = gf120->response_rate_sample_file_load(path.toStdString(),path2.toStdString());
 
-    if(!rt)
-    {
-        QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("加载响应率文件错误，请检查响应率配置文件！"));
-    }
-    else
-    {
-        QMessageBox::information(this, QString::fromLocal8Bit("正常"), QString::fromLocal8Bit("加载响应率文件完成！"));
-    }
+    if(!rt) QMessageBox::critical(this, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit("加载响应率文件错误，请检查响应率配置文件！"));
+    else QMessageBox::information(this, QString::fromLocal8Bit("正常"), QString::fromLocal8Bit("加载响应率文件完成！"));
 }
 
 #include <QtXml/QtXml>
@@ -2870,12 +2855,12 @@ void MainWindow::on_pushButton_save_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
-    QString file = QString("GF120_%1_%2.xml").arg(deviceItem->cameraName).arg(2020);
-    QString strSaveName = QFileDialog::getSaveFileName(this,"保存配置文件",file,"xml(*xml)");
+    QString file = QString("GF120_%1_%2.xml").arg(deviceItem->camera->info.acSn).arg(2020);
+    QString strSaveName = QFileDialog::getSaveFileName(this,QString::fromLocal8Bit("保存配置文件"),file,"xml(*xml)");
     //判断文件名
     if( strSaveName.isEmpty() )
     {
-      QMessageBox::warning(this, tr("打开写入文件"),tr("操作已经取消"));
+      QMessageBox::warning(this, QString::fromLocal8Bit("打开写入文件"),QString::fromLocal8Bit("操作已经取消"));
       return;
     }
     QFile fileSave(strSaveName);
@@ -2883,11 +2868,12 @@ void MainWindow::on_pushButton_save_clicked()
     if( ! fileSave.open( QIODevice::WriteOnly ))
     {
         //无法打开要写入的文件
-        QMessageBox::warning(this, tr("打开写入文件"),tr("打开要写入的文件失败，请检查文件名和是否具有写入权限！"));
+        QMessageBox::warning(this, QString::fromLocal8Bit("打开写入文件"),QString::fromLocal8Bit("打开要写入的文件失败，请检查文件名和是否具有写入权限！"));
         return;
     }
 
-    auto GF120_set_param = deviceItem->infrared_params_status();
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    auto& GF120_set_param = gf120->GF120_set_param;
 
     //创建xml文档在内存中
    QDomDocument doc;
@@ -3079,7 +3065,7 @@ void MainWindow::on_pushButton_load_clicked()
 {
     auto deviceItem = dynamic_cast<DeviceItem*>(ui->treeWidget_devices->currentItem());
 
-    QString file = QString("GF120_%1_%2.xml").arg(deviceItem->cameraName).arg(2020);
+    QString file = QString("GF120_%1_%2.xml").arg(deviceItem->camera->info.acSn).arg(2020);
     QString strSaveName = QFileDialog::getOpenFileName(this,"载入配置文件",file,"xml(*xml)");
     //判断文件名
     if( strSaveName.isEmpty() )
@@ -3112,7 +3098,8 @@ void MainWindow::on_pushButton_load_clicked()
         return;
     }
 
-    InfraredParamsStatus GF120_set_param;
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    auto& GF120_set_param = gf120->GF120_set_param;
 
     QDomElement root = doc.documentElement();
 
@@ -3344,14 +3331,14 @@ void MainWindow::on_pushButton_load_clicked()
     }
 
     fileSave.close();
-
-    deviceItem->infrared_params_status(GF120_set_param);
-
-    gui_init(GF120_set_param);
+    gui_init(gf120);
 }
 
-void MainWindow::gui_init(InfraredParamsStatus GF120_set_param)
+void MainWindow::gui_init(std::shared_ptr<GF120> gf120)
 {
+    auto& GF120_set_param = gf120->GF120_set_param;
+    auto& GF120_roi_temp = gf120->GF120_roi_temp;
+
     ui->comboBox_infrared_thermometry->setCurrentIndex(GF120_set_param.temp_mode);
     ui->comboBox_infrared_color->setCurrentIndex(GF120_set_param.color_mode);
     ui->comboBox_display_mode->setCurrentIndex(1);
@@ -3359,6 +3346,13 @@ void MainWindow::gui_init(InfraredParamsStatus GF120_set_param)
 
     ui->checkBox_infrared_osd->setChecked(GF120_set_param.osd_enable);
     ui->checkBox_infrared_temperature_display->setChecked(GF120_set_param.temp_display_enable);
+
+    ui->checkBox_infrared_roi->setChecked(GF120_roi_temp[0].user_roi_enable);
+
+    ui->spinBox_infrared_width_start->setValue(GF120_roi_temp[0].user_width_start);
+    ui->spinBox_infrared_width_end ->setValue(GF120_roi_temp[0].user_width_number);
+    ui->spinBox_infrared_high_start->setValue(GF120_roi_temp[0].user_high_start);
+    ui->spinBox_infrared_high_end->setValue(GF120_roi_temp[0].user_high_number);
 
     ui->lineEdit_sample_path->setText(GF120_set_param.file_path);
     ui->lineEdit_path_cover_low->setText(GF120_set_param.low_cover_file);
@@ -3384,7 +3378,6 @@ void MainWindow::gui_init(InfraredParamsStatus GF120_set_param)
     ui->doubleSpinBox_infrared_temperature_compensation->setValue((double)GF120_set_param.user_compensate_temp/100);
     ui->doubleSpinBox_infrared_distance_compensation->setValue((double)GF120_set_param.distance_compensate_temp);
     ui->doubleSpinBox_infrared_humidity_compensation->setValue((double)GF120_set_param.humidity_compensate_temp/100);
-
 }
 
 
@@ -3504,7 +3497,7 @@ void MainWindow::on_pushButton_saveToDevice_clicked()
     QDir dir(srcDirPath);
     if (!dir.exists())
     {
-        QMessageBox::information(this, "提示", "请选择正确的目录");
+        QMessageBox::information(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("请选择正确的目录"));
         return;
     }
 
@@ -3513,11 +3506,11 @@ void MainWindow::on_pushButton_saveToDevice_clicked()
     QList<QFileInfo> fileInfo(dir.entryInfoList(filter));
     if (fileInfo.count() < 1)
     {
-        QMessageBox::information(this, "提示", "目录不能为空");
+        QMessageBox::information(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("目录不能为空"));
         return;
     }
 
-    QString strText = QString("将写入如下文件 %1:\n").arg(srcDirPath);
+    QString strText = QString::fromLocal8Bit("将写入如下文件 %1:\n").arg(srcDirPath);
     QVector<QByteArray> FileNames;
 
     FileNames.append(srcDirPath.toLatin1());
@@ -3527,26 +3520,27 @@ void MainWindow::on_pushButton_saveToDevice_clicked()
         strText += fileName + "\n";
         FileNames.append(fileName.toLatin1());
     }
-    strText += "\n写入新的校正文件会覆盖相机内原有内容，确认要覆盖吗？";
-     strText += "\n写入新的校正文件大约需要35s,请等待,60s后没有响应关闭程序！";
+    strText += QString::fromLocal8Bit("\n写入新的校正文件会覆盖相机内原有内容，确认要覆盖吗？");
+     strText += QString::fromLocal8Bit("\n写入新的校正文件大约需要35s,请等待,60s后没有响应关闭程序！");
     QMessageBox::StandardButton selected = QMessageBox::warning(this, "warning", strText, QMessageBox::Yes | QMessageBox::No);
     if (selected == QMessageBox::Yes)
     {
-        QStringList FileNamePtrs;
+        vector<string> FileNamePtrs;
         for (int i = 0; i < FileNames.count(); ++i)
         {
-            FileNamePtrs.append(FileNames[i].data());
+            FileNamePtrs.push_back(FileNames[i].data());
         }
 
-        auto status = deviceItem->infared_save_config(FileNamePtrs);
+        auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+        auto status = gf120->save_check_config(FileNamePtrs);
 
         if (status == 0)
         {
-            QMessageBox::information(this, "提示", "保存成功");
+            QMessageBox::information(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("保存成功"));
         }
         else
         {
-            QMessageBox::information(this, "提示", QString("保存失败:%1").arg(status));
+            QMessageBox::information(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("保存失败:%1").arg(status));
         }
     }
 }
@@ -3560,15 +3554,16 @@ void MainWindow::on_pushButton_deleteFilesInDevice_clicked()
     QMessageBox::StandardButton selected = QMessageBox::warning(this, "warning", strText, QMessageBox::Yes | QMessageBox::No);
     if (selected == QMessageBox::Yes)
     {
-        auto status = deviceItem->infared_delete_config();
+        auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+        auto status = gf120->delete_check_config();
 
         if (status == 0)
         {
-            QMessageBox::information(this, "提示", "删除成功");
+            QMessageBox::information(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("保存成功"));
         }
         else
         {
-            QMessageBox::information(this, "提示", QString("删除失败:%1").arg(status));
+            QMessageBox::information(this, QString::fromLocal8Bit("提示"), QString::fromLocal8Bit("保存失败:%1").arg(status));
         }
     }
 }
@@ -3608,6 +3603,7 @@ void MainWindow::on_pushButton_up_clicked()
     char result[64];
     memset(cmd_buff,0x0,sizeof(cmd_buff));
     memset(result,0x0,sizeof(result));
+    typedef unsigned char BYTE;
     BYTE temp = 0;
     BYTE tempT[100] = {0};
     QString file_path = tmpfile.fileName();
@@ -3616,7 +3612,9 @@ void MainWindow::on_pushButton_up_clicked()
     sprintf(cmd_buff,"updatefile_start(%s )",file_name.toStdString().data() );//bbbbb
     printf("cmd_buff :%s \r\n",cmd_buff);
 
-    xxx = deviceItem->infrared_cmd(cmd_buff);
+
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    xxx = gf120->command(cmd_buff);
 
     //while (!in.atEnd())
     while ( (nCount = in.readRawData((char*)tempT, 100)) !=0 )
@@ -3653,7 +3651,7 @@ void MainWindow::on_pushButton_up_clicked()
                 ,tempT[90],tempT[91],tempT[92],tempT[93],tempT[94],tempT[95],tempT[96],tempT[97],tempT[98],tempT[99]
                 );
 
-        xxx = deviceItem->infrared_cmd(cmd_buff);
+        xxx = gf120->command(cmd_buff);
         //printf("xxx=%d cmd_buff=%s result:%s \r\n",xxx, cmd_buff, result);
         if(xxx != 0 )
         {
@@ -3672,7 +3670,7 @@ void MainWindow::on_pushButton_up_clicked()
     }
     sprintf(cmd_buff,"updatefile_end(%s )",file_name.toStdString().data() );//写完成关闭文件
     printf("cmd_buff :%s \r\n",cmd_buff);
-    xxx = deviceItem->infrared_cmd(cmd_buff);
+    xxx = gf120->command(cmd_buff);
 
     temp = 1;
     sprintf(cmd_buff,"updatefile data.rbf",temp);
@@ -3703,7 +3701,7 @@ void MainWindow::on_pushButton_update_clicked()
     memset(result,0x0,sizeof(result));
     sprintf(cmd_buff,"update_fpga(gev300_gf120_mipi.rbf )");//写完成关闭文件
     printf("cmd_buff :%s \r\n",cmd_buff);
-
-    deviceItem->infrared_cmd(cmd_buff);
+    auto gf120 =std::dynamic_pointer_cast<GF120>(deviceItem->camera);
+    gf120->command(cmd_buff);
 }
 

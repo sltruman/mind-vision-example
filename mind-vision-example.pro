@@ -8,16 +8,25 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += C:\opencv\build\include \
+unix:INCLUDEPATH += /usr/include/opencv4
+win32:INCLUDEPATH += "C:\Program Files (x86)\MindVision\Demo\VC++\Include" \
+
+unix:LIBS += -lMVSDK
+win32:LIBS += -L"C:\Program Files (x86)\MindVision\SDK\X64" -lMVCAMSDK_X64 \
+
+
+win32:INCLUDEPATH += C:\opencv\build\include \
                C:\Users\SLTru\Desktop\qtpropertybrowser\src
 
 CONFIG(debug,debug|release) {
-LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454d \
+win32:LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454d \
         -LC:\Users\SLTru\Desktop\qtpropertybrowser\lib -lQtSolutions_PropertyBrowser-headd
 } else {
-LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454 \
+win32:LIBS += -LC:\opencv\build\x64\vc15\lib -lopencv_world454 \
         -LC:\Users\SLTru\Desktop\qtpropertybrowser\lib -lQtSolutions_PropertyBrowser-head
 }
+
+unix:LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lopencv_calib3d
 
 SOURCES += \
     aboutdialog.cpp \
@@ -36,7 +45,6 @@ SOURCES += \
     toplevelitemwidget.cpp
 
 HEADERS += \
-    GF120.h \
     aboutdialog.h \
     calibrationdialog.h \
     cameraprocess.h \
@@ -50,7 +58,14 @@ HEADERS += \
     recorddialog.h \
     rightsidetitlebar.h \
     snapshotdialog.h \
-    toplevelitemwidget.h
+    toplevelitemwidget.h \
+    wrap/brightness.hpp \
+    wrap/defectpixelalg.hpp \
+    wrap/device.hpp \
+    wrap/device_manager.hpp \
+    wrap/gf120.hpp \
+    wrap/gige_device.hpp \
+    wrap/usb_device.hpp
 
 FORMS += \
     aboutdialog.ui \
@@ -78,6 +93,7 @@ DISTFILES += \
     theme/black.css \
     theme/black/calibration.css \
     theme/black/leftside.css \
+    theme/black/mainwindow.css \
     theme/black/menubar.css \
     theme/black/offlinefpn.css \
     theme/black/preview.css \
@@ -133,4 +149,4 @@ DISTFILES += \
 TRANSLATIONS += language/app_zh.ts
 
 RC_ICONS = theme/icon/app.ico
-QMAKE_LFLAGS += /MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"
+win32:QMAKE_LFLAGS += /MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"

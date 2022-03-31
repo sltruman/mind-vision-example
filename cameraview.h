@@ -2,6 +2,8 @@
 #define CAMERAVIEW_H
 
 #include "camerascene.h"
+#include "wrap/device.hpp"
+#include "wrap/gf120.hpp"
 
 #include <tuple>
 #include <thread>
@@ -30,7 +32,7 @@ public:
     ~CameraView();
     void paintEvent(QPaintEvent *event) override;
 
-    QProcess* camera;
+    std::shared_ptr<Device> camera;
 
     void zoom(float);
     void play();
@@ -53,17 +55,6 @@ public:
     std::mutex m_img;
     QImage snapshot();
 
-    struct FrameHead {
-        int num = 0;
-        int width = 0;
-        int height = 0;
-        int bits = 0;
-        char camera_status[256];
-        char exposure_status[256];
-        int record_status = 0;
-        int snapshot_status = 0;
-        char _[8];
-    } current_frame_head;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -87,9 +78,7 @@ private:
     Ui::CameraView *ui;
     std::thread task;
     int framesCaptured;
-    qint64 tick;
 
-    QSharedMemory sm;
     QTreeWidgetItem* owner;
 };
 

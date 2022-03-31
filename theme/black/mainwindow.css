@@ -1,0 +1,23 @@
+MainWindow {
+    background-color: #191919;
+}
+
+QScrollBar:horizontal {
+    background: black;
+    height: 15px;
+}
+
+QScrollBar::handle:horizontal {
+    background: white;
+    min-width: 20px;
+}
+
+QScrollBar:vertical {
+    background: black;
+    width: 15px;
+}
+
+QScrollBar::handle:vertical {
+    background: white;
+    min-height: 20px;
+}

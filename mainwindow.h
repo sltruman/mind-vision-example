@@ -1,6 +1,5 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#include <GF120.h>
 #include "cameraview.h"
 #include <QMainWindow>
 #include <QMouseEvent>
@@ -227,7 +226,7 @@ private Q_SLOTS:
     void on_checkBox_fpn_clicked(bool checked);
     void on_pushButton_fpnSave_clicked();
 
-    void gui_init(InfraredParamsStatus);
+    void gui_init(std::shared_ptr<GF120> gf120);
     void on_comboBox_infrared_thermometry_activated(int index);
     void on_comboBox_infrared_color_activated(int index);
     void on_comboBox_display_mode_currentIndexChanged(int index);
@@ -271,7 +270,7 @@ private Q_SLOTS:
     void on_pushButton_up_clicked();
     void on_pushButton_update_clicked();
     bool copyDirectoryFiles(const QString &fromDir, const QString &toDir, bool coverFileIfExist);
-    int Bin_Search(InfraredParamsStatus,int temp);
+    int Bin_Search(int temp);
 
 private:
     Ui::MainWindow *ui;
