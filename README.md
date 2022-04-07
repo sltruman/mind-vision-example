@@ -1,5 +1,7 @@
 # mind-vision-example
 
+<video src="C:\Users\SLTru\Desktop\mind-vision-example\效果.mp4"></video>
+
 ## 工作计划
 
 | 任务                 | 问题                                                         | 时间 | 测试 |
