@@ -1,6 +1,15 @@
 # mind-vision-example
 
-<img src="https://github.com/sltruman/mind-vision-example/test\1.png" alt="微信截图_20220402145808" style="zoom:50%;" /><img src="效果\微信截图_20220402145816.png" alt="微信截图_20220402145816" style="zoom:50%;" /><img src="效果\微信截图_20220402145821.png" alt="微信截图_20220402145821" style="zoom:50%;" /><img src="效果\微信截图_20220402145826.png" alt="微信截图_20220402145826" style="zoom:50%;" /><img src="效果\微信截图_20220402145831.png" alt="微信截图_20220402145831" style="zoom:50%;" /><img src="效果\微信截图_20220402145839.png" alt="微信截图_20220402145839" style="zoom:50%;" /><img src="效果\微信截图_20220402145847.png" alt="微信截图_20220402145847" style="zoom:50%;" /><img src="效果\微信截图_20220402145852.png" alt="微信截图_20220402145852" style="zoom:50%;" /><img src="效果\微信截图_20220402145856.png" alt="微信截图_20220402145856" style="zoom:50%;" /><img src="效果\微信截图_20220402150630.png" alt="微信截图_20220402150630" style="zoom:50%;" />
+<img src="https://github.com/sltruman/mind-vision-example/test/1.png" alt="微信截图_20220402145808" style="zoom:50%;" />
+<img src="test\微信截图_20220402145816.png" alt="微信截图_20220402145816" style="zoom:50%;" />
+<img src="test\微信截图_20220402145821.png" alt="微信截图_20220402145821" style="zoom:50%;" />
+<img src="test\微信截图_20220402145826.png" alt="微信截图_20220402145826" style="zoom:50%;" />
+<img src="test\微信截图_20220402145831.png" alt="微信截图_20220402145831" style="zoom:50%;" />
+<img src="test\微信截图_20220402145839.png" alt="微信截图_20220402145839" style="zoom:50%;" />
+<img src="test\微信截图_20220402145847.png" alt="微信截图_20220402145847" style="zoom:50%;" />
+<img src="test\微信截图_20220402145852.png" alt="微信截图_20220402145852" style="zoom:50%;" />
+<img src="test\微信截图_20220402145856.png" alt="微信截图_20220402145856" style="zoom:50%;" />
+<img src="test\微信截图_20220402150630.png" alt="微信截图_20220402150630" style="zoom:50%;" />
 
 ## 工作计划
 
