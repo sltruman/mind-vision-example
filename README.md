@@ -1,6 +1,6 @@
 # mind-vision-example
 
-<video src="C:\Users\SLTru\Desktop\mind-vision-example\效果.mp4"></video>
+<video src="效果.mp4"></video>
 
 ## 工作计划
 
