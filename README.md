@@ -1,6 +1,6 @@
 # mind-vision-example
 
-<img src="https://github.com/sltruman/mind-vision-example/test/1.png" alt="微信截图_20220402145808" style="zoom:50%;" />
+<img src="test\1.png" alt="微信截图_20220402145808" style="zoom:50%;" />
 <img src="test\微信截图_20220402145816.png" alt="微信截图_20220402145816" style="zoom:50%;" />
 <img src="test\微信截图_20220402145821.png" alt="微信截图_20220402145821" style="zoom:50%;" />
 <img src="test\微信截图_20220402145826.png" alt="微信截图_20220402145826" style="zoom:50%;" />
